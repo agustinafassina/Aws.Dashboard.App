@@ -84,7 +84,7 @@ AUTH0_BASE_URL=http://localhost:3000
 AUTH0_SECRET=your_random_secret_string
 
 # AWS Dashboard API (backend)
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5142
 ```
 
 Notes:
@@ -263,7 +263,7 @@ AUTH0_BASE_URL=http://localhost:3000
 AUTH0_SECRET=tu_cadena_secreta_aleatoria
 
 # API AWS Dashboard (backend)
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5142
 ```
 
 Notas:
