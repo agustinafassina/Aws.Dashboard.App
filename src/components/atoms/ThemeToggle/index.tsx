@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes'
 import Button from '@/components/atoms/Button'
 import SunIcon from '@/components/atoms/Icons/SunIcon'
 import MoonIcon from '@/components/atoms/Icons/MoonIcon'
+import { themeToggleStyles } from './styles'
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme()
@@ -16,7 +17,7 @@ export default function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button className="hover:opacity-80 w-10 h-10 p-0">
+      <Button className={themeToggleStyles.button}>
         <SunIcon width={20} height={20} />
       </Button>
     )
@@ -24,7 +25,7 @@ export default function ThemeToggle() {
 
   return (
     <Button
-      className="hover:opacity-80 w-10 h-10 p-0"
+      className={themeToggleStyles.button}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       aria-label="Toggle theme"
     >

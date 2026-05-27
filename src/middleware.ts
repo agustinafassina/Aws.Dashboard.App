@@ -3,6 +3,13 @@ import type { NextRequest } from 'next/server'
 import { getSession } from '@auth0/nextjs-auth0/edge'
 import { shouldRefreshToken } from '@/utils/jwt'
 
+function isClientNavigationRequest(req: NextRequest) {
+  return (
+    req.headers.get('RSC') === '1' ||
+    req.headers.get('Next-Router-Prefetch') === '1'
+  )
+}
+
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
 
@@ -16,7 +23,10 @@ export default async function middleware(req: NextRequest) {
 
   const existingToken = req.cookies.get('token')?.value
 
-  // Skip Auth0 session round-trip when the access token is still valid.
+  if (isClientNavigationRequest(req) && existingToken) {
+    return NextResponse.next()
+  }
+
   if (!shouldRefreshToken(existingToken)) {
     return NextResponse.next()
   }
@@ -44,5 +54,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api/auth|_next/static|_next/image|icon.png).*)'],
+  matcher: ['/', '/home', '/home/:path*', '/guide'],
 }

@@ -1,10 +1,11 @@
 import React from 'react'
+import { iconStyles } from './styles'
 
 interface AppLogoIconProps {
   className?: string
 }
 
-const AppLogoIcon: React.FC<AppLogoIconProps> = ({ className = 'w-9 h-9' }) => {
+const AppLogoIcon: React.FC<AppLogoIconProps> = ({ className = iconStyles.logo }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

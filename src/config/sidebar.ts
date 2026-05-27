@@ -1,10 +1,11 @@
 import LargeIcon from '@/components/atoms/Icons/LargeIcon'
 import BookIcon from '@/components/atoms/Icons/BookIcon'
 import UserIcon from '@/components/atoms/Icons/UserIcon'
-import { ReactNode, ComponentType } from 'react'
+import { ComponentType } from 'react'
+import type { SectionKey } from '@/i18n/types'
 
 export interface SidebarItem {
-  name: string
+  sectionKey: SectionKey
   path: string
   icon: ComponentType<{ width?: number; height?: number }>
   badge?: string | number
@@ -18,17 +19,17 @@ export interface SidebarConfig {
 export const sidebarConfig: SidebarConfig = {
   '/home': [
     {
-      name: 'Dashboard',
+      sectionKey: 'dashboard',
       path: '/home/dashboard',
       icon: LargeIcon,
     },
     {
-      name: 'Costs',
+      sectionKey: 'costs',
       path: '/home/costs',
       icon: BookIcon,
     },
     {
-      name: 'Iam users',
+      sectionKey: 'iam',
       path: '/home/iam',
       icon: UserIcon,
     },

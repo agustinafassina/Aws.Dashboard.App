@@ -1,61 +1,96 @@
 'use client'
 
-import React from 'react'
-import { usePathname } from 'next/navigation'
+import React, { useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import NavLink from '@/components/atoms/NavLink'
+import ChevronIcon from '@/components/atoms/Icons/ChevronIcon'
 import packageInfo from '../../../../package.json'
 import { sidebarConfig } from '@/config/sidebar'
+import { useSidebar } from '@/context/SidebarContext'
+import { useTranslation } from '@/i18n/useTranslation'
+import {
+  getAsideClass,
+  getFooterClass,
+  getHeaderRowClass,
+  getInnerClass,
+  getToggleButtonClass,
+  sidebarStyles,
+} from './styles'
+
+const getSidebarOptions = (pathname: string) => {
+  for (const [routePrefix, items] of Object.entries(sidebarConfig)) {
+    if (pathname.startsWith(routePrefix)) {
+      return items.filter((item) => !item.disabled)
+    }
+  }
+  return null
+}
 
 const SideBar: React.FC = () => {
   const pathname = usePathname()
+  const router = useRouter()
+  const { collapsed, toggle } = useSidebar()
+  const { dictionary, sectionTitle } = useTranslation()
+  const options = pathname ? getSidebarOptions(pathname) : null
 
-  if (!pathname) return null
+  useEffect(() => {
+    options?.forEach((item) => router.prefetch(item.path))
+  }, [options, router])
 
-  const getSidebarOptions = () => {
-    // Find the configuration that matches the current route
-    for (const [routePrefix, items] of Object.entries(sidebarConfig)) {
-      if (pathname.startsWith(routePrefix)) {
-        return items.filter(item => !item.disabled) // Filter disabled items
-      }
-    }
-    return null
-  }
-
-  const options = getSidebarOptions()
-  if (!options) return null
+  if (!pathname || !options) return null
 
   return (
-    <aside 
-      className="flex flex-col w-[15%] flex-shrink-0 justify-between bg-white dark:bg-gray_900 border-r-[0.06rem] border-r-black/10 dark:border-r-gray_700 min-w-[15.625rem] transition-colors shadow-sm"
+    <aside
+      className={getAsideClass(collapsed)}
       role="complementary"
-      aria-label="Navigation sidebar"
+      aria-label={dictionary.sidebar.ariaLabel}
     >
-      <div className="flex flex-col pt-6 px-4">
-        <div className="mb-6 px-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-gray_600 dark:text-gray_400 mb-4">
-            Menu
-          </h2>
+      <div className={getInnerClass(collapsed)}>
+        <div className={getHeaderRowClass(collapsed)}>
+          {!collapsed && (
+            <h2 className={sidebarStyles.menuTitle}>{dictionary.sidebar.menuTitle}</h2>
+          )}
+          <button
+            type="button"
+            onClick={toggle}
+            className={getToggleButtonClass()}
+            aria-label={
+              collapsed
+                ? dictionary.sidebar.expandMenu
+                : dictionary.sidebar.collapseMenu
+            }
+          >
+            <ChevronIcon direction={collapsed ? 'right' : 'left'} />
+          </button>
         </div>
-        <nav className="flex flex-col gap-1.5" role="navigation" aria-label="Main navigation">
+
+        <nav
+          className={sidebarStyles.nav}
+          role="navigation"
+          aria-label={dictionary.sidebar.navAriaLabel}
+        >
           {options.map((option) => {
             const IconComponent = option.icon
             return (
               <NavLink
                 key={option.path}
-                name={option.name}
+                name={sectionTitle(option.sectionKey)}
                 href={option.path}
                 icon={<IconComponent />}
                 badge={option.badge}
+                collapsed={collapsed}
               />
             )
           })}
         </nav>
       </div>
-      
-      <footer className="flex flex-col items-center justify-center py-4 border-t border-gray_200 dark:border-gray_700 px-4">
-        <p className="text-center text-xs text-gray_500 dark:text-gray_400 font-medium">
-          Version {packageInfo.version}
-        </p>
+
+      <footer className={getFooterClass(collapsed)}>
+        {!collapsed && (
+          <p className={sidebarStyles.version}>
+            {dictionary.sidebar.version} {packageInfo.version}
+          </p>
+        )}
       </footer>
     </aside>
   )

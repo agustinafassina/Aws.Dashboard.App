@@ -23,10 +23,10 @@ const config = {
     'text-blue_400',
     'text-blue_500',
 
-    // Greens
-    'bg-green_100',
-    'text-green_300',
-    'text-green_500',
+    // Brand (primary)
+    'bg-brand_100',
+    'text-brand_300',
+    'text-brand_500',
 
     // Reds
     'bg-red_50',
@@ -68,17 +68,16 @@ const config = {
         blue_600: '#0078D4',
         blue_700: '#0056B3',
 
-        // Greens
-        green_50: '#e8f1e9ff',
-        green_100: '#4AA77C1A',
-        green_200: '#14AE5C',
-        green_300: '#4AA77C',
-        green_400: '#009951',
-        green_500: '#163832',
-
-        // light greens
-        lightgreen_300: '#59E6A44D',
-        lightgreen: '#22A468',
+        // Brand — neutral gray / charcoal (no blue tint)
+        brand_50: '#f4f4f5',
+        brand_100: '#e4e4e7',
+        brand_200: '#a1a1aa',
+        brand_300: '#d4d4d8',
+        brand_400: '#71717a',
+        brand_500: '#3f3f46',
+        brand_600: '#18181b',
+        brand_700: '#52525b',
+        brand_900: '#27272a',
 
         // oranges
         orange_300: '#F3BC6E4D',
@@ -116,8 +115,8 @@ const config = {
           '--blue_400': theme('colors.blue_400'),
           '--blue_500': theme('colors.blue_500'),
 
-          // Greens
-          '--green_400': '#4AA77C',
+          // Brand
+          '--brand_400': theme('colors.brand_400'),
 
           // Reds
           '--red_400': '#D13438',

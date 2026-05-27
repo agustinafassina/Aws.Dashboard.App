@@ -1,74 +1,58 @@
-# AWS Dashboard App
-
+# 📊 Dashboard Template — Next.js
 [English](#english) | [Español](#español)
 
----
+Plantilla de dashboard moderna con Auth0, temas claro/oscuro, internacionalización (ES/EN) y arquitectura escalable.
 
-## English
+> 📌 Ver también [MEJORAS.md](./MEJORAS.md) para el roadmap y tareas pendientes.
 
-### Description
 
-Frontend UI for an **AWS Dashboard API**. The app authenticates users with Auth0, calls the backend over HTTP (Axios + React Query), and presents AWS-related views in a responsive dashboard layout.
+## English 🇬🇧
+### 📋 Description
+A production-oriented dashboard template built with **Next.js 15** (App Router), **Auth0**, **Tailwind CSS**, and **NextUI**. It includes a collapsible sidebar, avatar menu (theme + language + guide + logout), sample charts, bilingual UI, and CI-ready scripts.
 
-The repository currently includes **scaffolding**: routing, layout, auth, and HTTP client are in place; feature pages are placeholders ready to wire to the API.
+Designed to clone and extend quickly for internal tools, admin panels, and SaaS dashboards.
 
-### Planned views (scaffolding)
+### ✨ Features
+- **Authentication** — Auth0 with middleware-protected routes and JWT cookie caching for faster navigation
+- **Light / Dark themes** — Manual toggle in the avatar menu (`next-themes`, persisted; no system theme)
+- **Internationalization (i18n)** — Spanish and English via dictionary files; locale stored in `localStorage` + cookie (SSR metadata)
+- **Collapsible sidebar** — Expand/collapse with persisted width; prefetch on mount
+- **Single client route for sections** — `home/[[...section]]` (Dashboard, Costs, IAM) for instant section switches
+- **Sample charts** — Recharts bar/area charts on Dashboard with theme-aware colors
+- **Site guide** — `/guide` page (bilingual), opened from the avatar menu in a new tab
+- **Responsive layout** — No fixed `min-width`; mobile-friendly content shell
+- **Error pages** — Branded 404 and error boundaries with i18n
+- **Accessibility** — Focus trap, keyboard navigation, and ARIA on the avatar menu
+- **Atomic design** — `atoms` / `molecules` / `organism` component structure
+- **Co-located styles** — `styles.ts` per component + shared tokens in `src/styles/`
+- **CI** — GitHub Actions workflow (lint + build)
 
-| Section    | Route            | Status        |
-| ---------- | ---------------- | ------------- |
-| Dashboard  | `/home/dashboard` | Placeholder   |
-| Costs      | `/home/costs`     | Placeholder   |
-| IAM users  | `/home/iam`       | Placeholder   |
+### 🛠️ Tech stack
+| Area | Technology |
+|------|------------|
+| Framework | Next.js **15.5.x** (App Router) |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS 3.4 |
+| UI | NextUI (`@nextui-org/react`) |
+| Auth | Auth0 Next.js SDK 3.5 |
+| Themes | next-themes 0.4 |
+| Data fetching | TanStack React Query 5 |
+| HTTP | Axios |
+| Charts | Recharts 2.15 |
+| Icons | React Icons |
 
-### Features
-
-- **Auth0** — Login, session, and access token stored for API calls
-- **AWS API client** — Axios instance with Bearer token (`NEXT_PUBLIC_API_BASE_URL`)
-- **React Query** — Ready for server state and caching
-- **Dashboard shell** — Sidebar, navbar, dark mode, responsive layout
-- **TypeScript** — Typed interfaces and shared utilities
-
-### Tech stack
-
-- **Framework:** Next.js 15 (App Router)
-- **Language:** TypeScript 5
-- **Styling:** Tailwind CSS 3
-- **UI:** HeroUI / NextUI
-- **Auth:** Auth0 Next.js SDK
-- **Data:** TanStack React Query, Axios
-- **Charts:** Recharts (for future metrics)
-
-### Architecture
-
-```text
-Browser (Next.js UI)
-    │
-    ├── Auth0 ──► login / session / access token (cookie: token)
-    │
-    └── Axios (axiosBase) ──► AWS Dashboard API
-            Authorization: Bearer <token>
-            baseURL: NEXT_PUBLIC_API_BASE_URL
-```
-
-The **backend API** is a separate service. This repo only hosts the UI; point `NEXT_PUBLIC_API_BASE_URL` at your API (local or deployed).
-
-### Prerequisites
-
-- **Node.js** 18+
+### 📦 Prerequisites
+- **Node.js** 18.x or higher
 - **npm**, **yarn**, **pnpm**, or **bun**
-- **Auth0** application (callback: `http://localhost:3000/api/auth/callback`)
-- **AWS Dashboard API** running and reachable from the browser (CORS configured on the API if needed)
+- An **Auth0** application (Regular Web Application)
 
-### Getting started
-
-#### 1. Install dependencies
-
+### 🚀 Getting started
+#### 1️⃣ Install dependencies
 ```bash
 npm install
 ```
 
-#### 2. Environment variables
-
+#### 2️⃣ Environment variables
 Copy `.env.example` to `.env`:
 
 ```bash
@@ -76,282 +60,336 @@ cp .env.example .env
 ```
 
 ```env
-# Auth0
-AUTH0_ISSUER_BASE_URL=https://your-domain.auth0.com
+AUTH0_ISSUER_BASE_URL=https://your-tenant.auth0.com
 AUTH0_CLIENT_ID=your_client_id
 AUTH0_CLIENT_SECRET=your_client_secret
 AUTH0_BASE_URL=http://localhost:3000
-AUTH0_SECRET=your_random_secret_string
-
-# AWS Dashboard API (backend)
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5142
+AUTH0_SECRET=your_random_secret_min_32_chars
 ```
 
-Notes:
+**Auth0 application settings** (Application → Settings):
 
-- Do not wrap values in quotes in `.env`.
-- Generate `AUTH0_SECRET` with `openssl rand -hex 32` (or equivalent).
-- `AUTH0_BASE_URL` must match the URL where this UI runs.
-- `NEXT_PUBLIC_API_BASE_URL` is exposed to the client; use only for the public API base URL.
+| Setting | Value (local dev) |
+|---------|-------------------|
+| Allowed Callback URLs | `http://localhost:3000/api/auth/callback` |
+| Allowed Logout URLs | `http://localhost:3000` |
+| Allowed Web Origins | `http://localhost:3000` |
 
-#### 3. Run the dev server
+**Notes:**
 
+- Do not wrap values in quotes in `.env`
+- Generate `AUTH0_SECRET` with: `openssl rand -hex 32`
+- `AUTH0_BASE_URL` must match the URL you use to open the app
+
+#### 3️⃣ Run the dev server
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Unauthenticated users are redirected to Auth0 login; after login you land on `/home/dashboard`.
 
-### Scripts
+### 📜 Available scripts
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | ESLint |
 
-| Command           | Description              |
-| ----------------- | ------------------------ |
-| `npm run dev`     | Development server       |
-| `npm run build`   | Production build         |
-| `npm run start`   | Production server        |
-| `npm run lint`    | ESLint                   |
-
-### Project structure
-
-```text
+### 📁 Project structure
+```
 src/
 ├── app/
-│   ├── api/auth/[auth0]/   # Auth0 route handlers
-│   ├── home/               # Protected app area
-│   │   ├── dashboard/      # Overview (scaffold)
-│   │   ├── costs/          # Costs (scaffold)
-│   │   ├── iam/            # IAM users (scaffold)
-│   │   └── layout.tsx
-│   ├── layout.tsx
-│   └── page.tsx
-├── api/
-│   └── axiosBase.ts        # API client + 401 → logout
+│   ├── api/auth/[auth0]/     # Auth0 route handler
+│   ├── guide/                # Bilingual site guide (public)
+│   ├── home/
+│   │   ├── [[...section]]/   # Dashboard, costs, iam (single page)
+│   │   ├── layout.tsx        # Sidebar + main
+│   │   ├── loading.tsx       # Section skeleton
+│   │   └── error.tsx         # Home error boundary
+│   ├── layout.tsx            # Root layout, metadata, NavBar
+│   ├── not-found.tsx         # 404 (i18n)
+│   └── error.tsx             # Global error boundary
 ├── components/
-│   ├── atoms/
-│   └── organism/           # NavBar, Sidebar
+│   ├── atoms/                # NavLink, Icons, Skeleton, …
+│   ├── molecules/            # UserMenu
+│   └── organism/             # NavBar, Sidebar, DashboardCharts, …
 ├── config/
-│   └── sidebar.ts          # Navigation items
-├── interfaces/
-├── provider/               # React Query, theme, Axios interceptor
-├── styles/
-├── utils/
-└── middleware.ts           # Auth0 session → token cookie
+│   ├── app.ts                # App name, description, default locale
+│   ├── sidebar.ts            # Sidebar items (sectionKey + path)
+│   └── siteGuide.ts          # Guide section IDs
+├── context/                  # Language, Sidebar
+├── i18n/
+│   ├── dictionaries/         # es.ts, en.ts
+│   ├── useTranslation.ts
+│   └── getDictionary.ts
+├── hooks/                    # useFocusTrap, …
+├── provider/                 # Theme, Language, React Query, NextUI
+├── styles/                   # globals, pageShell, cn, shared
+└── middleware.ts             # Auth0 + JWT cookie refresh
+.github/workflows/ci.yml        # Lint + build on push/PR
 ```
 
-### Connecting to the AWS API
+### 🗺️ Routes
+| Path | Access | Description |
+|------|--------|-------------|
+| `/` | Public | Redirects to dashboard or login |
+| `/home/dashboard` | Protected | Dashboard + sample charts |
+| `/home/costs` | Protected | Costs placeholder |
+| `/home/iam` | Protected | IAM users placeholder |
+| `/guide` | Protected | Site guide (bilingual) |
+| `/api/auth/*` | Auth0 | Login, logout, callback |
 
-1. Start your **AWS Dashboard API** and set `NEXT_PUBLIC_API_BASE_URL`.
-2. Use `axiosBase` from `src/api/axiosBase.ts` for authenticated requests (Bearer token from cookie).
-3. Add hooks or services under `src/api/` (or feature folders) and consume them with React Query in pages under `src/app/home/`.
-4. On **401**, the Axios interceptor redirects to logout.
+### 🔐 Authentication flow
+1. User hits a protected route.
+2. Middleware checks the `token` cookie; if valid, skips `getSession` (performance).
+3. If the token is missing or near expiry, `getSession` runs and refreshes the cookie.
+4. Unauthenticated users are redirected to Auth0 login.
+5. After login, the user returns to the app with session + access token in cookies.
 
-Example (client component):
+### 🎨 Customization
+#### 🏷️ App branding
+Edit `src/config/app.ts`:
 
-```tsx
-import { useQuery } from '@tanstack/react-query'
-import { axiosBase } from '@/api/axiosBase'
-
-const { data } = useQuery({
-  queryKey: ['iam-users'],
-  queryFn: () => axiosBase.get('/iam/users').then((r) => r.data),
-})
+```ts
+export const appConfig = {
+  name: 'Dashboard Template',
+  description: '…',
+  defaultLocale: 'es',
+  // …
+}
 ```
 
-### Customization
+Root layout metadata and Open Graph use these values.
 
-**New sidebar route**
+#### ➕ Add a new sidebar section
+1. Add `sectionKey` to `SectionKey` in `src/i18n/types.ts`.
+2. Add labels in `src/i18n/dictionaries/es.ts` and `en.ts` (`sections`, `homeContent`).
+3. Register the item in `src/config/sidebar.ts` (`path`, `icon`).
+4. Handle content in `src/components/organism/HomeSectionContent/index.tsx` (or a new organism).
+5. Optional: add a block in `guide.sections` in both dictionaries.
 
-1. Add `src/app/home/<section>/page.tsx`.
-2. Register the item in `src/config/sidebar.ts`.
+No new `page.tsx` under `home/` is required — routing is handled by `[[...section]]`.
 
-**Styling**
+#### 🌙 Themes
+- Toggle: avatar menu → **Appearance** → Light / Dark
+- Default: light (`src/provider/index.tsx`)
+- Palette: `brand_*` and `gray_*` in `tailwind.config.js`
+- Co-located styles: prefer `styles.ts` + `dark:` variants
 
-Tailwind theme in `tailwind.config.js`; globals in `src/styles/globals.css`.
+#### 🌐 Internationalization
+- Dictionaries: `src/i18n/dictionaries/{es,en}.ts`
+- Client: `useTranslation()` hook
+- Server (metadata, 404): `getServerLocale()` reads the `dashboard-locale` cookie
 
-### Troubleshooting
+### ☁️ Deployment
+- `next.config.mjs` sets `output: 'standalone'` for Docker / container hosts.
+- Set all `AUTH0_*` variables in your hosting provider.
+- Update Auth0 callback/logout URLs for production domains.
 
-| Issue | What to check |
-| ----- | ------------- |
-| `issuerBaseURL must be a valid uri` | `AUTH0_ISSUER_BASE_URL` has `https://`, no quotes; restart dev server |
-| Login redirect fails | Auth0 callback URL includes `/api/auth/callback` |
-| API calls fail / CORS | API allows origin `http://localhost:3000`; base URL in `.env` is correct |
-| `No token available` | User must be logged in; middleware should set `token` cookie |
+### 🐛 Troubleshooting
+**`issuerBaseURL must be a valid uri`**
 
-### License
+- Remove quotes from `AUTH0_ISSUER_BASE_URL`
+- Use `https://` and restart the dev server
 
+**Auth redirect loop or login fails**
+
+- Verify callback/logout URLs in Auth0
+- Ensure `AUTH0_BASE_URL` matches the browser URL
+
+**Guide or 404 shows wrong language**
+
+- Change language in the avatar menu once so the cookie is set
+- Or clear cookies and reload
+
+### 📝 License
 Agustina Fassina
 
 ---
 
-## Español
+## Español 🇪🇸
+### 📋 Descripción
+Plantilla de dashboard orientada a producción con **Next.js 15** (App Router), **Auth0**, **Tailwind CSS** y **NextUI**. Incluye sidebar colapsable, menú de avatar (tema + idioma + guía + logout), gráficos de ejemplo, UI bilingüe y scripts listos para CI.
 
-### Descripción
+Pensada para clonar y extender rápido en herramientas internas, paneles admin y dashboards SaaS.
 
-Interfaz web (**UI**) para una **API de AWS Dashboard**. La aplicación autentica con Auth0, consume el backend por HTTP (Axios + React Query) y muestra vistas relacionadas con AWS en un layout de dashboard responsive.
+### ✨ Características
+- **Autenticación** — Auth0 con rutas protegidas por middleware y caché de JWT en cookie para navegación más rápida
+- **Temas claro / oscuro** — Selector en el menú del avatar (`next-themes`, persistido; sin tema “system”)
+- **Internacionalización (i18n)** — Español e inglés con diccionarios; locale en `localStorage` + cookie (metadata SSR)
+- **Sidebar colapsable** — Expandir/colapsar; prefetch al montar
+- **Ruta única por secciones** — `home/[[...section]]` (Dashboard, Costos, IAM) para cambios instantáneos
+- **Gráficos de ejemplo** — Recharts en Dashboard con colores según tema
+- **Guía del sitio** — Página `/guide` (bilingüe), enlace en el menú del avatar (nueva pestaña)
+- **Layout responsive** — Sin `min-width` fijo; contenido usable en móvil
+- **Páginas de error** — 404 y límites de error con i18n
+- **Accesibilidad** — Focus trap y teclado en el menú del avatar
+- **Atomic design** — Estructura `atoms` / `molecules` / `organism`
+- **Estilos co-localizados** — `styles.ts` por componente + tokens en `src/styles/`
+- **CI** — Workflow de GitHub Actions (lint + build)
 
-El repositorio incluye el **scaffolding** listo: rutas, layout, autenticación y cliente HTTP; las pantallas de negocio son placeholders para conectar con la API.
+### 🛠️ Stack tecnológico
+| Área | Tecnología |
+|------|------------|
+| Framework | Next.js **15.5.x** (App Router) |
+| Lenguaje | TypeScript 5 |
+| Estilos | Tailwind CSS 3.4 |
+| UI | NextUI (`@nextui-org/react`) |
+| Auth | Auth0 Next.js SDK 3.5 |
+| Temas | next-themes 0.4 |
+| Datos | TanStack React Query 5 |
+| HTTP | Axios |
+| Gráficos | Recharts 2.15 |
+| Iconos | React Icons |
 
-### Vistas previstas (scaffolding)
+### 📦 Requisitos previos
 
-| Sección      | Ruta              | Estado        |
-| ------------ | ----------------- | ------------- |
-| Dashboard    | `/home/dashboard` | Placeholder   |
-| Costos       | `/home/costs`     | Placeholder   |
-| Usuarios IAM | `/home/iam`       | Placeholder   |
-
-### Características
-
-- **Auth0** — Login, sesión y token de acceso para llamadas a la API
-- **Cliente API AWS** — Instancia Axios con Bearer (`NEXT_PUBLIC_API_BASE_URL`)
-- **React Query** — Listo para estado remoto y caché
-- **Shell del dashboard** — Sidebar, navbar, modo oscuro, diseño responsive
-- **TypeScript** — Interfaces y utilidades compartidas
-
-### Stack tecnológico
-
-- **Framework:** Next.js 15 (App Router)
-- **Lenguaje:** TypeScript 5
-- **Estilos:** Tailwind CSS 3
-- **UI:** HeroUI / NextUI
-- **Auth:** Auth0 Next.js SDK
-- **Datos:** TanStack React Query, Axios
-- **Gráficos:** Recharts (métricas futuras)
-
-### Arquitectura
-
-```text
-Navegador (UI Next.js)
-    │
-    ├── Auth0 ──► login / sesión / access token (cookie: token)
-    │
-    └── Axios (axiosBase) ──► API AWS Dashboard
-            Authorization: Bearer <token>
-            baseURL: NEXT_PUBLIC_API_BASE_URL
-```
-
-La **API backend** es un servicio aparte. Este repo solo contiene la UI; configurá `NEXT_PUBLIC_API_BASE_URL` apuntando a tu API (local o desplegada).
-
-### Requisitos previos
-
-- **Node.js** 18+
+- **Node.js** 18.x o superior
 - **npm**, **yarn**, **pnpm** o **bun**
-- Aplicación **Auth0** (callback: `http://localhost:3000/api/auth/callback`)
-- **API AWS Dashboard** en ejecución y accesible desde el navegador (CORS en la API si aplica)
+- Una aplicación **Auth0** (Regular Web Application)
 
-### Comenzar
-
-#### 1. Instalar dependencias
-
+### 🚀 Comenzar
+#### 1️⃣ Instalar dependencias
 ```bash
 npm install
 ```
 
-#### 2. Variables de entorno
-
-Copiá `.env.example` a `.env`:
+#### 2️⃣ Variables de entorno
+Copiar `.env.example` a `.env`:
 
 ```bash
 cp .env.example .env
 ```
 
 ```env
-# Auth0
-AUTH0_ISSUER_BASE_URL=https://tu-dominio.auth0.com
+AUTH0_ISSUER_BASE_URL=https://tu-tenant.auth0.com
 AUTH0_CLIENT_ID=tu_client_id
 AUTH0_CLIENT_SECRET=tu_client_secret
 AUTH0_BASE_URL=http://localhost:3000
-AUTH0_SECRET=tu_cadena_secreta_aleatoria
-
-# API AWS Dashboard (backend)
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5142
+AUTH0_SECRET=tu_secreto_aleatorio_min_32_caracteres
 ```
 
-Notas:
+**Configuración en Auth0** (Application → Settings):
 
-- No uses comillas en los valores del `.env`.
-- Generá `AUTH0_SECRET` con `openssl rand -hex 32` (o equivalente).
-- `AUTH0_BASE_URL` debe coincidir con la URL donde corre esta UI.
-- `NEXT_PUBLIC_API_BASE_URL` es visible en el cliente; usalo solo para la URL base pública de la API.
+| Campo | Valor (desarrollo local) |
+|-------|--------------------------|
+| Allowed Callback URLs | `http://localhost:3000/api/auth/callback` |
+| Allowed Logout URLs | `http://localhost:3000` |
+| Allowed Web Origins | `http://localhost:3000` |
 
-#### 3. Servidor de desarrollo
+**Importante:**
 
+- No uses comillas en los valores del `.env`
+- Genera `AUTH0_SECRET` con: `openssl rand -hex 32`
+- `AUTH0_BASE_URL` debe coincidir con la URL con la que abrís la app
+
+#### 3️⃣ Servidor de desarrollo
 ```bash
 npm run dev
 ```
 
-Abrí [http://localhost:3000](http://localhost:3000).
+Abrí [http://localhost:3000](http://localhost:3000). Si no hay sesión, redirige a Auth0; tras el login llegás a `/home/dashboard`.
 
-### Scripts
+### 📜 Scripts disponibles
+| Script | Descripción |
+|--------|-------------|
+| `npm run dev` | Servidor de desarrollo |
+| `npm run build` | Build de producción |
+| `npm run start` | Servidor de producción |
+| `npm run lint` | ESLint |
 
-| Comando           | Descripción              |
-| ----------------- | ------------------------ |
-| `npm run dev`     | Servidor de desarrollo   |
-| `npm run build`   | Build de producción      |
-| `npm run start`   | Servidor de producción   |
-| `npm run lint`    | ESLint                   |
-
-### Estructura del proyecto
-
-```text
+### 📁 Estructura del proyecto
+```
 src/
 ├── app/
-│   ├── api/auth/[auth0]/   # Handlers Auth0
-│   ├── home/               # Área protegida
-│   │   ├── dashboard/      # Resumen (scaffold)
-│   │   ├── costs/          # Costos (scaffold)
-│   │   ├── iam/            # Usuarios IAM (scaffold)
-│   │   └── layout.tsx
-│   ├── layout.tsx
-│   └── page.tsx
-├── api/
-│   └── axiosBase.ts        # Cliente API + 401 → logout
+│   ├── api/auth/[auth0]/     # Handler de Auth0
+│   ├── guide/                # Guía del sitio (bilingüe)
+│   ├── home/
+│   │   ├── [[...section]]/   # dashboard, costs, iam
+│   │   ├── layout.tsx        # Sidebar + main
+│   │   ├── loading.tsx       # Skeleton de carga
+│   │   └── error.tsx         # Error boundary del home
+│   ├── layout.tsx            # Layout raíz, metadata, NavBar
+│   ├── not-found.tsx         # 404 (i18n)
+│   └── error.tsx             # Error boundary global
 ├── components/
 │   ├── atoms/
-│   └── organism/           # NavBar, Sidebar
+│   ├── molecules/            # UserMenu
+│   └── organism/             # NavBar, Sidebar, DashboardCharts, …
 ├── config/
-│   └── sidebar.ts          # Ítems de navegación
-├── interfaces/
-├── provider/               # React Query, tema, interceptor Axios
+│   ├── app.ts                # Nombre, descripción, locale por defecto
+│   ├── sidebar.ts            # Ítems del sidebar
+│   └── siteGuide.ts          # IDs de secciones de la guía
+├── context/                  # Language, Sidebar
+├── i18n/dictionaries/        # es.ts, en.ts
+├── hooks/
+├── provider/
 ├── styles/
-├── utils/
-└── middleware.ts           # Sesión Auth0 → cookie token
+└── middleware.ts
+.github/workflows/ci.yml
 ```
 
-### Conectar con la API AWS
-1. Levantá la **API AWS Dashboard** y configurá `NEXT_PUBLIC_API_BASE_URL`.
-2. Usá `axiosBase` en `src/api/axiosBase.ts` para requests autenticados (Bearer desde la cookie).
-3. Agregá hooks o servicios en `src/api/` (o por feature) y consumilos con React Query en `src/app/home/`.
-4. Ante **401**, el interceptor de Axios redirige al logout.
+### 🗺️ Rutas
+| Ruta | Acceso | Descripción |
+|------|--------|-------------|
+| `/` | Pública | Redirige al dashboard o al login |
+| `/home/dashboard` | Protegida | Dashboard + gráficos de ejemplo |
+| `/home/costs` | Protegida | Placeholder de costos |
+| `/home/iam` | Protegida | Placeholder de usuarios IAM |
+| `/guide` | Protegida | Guía del sitio (bilingüe) |
+| `/api/auth/*` | Auth0 | Login, logout, callback |
 
-Ejemplo (componente cliente):
+### 🔐 Flujo de autenticación
+1. El usuario accede a una ruta protegida.
+2. El middleware revisa la cookie `token`; si es válida, evita `getSession` (rendimiento).
+3. Si falta o está por vencer, ejecuta `getSession` y actualiza la cookie.
+4. Sin sesión, redirige al login de Auth0.
+5. Tras el login, vuelve a la app con sesión y access token en cookies.
 
-```tsx
-import { useQuery } from '@tanstack/react-query'
-import { axiosBase } from '@/api/axiosBase'
+### 🎨 Personalización
+#### 🏷️ Branding de la app
+Editá `src/config/app.ts` (nombre, descripción, locale por defecto). El layout raíz usa esos valores en metadata y Open Graph.
 
-const { data } = useQuery({
-  queryKey: ['iam-users'],
-  queryFn: () => axiosBase.get('/iam/users').then((r) => r.data),
-})
-```
+#### ➕ Agregar una sección al sidebar
+1. Sumar `sectionKey` en `src/i18n/types.ts`.
+2. Traducciones en `src/i18n/dictionaries/es.ts` y `en.ts` (`sections`, `homeContent`).
+3. Ítem en `src/config/sidebar.ts`.
+4. Contenido en `src/components/organism/HomeSectionContent/index.tsx` (u organismo nuevo).
+5. Opcional: bloque en `guide.sections` en ambos diccionarios.
 
-### Personalización
-**Nueva ruta en el sidebar**
+No hace falta crear `page.tsx` en `home/` — la ruta catch-all `[[...section]]` ya lo resuelve.
 
-1. Creá `src/app/home/<seccion>/page.tsx`.
-2. Registrá el ítem en `src/config/sidebar.ts`.
+#### 🌙 Temas
+- Cambio: menú del avatar → **Apariencia** → Claro / Oscuro
+- Por defecto: claro
+- Colores: `brand_*` y `gray_*` en `tailwind.config.js`
 
-**Estilos**
+#### 🌐 Internacionalización
+- Diccionarios: `src/i18n/dictionaries/{es,en}.ts`
+- Cliente: hook `useTranslation()`
+- Servidor (metadata, 404): `getServerLocale()` lee la cookie `dashboard-locale`
 
-Tema Tailwind en `tailwind.config.js`; globales en `src/styles/globals.css`.
+### ☁️ Despliegue
+- `output: 'standalone'` en `next.config.mjs` para Docker.
+- Configurá todas las variables `AUTH0_*` en el hosting.
+- Actualizá callbacks y logout URLs en Auth0 para producción.
 
-### Solución de problemas
-| Problema | Revisar |
-| -------- | ------- |
-| `issuerBaseURL must be a valid uri` | `AUTH0_ISSUER_BASE_URL` con `https://`, sin comillas; reiniciar dev server |
-| Falla el redirect de login | Callback Auth0 incluye `/api/auth/callback` |
-| Fallan llamadas API / CORS | API permite origen `http://localhost:3000`; URL base en `.env` correcta |
-| `No token available` | Usuario logueado; middleware debe setear cookie `token` |
+### 🐛 Solución de problemas
+**Error `issuerBaseURL must be a valid uri`**
 
-### Licencia
+- Sin comillas en `AUTH0_ISSUER_BASE_URL`
+- URL con `https://` y reiniciar el servidor
+
+**Login o redirect en bucle**
+
+- Revisar callback/logout en Auth0
+- `AUTH0_BASE_URL` igual a la URL del navegador
+
+**Guía o 404 en idioma incorrecto**
+
+- Cambiá el idioma una vez desde el menú del avatar (setea la cookie)
+- O borrá cookies y recargá
+
+### 📝 Licencia
 Agustina Fassina

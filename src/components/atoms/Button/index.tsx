@@ -1,7 +1,7 @@
 'use client'
 
 import React, { FC, ReactNode } from 'react'
-import clsx from 'clsx'
+import { getButtonClass } from './styles'
 
 interface ButtonProps {
   children: ReactNode
@@ -15,24 +15,14 @@ interface ButtonProps {
 
 const Button: FC<ButtonProps> = ({
   children,
-  width = 'w-full',
   disabled = false,
   onClick,
   className,
   ...props
 }) => {
-  const baseClasses =
-    'flex items-center justify-center font-bold rounded-lg h-8 text-base uppercase p-2'
-
-  const buttonClasses = clsx(
-    baseClasses,
-    disabled ? 'cursor-default opacity-50' : 'cursor-pointer',
-    className,
-  )
-
   return (
     <button
-      className={buttonClasses}
+      className={getButtonClass(disabled, className)}
       disabled={disabled}
       onClick={onClick}
       {...props}

@@ -1,4 +1,5 @@
 import React from 'react'
+import { iconStyles } from './styles'
 
 const LargeIcon: React.FC = () => {
   return (
@@ -8,7 +9,7 @@ const LargeIcon: React.FC = () => {
       fill="none"
       stroke="currentColor"
       strokeWidth="2.4"
-      className="w-5 h-5"
+      className={iconStyles.sm}
     >
       <rect x="2" y="2" width="8" height="10" rx="1" />{' '}
       <rect x="14" y="2" width="8" height="6" rx="1" />{' '}
