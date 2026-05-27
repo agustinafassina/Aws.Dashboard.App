@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -11,20 +11,25 @@ import {
   YAxis,
 } from 'recharts'
 import Button from '@/components/atoms/Button'
+import ProjectsIcon from '@/components/atoms/Icons/ProjectsIcon'
+import SpendIcon from '@/components/atoms/Icons/SpendIcon'
+import TopProjectIcon from '@/components/atoms/Icons/TopProjectIcon'
 import { BarChartSkeleton, CardSkeleton } from '@/components/atoms/Skeleton'
-import DataTable from '@/components/molecules/DataTable'
 import ErrorState from '@/components/molecules/ErrorState'
 import PageHeader from '@/components/molecules/PageHeader'
+import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useCostByProject } from '@/hooks/useCostByProject'
 import type { Column } from '@/interfaces/common'
 import type { ProjectCost } from '@/interfaces/aws-api'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
+import { pageContentShellMinHeight } from '@/styles/pageShell'
 import {
   defaultCostDateRange,
   formatCurrency,
-  formatDateTime,
+  formatDate,
 } from '@/utils/formatters'
+import { exportTableToPdf } from '@/utils/exportPdf'
 
 const projectColumns: Column<ProjectCost>[] = [
   { key: 'project', label: 'Project' },
@@ -54,6 +59,24 @@ export default function CostsView() {
     [data?.projects],
   )
 
+  const topProjectStat = useMemo(() => {
+    const projects = data?.projects ?? []
+    if (projects.length === 0) {
+      return { label: 'Top project', value: '—', hint: 'No spend in the selected range' }
+    }
+
+    const top = projects.reduce((max, p) => (p.amount > max.amount ? p : max), projects[0])
+    const total = data?.totalAmount ?? 0
+    const sharePct =
+      total > 0 ? ((top.amount / total) * 100).toFixed(1) : '0.0'
+
+    return {
+      label: 'Top project',
+      value: top.project,
+      hint: `${formatCurrency(top.amount, top.currency)} · ${sharePct}% of total`,
+    }
+  }, [data?.projects, data?.totalAmount])
+
   const handleApply = () => {
     if (startDate && endDate && startDate <= endDate) {
       setAppliedRange({ startDate, endDate })
@@ -62,53 +85,79 @@ export default function CostsView() {
 
   const dateRangeInvalid = Boolean(startDate && endDate && startDate > endDate)
 
+  const handleExportPdf = useCallback(() => {
+    if (!data?.projects.length) return
+
+    exportTableToPdf({
+      filename: `costs-by-project-${data.startDate}-${data.endDate}`,
+      title: 'Costs by project',
+      subtitle: `Tag key: ${data.projectTagKey} · Range: ${formatDate(data.startDate)} → ${formatDate(data.endDate)}`,
+      columns: [
+        { header: 'Project', value: (row) => row.project },
+        {
+          header: 'Amount',
+          value: (row) => formatCurrency(row.amount, row.currency),
+        },
+        { header: 'Currency', value: (row) => row.currency },
+      ],
+      rows: data.projects,
+    })
+  }, [data])
+
+  const dateInputClass =
+    'h-8 w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
+
   return (
-    <div className="h-[calc(90vh-10rem)] p-4 min-w-[70rem] max-w-[90rem] mx-auto text-gray_900 dark:text-gray_200">
+    <div className={pageContentShellMinHeight}>
       <PageHeader
         title="Costs"
         description="AWS spend grouped by project tag for the selected date range."
-        scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
+        meta={
+          data && !dateRangeInvalid ? (
+            <>
+              Tag key: <span className="font-mono">{data.projectTagKey}</span>
+              {' · '}
+              Range: {formatDate(data.startDate)} → {formatDate(data.endDate)}
+            </>
+          ) : undefined
+        }
+        actions={
+          <>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <label className="flex items-center gap-1.5">
+                <span className="text-xs text-gray_600 dark:text-gray_400">From</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className={dateInputClass}
+                />
+              </label>
+              <label className="flex items-center gap-1.5">
+                <span className="text-xs text-gray_600 dark:text-gray_400">To</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className={dateInputClass}
+                />
+              </label>
+              <Button
+                className="h-8 min-w-0 bg-brand_600 px-3 text-xs text-white transition-colors hover:bg-brand_700 disabled:opacity-50"
+                disabled={dateRangeInvalid || isFetching}
+                onClick={handleApply}
+              >
+                {isFetching ? '…' : 'Apply'}
+              </Button>
+            </div>
+            {dateRangeInvalid && (
+              <p className="text-right text-xs text-red_900 dark:text-red_200">
+                Start date must be on or before end date.
+              </p>
+            )}
+          </>
+        }
       />
-
-      <section className="mb-6 flex flex-wrap items-end gap-4 rounded-xl border border-gray_200 dark:border-gray_700 bg-white dark:bg-gray_800 p-4 shadow-sm">
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-label">Start date</span>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="input-field"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-label">End date</span>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="input-field"
-          />
-        </label>
-        <Button
-          className="bg-primary_600 hover:bg-primary_700 text-white px-6 w-auto min-w-[8rem] disabled:opacity-50 transition-colors"
-          disabled={dateRangeInvalid || isFetching}
-          onClick={handleApply}
-        >
-          {isFetching ? 'Loading…' : 'Apply'}
-        </Button>
-        {dateRangeInvalid && (
-          <p className="text-xs text-red_900 dark:text-red_200 w-full">
-            Start date must be on or before end date.
-          </p>
-        )}
-        {data && (
-          <p className="text-xs text-gray_700 dark:text-gray_500 w-full">
-            Tag key: <span className="font-mono">{data.projectTagKey}</span>
-            {' · '}
-            Range: {data.startDate} → {data.endDate}
-          </p>
-        )}
-      </section>
 
       {isLoading && (
         <div className="space-y-6">
@@ -137,15 +186,19 @@ export default function CostsView() {
             <StatCard
               label="Total spend"
               value={formatCurrency(data.totalAmount, data.currency)}
+              icon={<SpendIcon className="h-5 w-5" />}
             />
             <StatCard
               label="Projects"
               value={data.projects.length}
               hint="With cost in the selected range"
+              icon={<ProjectsIcon className="h-5 w-5" />}
             />
             <StatCard
-              label="Currency"
-              value={data.currency}
+              label={topProjectStat.label}
+              value={topProjectStat.value}
+              hint={topProjectStat.hint}
+              icon={<TopProjectIcon className="h-5 w-5" />}
             />
           </div>
 
@@ -182,17 +235,15 @@ export default function CostsView() {
             </section>
           )}
 
-          <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray_800 dark:text-gray_400">
-              Breakdown
-            </h2>
-            <DataTable
-              columns={projectColumns}
-              data={data.projects}
-              emptyMessage="No project costs found for this range."
-              getRowKey={(row) => row.project}
-            />
-          </section>
+          <TableSection
+            title="Breakdown"
+            onExportPdf={handleExportPdf}
+            exportDisabled={data.projects.length === 0}
+            columns={projectColumns}
+            data={data.projects}
+            emptyMessage="No project costs found for this range."
+            getRowKey={(row) => row.project}
+          />
         </>
       )}
     </div>

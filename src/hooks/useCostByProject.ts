@@ -13,6 +13,7 @@ export function useCostByProject(startDate: string, endDate: string) {
     queryKey: ['costs', 'by-project', startDate, endDate],
     queryFn: () => fetchCostsByProject(startDate, endDate),
     enabled,
+    staleTime: 5 * 60 * 1000,
     placeholderData: (prev) => prev,
   })
 }

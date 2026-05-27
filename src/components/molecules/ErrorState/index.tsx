@@ -18,7 +18,7 @@ export default function ErrorState({
       <p className="text-sm text-red_900 dark:text-red_200">{message}</p>
       {onRetry && (
         <Button
-          className="bg-primary_600 hover:bg-primary_700 text-white px-6 w-auto transition-colors"
+          className="bg-brand_600 hover:bg-brand_700 text-white px-6 w-auto transition-colors"
           onClick={onRetry}
         >
           Retry

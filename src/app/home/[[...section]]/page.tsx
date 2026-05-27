@@ -5,7 +5,7 @@ import HomeSectionContent from '@/components/organism/HomeSectionContent'
 
 export default function HomeSectionPage() {
   const params = useParams<{ section?: string[] }>()
-  const section = params?.section?.[0]
+  const segments = params?.section ?? []
 
-  return <HomeSectionContent section={section} />
+  return <HomeSectionContent segments={segments} />
 }

@@ -3,6 +3,9 @@ import type { GuideSectionId } from '@/config/siteGuide'
 
 export type SectionKey = 'dashboard' | 'costs' | 'iam'
 
+export type SidebarGroupLabelKey = 'vulnerabilities'
+export type SidebarChildLabelKey = 'dockerImages' | 'ec2Servers'
+
 export type TranslationDictionary = {
   nav: {
     mainAriaLabel: string
@@ -21,6 +24,7 @@ export type TranslationDictionary = {
     expandMenu: string
     collapseMenu: string
     version: string
+    items: Record<SidebarGroupLabelKey | SidebarChildLabelKey, string>
   }
   userMenu: {
     menuOf: string
@@ -37,6 +41,14 @@ export type TranslationDictionary = {
   language: {
     es: string
     en: string
+  }
+  export: {
+    downloadPdf: string
+  }
+  table: {
+    searchPlaceholder: string
+    searchAriaLabel: string
+    noSearchResults: string
   }
   guide: {
     metaTitle: string

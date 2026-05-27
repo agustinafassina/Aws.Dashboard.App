@@ -4,7 +4,11 @@ import { useMemo } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { getDictionary } from '@/i18n/getDictionary'
 import { interpolate } from '@/i18n/translate'
-import type { SectionKey } from '@/i18n/types'
+import type {
+  SectionKey,
+  SidebarChildLabelKey,
+  SidebarGroupLabelKey,
+} from '@/i18n/types'
 
 export function useTranslation() {
   const { locale, setLocale } = useLanguage()
@@ -16,5 +20,7 @@ export function useTranslation() {
     dictionary,
     format: interpolate,
     sectionTitle: (key: SectionKey) => dictionary.sections[key],
+    sidebarItemLabel: (key: SidebarGroupLabelKey | SidebarChildLabelKey) =>
+      dictionary.sidebar.items[key],
   }
 }

@@ -4,8 +4,9 @@ import React, { useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import NavLink from '@/components/atoms/NavLink'
 import ChevronIcon from '@/components/atoms/Icons/ChevronIcon'
+import SidebarNavGroup from '@/components/molecules/SidebarNavGroup'
 import packageInfo from '../../../../package.json'
-import { sidebarConfig } from '@/config/sidebar'
+import { sidebarConfig, type SidebarEntry } from '@/config/sidebar'
 import { useSidebar } from '@/context/SidebarContext'
 import { useTranslation } from '@/i18n/useTranslation'
 import {
@@ -17,24 +18,32 @@ import {
   sidebarStyles,
 } from './styles'
 
-const getSidebarOptions = (pathname: string) => {
+function getSidebarOptions(pathname: string): SidebarEntry[] | null {
   for (const [routePrefix, items] of Object.entries(sidebarConfig)) {
     if (pathname.startsWith(routePrefix)) {
-      return items.filter((item) => !item.disabled)
+      return items.filter((item) => item.kind !== 'link' || !item.disabled)
     }
   }
   return null
+}
+
+function collectPrefetchPaths(entries: SidebarEntry[]): string[] {
+  return entries.flatMap((entry) => {
+    if (entry.kind === 'link') return [entry.path]
+    return entry.children.map((child) => child.path)
+  })
 }
 
 const SideBar: React.FC = () => {
   const pathname = usePathname()
   const router = useRouter()
   const { collapsed, toggle } = useSidebar()
-  const { dictionary, sectionTitle } = useTranslation()
+  const { dictionary, sectionTitle, sidebarItemLabel } = useTranslation()
   const options = pathname ? getSidebarOptions(pathname) : null
 
   useEffect(() => {
-    options?.forEach((item) => router.prefetch(item.path))
+    if (!options) return
+    collectPrefetchPaths(options).forEach((path) => router.prefetch(path))
   }, [options, router])
 
   if (!pathname || !options) return null
@@ -69,18 +78,48 @@ const SideBar: React.FC = () => {
           role="navigation"
           aria-label={dictionary.sidebar.navAriaLabel}
         >
-          {options.map((option) => {
-            const IconComponent = option.icon
-            return (
-              <NavLink
-                key={option.path}
-                name={sectionTitle(option.sectionKey)}
-                href={option.path}
-                icon={<IconComponent />}
-                badge={option.badge}
-                collapsed={collapsed}
-              />
-            )
+          {options.flatMap((option) => {
+            if (option.kind === 'link') {
+              const IconComponent = option.icon
+              return [
+                <NavLink
+                  key={option.path}
+                  name={sectionTitle(option.sectionKey)}
+                  href={option.path}
+                  icon={<IconComponent />}
+                  badge={option.badge}
+                  collapsed={collapsed}
+                />,
+              ]
+            }
+
+            if (collapsed) {
+              return option.children.map((child) => {
+                const ChildIcon = child.icon
+                return (
+                  <NavLink
+                    key={child.path}
+                    name={sidebarItemLabel(child.labelKey)}
+                    href={child.path}
+                    icon={<ChildIcon className="h-4 w-4" />}
+                    collapsed
+                  />
+                )
+              })
+            }
+
+            return [
+              <SidebarNavGroup
+                key={option.labelKey}
+                name={sidebarItemLabel(option.labelKey)}
+                icon={<option.icon className="h-5 w-5" />}
+                items={option.children.map((child) => ({
+                  name: sidebarItemLabel(child.labelKey),
+                  path: child.path,
+                  icon: child.icon,
+                }))}
+              />,
+            ]
           })}
         </nav>
       </div>

@@ -7,6 +7,7 @@ export function useIamAccessKeys() {
   return useQuery({
     queryKey: ['iam', 'access-keys'],
     queryFn: fetchIamAccessKeys,
+    staleTime: 5 * 60 * 1000,
     placeholderData: (prev) => prev,
   })
 }

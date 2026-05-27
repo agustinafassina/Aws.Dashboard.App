@@ -1,15 +1,18 @@
 'use client'
 
+import { useCallback } from 'react'
 import { CardSkeleton } from '@/components/atoms/Skeleton'
-import DataTable from '@/components/molecules/DataTable'
 import ErrorState from '@/components/molecules/ErrorState'
 import PageHeader from '@/components/molecules/PageHeader'
+import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useIamAccessKeys } from '@/hooks/useIamAccessKeys'
 import type { Column } from '@/interfaces/common'
 import type { IamAccessKey } from '@/interfaces/aws-api'
+import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
 import { formatDate, formatDateTime } from '@/utils/formatters'
+import { exportTableToPdf } from '@/utils/exportPdf'
 
 const accessKeyColumns: Column<IamAccessKey>[] = [
   { key: 'userName', label: 'User' },
@@ -58,8 +61,35 @@ export default function IamAccessKeysView() {
     return b.ageInDays - a.ageInDays
   })
 
+  const handleExportPdf = useCallback(() => {
+    if (!data?.accessKeys.length) return
+
+    exportTableToPdf({
+      filename: 'iam-access-keys',
+      title: 'IAM access keys',
+      subtitle: `Users: ${data.totalUsers} · Keys: ${data.totalAccessKeys}`,
+      columns: [
+        { header: 'User', value: (row) => row.userName },
+        { header: 'Access key', value: (row) => row.accessKeyId },
+        { header: 'Status', value: (row) => row.status },
+        { header: 'Age (days)', value: (row) => String(row.ageInDays) },
+        {
+          header: 'Last used',
+          value: (row) =>
+            row.lastUsedDate ? formatDate(row.lastUsedDate) : 'Never',
+        },
+        {
+          header: 'Rotation',
+          value: (row) => (row.needsRotation ? 'Needs rotation' : 'OK'),
+        },
+        { header: 'Recommendation', value: (row) => row.recommendation },
+      ],
+      rows: sortedKeys,
+    })
+  }, [data, sortedKeys])
+
   return (
-    <div className="h-[calc(90vh-10rem)] p-4 min-w-[70rem] max-w-[90rem] mx-auto text-gray_900 dark:text-gray_200">
+    <div className={pageContentShellMinHeight}>
       <PageHeader
         title="IAM access keys"
         description="Access keys across IAM users, including age, last usage, and rotation recommendations."
@@ -107,17 +137,15 @@ export default function IamAccessKeysView() {
             />
           </div>
 
-          <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray_800 dark:text-gray_400">
-              All access keys
-            </h2>
-            <DataTable
-              columns={accessKeyColumns}
-              data={sortedKeys}
-              emptyMessage="No IAM access keys found."
-              getRowKey={(row) => row.accessKeyId}
-            />
-          </section>
+          <TableSection
+            title="All access keys"
+            onExportPdf={handleExportPdf}
+            exportDisabled={sortedKeys.length === 0}
+            columns={accessKeyColumns}
+            data={sortedKeys}
+            emptyMessage="No IAM access keys found."
+            getRowKey={(row) => row.accessKeyId}
+          />
         </>
       )}
     </div>

@@ -4,22 +4,28 @@ import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import SidebarNavItem from '@/components/molecules/SidebarNavItem'
-import type { SidebarChildLink } from '@/config/sidebar'
 import { isNavGroupActive } from '@/utils/nav'
+import type { ComponentType } from 'react'
+
+export interface SidebarNavGroupChild {
+  name: string
+  path: string
+  icon?: ComponentType<{ width?: number; height?: number; className?: string }>
+}
 
 interface SidebarNavGroupProps {
   name: string
   icon: React.ReactNode
-  children: SidebarChildLink[]
+  items: SidebarNavGroupChild[]
 }
 
 export default function SidebarNavGroup({
   name,
   icon,
-  children,
+  items,
 }: SidebarNavGroupProps) {
   const pathname = usePathname()
-  const childPaths = children.map((c) => c.path)
+  const childPaths = items.map((c) => c.path)
   const hasActiveChild = isNavGroupActive(pathname, childPaths)
   const [expanded, setExpanded] = useState(hasActiveChild)
 
@@ -33,31 +39,19 @@ export default function SidebarNavGroup({
         type="button"
         onClick={() => setExpanded((open) => !open)}
         className={clsx(
-          'flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm transition-all duration-200',
+          'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-150',
           hasActiveChild
-            ? [
-                'bg-primary_50 text-primary_900 ring-1 ring-primary_200',
-                'dark:bg-gray_800 dark:text-gray_100 dark:ring-primary_500/30',
-              ]
-            : [
-                'text-gray_700 hover:bg-gray_100',
-                'dark:text-gray_300 dark:hover:bg-gray_800/90',
-              ],
+            ? 'bg-brand_100 text-brand_700 shadow-sm dark:bg-gray_800 dark:text-brand_300'
+            : 'text-gray_700 hover:bg-brand_50/60 dark:text-gray_400 dark:hover:bg-gray_800/60',
         )}
         aria-expanded={expanded}
       >
         <span
           className={clsx(
-            'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg',
+            'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
             hasActiveChild
-              ? [
-                  'bg-primary_100 text-primary_700',
-                  'dark:bg-primary_600/25 dark:text-primary_300',
-                ]
-              : [
-                  'bg-gray_100 text-gray_600',
-                  'dark:bg-gray_800 dark:text-gray_400',
-                ],
+              ? 'text-brand_500 dark:text-brand_300'
+              : 'text-gray_500 dark:text-gray_400',
           )}
         >
           {icon}
@@ -70,9 +64,7 @@ export default function SidebarNavGroup({
           className={clsx(
             'h-4 w-4 flex-shrink-0 transition-transform duration-200',
             expanded && 'rotate-180',
-            hasActiveChild
-              ? 'text-primary_600 dark:text-primary_400'
-              : 'text-gray_400 dark:text-gray_500',
+            hasActiveChild ? 'text-brand_500' : 'text-gray_400',
           )}
           aria-hidden
         >
@@ -90,14 +82,14 @@ export default function SidebarNavGroup({
           expanded ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0',
         )}
       >
-        {children.map((child) => {
+        {items.map((child) => {
           const ChildIcon = child.icon
           return (
             <SidebarNavItem
               key={child.path}
               name={child.name}
               href={child.path}
-              icon={ChildIcon ? <ChildIcon /> : undefined}
+              icon={ChildIcon ? <ChildIcon className="h-4 w-4" /> : undefined}
               variant="sub"
             />
           )

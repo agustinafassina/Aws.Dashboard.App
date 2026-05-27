@@ -26,6 +26,11 @@ const es: TranslationDictionary = {
     expandMenu: 'Expandir menú',
     collapseMenu: 'Colapsar menú',
     version: 'Versión',
+    items: {
+      vulnerabilities: 'Vulnerabilidades',
+      dockerImages: 'Imágenes Docker',
+      ec2Servers: 'Servidores EC2',
+    },
   },
   userMenu: {
     menuOf: 'Menú de {{name}}',
@@ -42,6 +47,14 @@ const es: TranslationDictionary = {
   language: {
     es: 'Español',
     en: 'English',
+  },
+  export: {
+    downloadPdf: 'Descargar PDF',
+  },
+  table: {
+    searchPlaceholder: 'Buscar…',
+    searchAriaLabel: 'Buscar en la tabla',
+    noSearchResults: 'No hay resultados para tu búsqueda.',
   },
   guide: {
     metaTitle: 'Guía — Acerca del sitio',

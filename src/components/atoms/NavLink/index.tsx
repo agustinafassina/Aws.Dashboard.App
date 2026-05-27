@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useTransition } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { isNavItemActive } from '@/utils/nav'
 import {
   getActiveIndicatorClass,
   getBadgeClass,
@@ -34,7 +35,8 @@ export default function NavLink({
 
   const normalizedHref = href.split('?')[0]
   const isActive =
-    pathname === normalizedHref || pendingHref === normalizedHref
+    isNavItemActive(pathname, normalizedHref) ||
+    pendingHref === normalizedHref
   const isNavigating = pendingHref === normalizedHref && isPending
 
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function NavLink({
       }}
       title={collapsed ? name : undefined}
       className={getNavLinkClass(collapsed, isActive, isNavigating)}
-      aria-current={pathname === normalizedHref ? 'page' : undefined}
+      aria-current={isNavItemActive(pathname, normalizedHref) ? 'page' : undefined}
       aria-label={collapsed ? name : undefined}
     >
       {icon && <span className={getIconClass(isActive)}>{icon}</span>}

@@ -7,13 +7,13 @@ import { useRouter } from 'next/navigation'
 const axiosBase = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   responseType: 'json',
-  withCredentials: true,
+  withCredentials: false,
 })
 
 const axiosBaseJson = axios.create({
   baseURL: '/',
   responseType: 'json',
-  withCredentials: true,
+  withCredentials: false,
 })
 
 axiosBase.interceptors.request.use(
@@ -25,7 +25,6 @@ axiosBase.interceptors.request.use(
     }
 
     config.headers.set('Content-Type', 'application/json')
-    config.headers.set('Access-Control-Allow-Origin', '*')
     config.headers.set('Authorization', `Bearer ${token}`)
 
     return config
@@ -40,8 +39,10 @@ const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const responseInterceptor = axiosBase.interceptors.response.use(
       (response) => response,
-      (error: any) => {
-        if (error?.response?.status === 401) {
+      (error: unknown) => {
+        const status = (error as { response?: { status?: number } })?.response
+          ?.status
+        if (status === 401) {
           router.push('/api/auth/logout')
           return
         }

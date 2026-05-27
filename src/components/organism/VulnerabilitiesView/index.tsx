@@ -1,11 +1,11 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Button from '@/components/atoms/Button'
 import { CardSkeleton } from '@/components/atoms/Skeleton'
-import DataTable from '@/components/molecules/DataTable'
 import ErrorState from '@/components/molecules/ErrorState'
 import PageHeader from '@/components/molecules/PageHeader'
+import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities'
 import type { Column } from '@/interfaces/common'
@@ -13,9 +13,11 @@ import type {
   InspectorFinding,
   InspectorResourceType,
 } from '@/interfaces/aws-api'
+import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
 import { AWS_REGIONS, DEFAULT_AWS_REGION } from '@/utils/awsDefaults'
 import { formatDate, formatDateTime } from '@/utils/formatters'
+import { exportTableToPdf } from '@/utils/exportPdf'
 
 function severityBadge(severity: string) {
   const normalized = severity.toUpperCase()
@@ -27,7 +29,7 @@ function severityBadge(severity: string) {
     MEDIUM:
       'bg-orange_300/35 text-gray_900 dark:bg-orange_300/20 dark:text-orange',
     LOW:
-      'bg-primary_100 text-primary_800 dark:bg-blue_200/30 dark:text-primary_300',
+      'bg-brand_100 text-brand_700 dark:bg-blue_200/30 dark:text-brand_300',
     INFORMATIONAL:
       'bg-gray_200 text-gray_800 dark:bg-gray_700 dark:text-gray_300',
   }
@@ -127,8 +129,43 @@ export default function VulnerabilitiesView({
 
   const columns = findingColumns(resourceType)
 
+  const handleExportPdf = useCallback(() => {
+    if (!data?.findings.length) return
+
+    const resourceLabel = resourceType === 'ecr' ? 'Image' : 'Instance'
+
+    exportTableToPdf({
+      filename: `inspector-${resourceType}-${data.region}`,
+      title,
+      subtitle: `Region: ${data.region} · Resource type: ${resourceType}`,
+      columns: [
+        { header: 'Severity', value: (row) => row.severity },
+        { header: 'Title', value: (row) => row.title },
+        { header: 'Status', value: (row) => row.status },
+        {
+          header: resourceLabel,
+          value: (row) => formatResourceLabel(row, resourceType),
+        },
+        {
+          header: 'CVE / ID',
+          value: (row) => row.vulnerabilityId ?? '—',
+        },
+        {
+          header: 'Last observed',
+          value: (row) =>
+            row.lastObservedAt ? formatDate(row.lastObservedAt) : '—',
+        },
+        {
+          header: 'Recommendation',
+          value: (row) => row.recommendation ?? '—',
+        },
+      ],
+      rows: data.findings,
+    })
+  }, [data, resourceType, title])
+
   return (
-    <div className="h-[calc(90vh-10rem)] p-4 min-w-[70rem] max-w-[90rem] mx-auto text-gray_900 dark:text-gray_200">
+    <div className={pageContentShellMinHeight}>
       <PageHeader
         title={title}
         description={description}
@@ -151,7 +188,7 @@ export default function VulnerabilitiesView({
           </select>
         </label>
         <Button
-          className="bg-primary_600 hover:bg-primary_700 text-white px-6 w-auto min-w-[8rem] disabled:opacity-50 transition-colors"
+          className="bg-brand_600 hover:bg-brand_700 text-white px-6 w-auto min-w-[8rem] disabled:opacity-50 transition-colors"
           disabled={!region || isFetching}
           onClick={() => setAppliedRegion(region)}
         >
@@ -206,17 +243,15 @@ export default function VulnerabilitiesView({
             />
           </div>
 
-          <section>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray_800 dark:text-gray_400">
-              Findings
-            </h2>
-            <DataTable
-              columns={columns}
-              data={data.findings}
-              emptyMessage="No vulnerabilities found for this region and resource type."
-              getRowKey={(row) => row.findingArn}
-            />
-          </section>
+          <TableSection
+            title="Findings"
+            onExportPdf={handleExportPdf}
+            exportDisabled={data.findings.length === 0}
+            columns={columns}
+            data={data.findings}
+            emptyMessage="No vulnerabilities found for this region and resource type."
+            getRowKey={(row) => row.findingArn}
+          />
         </>
       )}
     </div>

@@ -20,6 +20,7 @@ export function useInspectorVulnerabilities(params: InspectorVulnerabilitiesPara
     ],
     queryFn: () => fetchInspectorVulnerabilities(params),
     enabled,
+    staleTime: 5 * 60 * 1000,
     placeholderData: (prev) => prev,
   })
 }

@@ -1,8 +1,11 @@
+import type { ReactNode } from 'react'
+
 interface StatCardProps {
   label: string
   value: string | number
   hint?: string
   variant?: 'default' | 'warning' | 'success'
+  icon?: ReactNode
 }
 
 const variantClasses = {
@@ -19,12 +22,23 @@ export default function StatCard({
   value,
   hint,
   variant = 'default',
+  icon,
 }: StatCardProps) {
   return (
     <div
-      className={`rounded-xl border p-4 shadow-sm transition-colors ${variantClasses[variant]}`}
+      className={`relative rounded-xl border p-4 shadow-sm transition-colors ${variantClasses[variant]}`}
     >
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray_700 dark:text-gray_400">
+      {icon ? (
+        <div
+          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-lg bg-brand_50 text-brand_500 dark:bg-gray_750 dark:text-brand_300"
+          aria-hidden
+        >
+          {icon}
+        </div>
+      ) : null}
+      <p
+        className={`text-xs font-semibold uppercase tracking-wide text-gray_700 dark:text-gray_400 ${icon ? 'pr-12' : ''}`}
+      >
         {label}
       </p>
       <p className="mt-2 text-2xl font-bold text-gray_900 dark:text-gray_100">

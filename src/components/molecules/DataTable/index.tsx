@@ -1,3 +1,7 @@
+'use client'
+
+import { useMemo } from 'react'
+import { useTranslation } from '@/i18n/useTranslation'
 import type { Column } from '@/interfaces/common'
 
 interface DataTableProps<T> {
@@ -5,6 +9,18 @@ interface DataTableProps<T> {
   data: T[]
   emptyMessage?: string
   getRowKey: (row: T, index: number) => string
+  searchQuery?: string
+}
+
+function getRowSearchText<T extends object>(row: T, columns: Column<T>[]): string {
+  return columns
+    .map((col) => {
+      const value = row[col.key]
+      if (value == null) return ''
+      return String(value)
+    })
+    .join(' ')
+    .toLowerCase()
 }
 
 export default function DataTable<T extends object>({
@@ -12,11 +28,29 @@ export default function DataTable<T extends object>({
   data,
   emptyMessage = 'No data available.',
   getRowKey,
+  searchQuery = '',
 }: DataTableProps<T>) {
+  const { dictionary } = useTranslation()
+
+  const filteredData = useMemo(() => {
+    const trimmed = searchQuery.trim().toLowerCase()
+    if (!trimmed) return data
+
+    return data.filter((row) => getRowSearchText(row, columns).includes(trimmed))
+  }, [columns, data, searchQuery])
+
   if (data.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-gray_700 dark:text-gray_400">
         {emptyMessage}
+      </p>
+    )
+  }
+
+  if (filteredData.length === 0) {
+    return (
+      <p className="py-8 text-center text-sm text-gray_700 dark:text-gray_400">
+        {dictionary.table.noSearchResults}
       </p>
     )
   }
@@ -38,10 +72,10 @@ export default function DataTable<T extends object>({
           </tr>
         </thead>
         <tbody>
-          {data.map((row, index) => (
+          {filteredData.map((row, index) => (
             <tr
               key={getRowKey(row, index)}
-              className="border-b border-gray_100 dark:border-gray_800 last:border-0 hover:bg-primary_50/70 dark:hover:bg-gray_800/40 transition-colors"
+              className="border-b border-gray_100 dark:border-gray_800 last:border-0 transition-colors hover:bg-brand_50/70 dark:hover:bg-gray_800/40"
             >
               {columns.map((col) => {
                 const value = row[col.key]

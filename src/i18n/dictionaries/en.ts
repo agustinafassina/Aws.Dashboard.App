@@ -26,6 +26,11 @@ const en: TranslationDictionary = {
     expandMenu: 'Expand menu',
     collapseMenu: 'Collapse menu',
     version: 'Version',
+    items: {
+      vulnerabilities: 'Vulnerabilities',
+      dockerImages: 'Docker images',
+      ec2Servers: 'EC2 servers',
+    },
   },
   userMenu: {
     menuOf: '{{name}} menu',
@@ -42,6 +47,14 @@ const en: TranslationDictionary = {
   language: {
     es: 'Español',
     en: 'English',
+  },
+  export: {
+    downloadPdf: 'Download PDF',
+  },
+  table: {
+    searchPlaceholder: 'Search…',
+    searchAriaLabel: 'Search table',
+    noSearchResults: 'No results match your search.',
   },
   guide: {
     metaTitle: 'Guide — About this site',
