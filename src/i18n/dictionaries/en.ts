@@ -28,8 +28,12 @@ const en: TranslationDictionary = {
     version: 'Version',
     items: {
       vulnerabilities: 'Vulnerabilities',
+      security: 'Security',
       dockerImages: 'Docker images',
       ec2Servers: 'EC2 servers',
+      rdsOpenPorts: 'RDS open ports',
+      ec2OpenPorts: 'EC2 open ports',
+      s3PublicBuckets: 'S3 public buckets',
     },
   },
   userMenu: {

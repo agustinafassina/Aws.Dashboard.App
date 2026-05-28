@@ -2,8 +2,11 @@ import LargeIcon from '@/components/atoms/Icons/LargeIcon'
 import BookIcon from '@/components/atoms/Icons/BookIcon'
 import UserIcon from '@/components/atoms/Icons/UserIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
+import SecurityIcon from '@/components/atoms/Icons/SecurityIcon'
 import DockerIcon from '@/components/atoms/Icons/DockerIcon'
 import ServerIcon from '@/components/atoms/Icons/ServerIcon'
+import DatabaseIcon from '@/components/atoms/Icons/DatabaseIcon'
+import BucketIcon from '@/components/atoms/Icons/BucketIcon'
 import { ComponentType } from 'react'
 import type { SectionKey, SidebarGroupLabelKey, SidebarChildLabelKey } from '@/i18n/types'
 
@@ -71,6 +74,28 @@ export const sidebarConfig: SidebarConfig = {
           labelKey: 'ec2Servers',
           path: '/home/vulnerabilities/ec2-servers',
           icon: ServerIcon,
+        },
+      ],
+    },
+    {
+      kind: 'group',
+      labelKey: 'security',
+      icon: SecurityIcon,
+      children: [
+        {
+          labelKey: 'rdsOpenPorts',
+          path: '/home/vulnerabilities/rds-open-ports',
+          icon: DatabaseIcon,
+        },
+        {
+          labelKey: 'ec2OpenPorts',
+          path: '/home/vulnerabilities/ec2-open-ports',
+          icon: ServerIcon,
+        },
+        {
+          labelKey: 's3PublicBuckets',
+          path: '/home/vulnerabilities/s3-public-buckets',
+          icon: BucketIcon,
         },
       ],
     },

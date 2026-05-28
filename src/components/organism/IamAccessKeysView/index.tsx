@@ -1,11 +1,16 @@
 'use client'
 
 import { useCallback } from 'react'
+import AccessKeyIcon from '@/components/atoms/Icons/AccessKeyIcon'
+import PolicyClockIcon from '@/components/atoms/Icons/PolicyClockIcon'
+import RotationAlertIcon from '@/components/atoms/Icons/RotationAlertIcon'
+import UsersIcon from '@/components/atoms/Icons/UsersIcon'
 import { CardSkeleton } from '@/components/atoms/Skeleton'
 import ErrorState from '@/components/molecules/ErrorState'
 import PageHeader from '@/components/molecules/PageHeader'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
+import { maskAccessKeyId } from '@/api/aws/iam'
 import { useIamAccessKeys } from '@/hooks/useIamAccessKeys'
 import type { Column } from '@/interfaces/common'
 import type { IamAccessKey } from '@/interfaces/aws-api'
@@ -15,33 +20,49 @@ import { formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 const accessKeyColumns: Column<IamAccessKey>[] = [
-  { key: 'userName', label: 'User' },
+  {
+    key: 'userName',
+    label: 'User',
+    cellClassName: 'max-w-[9rem] truncate whitespace-nowrap',
+  },
   {
     key: 'accessKeyId',
     label: 'Access key',
-    className: 'font-mono text-xs',
+    cellClassName: 'whitespace-nowrap font-mono text-xs',
+    render: (value) => maskAccessKeyId(String(value ?? '')),
   },
-  { key: 'status', label: 'Status' },
+  {
+    key: 'status',
+    label: 'Status',
+    cellClassName: 'whitespace-nowrap',
+  },
   {
     key: 'ageInDays',
     label: 'Age (days)',
+    cellClassName: 'whitespace-nowrap',
     render: (value) => String(value),
   },
   {
     key: 'lastUsedDate',
     label: 'Last used',
+    cellClassName: 'whitespace-nowrap',
     render: (value) => (value ? formatDate(String(value)) : 'Never'),
   },
   {
     key: 'needsRotation',
     label: 'Rotation',
+    width: '8.75rem',
+    cellClassName: 'whitespace-nowrap',
     render: (value) =>
       value ? (
-        <span className="inline-flex rounded-full bg-red_50 px-2 py-0.5 text-xs font-semibold text-red_900 dark:text-red_200">
+        <span
+          title="Needs rotation"
+          className="inline-flex shrink-0 whitespace-nowrap rounded-full bg-red_50 px-2.5 py-0.5 text-xs font-semibold text-red_900 dark:text-red_200"
+        >
           Needs rotation
         </span>
       ) : (
-        <span className="inline-flex rounded-full bg-success_100 px-2 py-0.5 text-xs font-semibold text-success_700 dark:text-success_500">
+        <span className="inline-flex shrink-0 whitespace-nowrap rounded-full bg-success_100 px-2.5 py-0.5 text-xs font-semibold text-success_700 dark:text-success_500">
           OK
         </span>
       ),
@@ -49,7 +70,7 @@ const accessKeyColumns: Column<IamAccessKey>[] = [
   {
     key: 'recommendation',
     label: 'Recommendation',
-    className: 'max-w-xs text-xs',
+    cellClassName: 'min-w-[12rem] whitespace-normal text-xs leading-snug',
   },
 ]
 
@@ -70,7 +91,7 @@ export default function IamAccessKeysView() {
       subtitle: `Users: ${data.totalUsers} · Keys: ${data.totalAccessKeys}`,
       columns: [
         { header: 'User', value: (row) => row.userName },
-        { header: 'Access key', value: (row) => row.accessKeyId },
+        { header: 'Access key', value: (row) => maskAccessKeyId(row.accessKeyId) },
         { header: 'Status', value: (row) => row.status },
         { header: 'Age (days)', value: (row) => String(row.ageInDays) },
         {
@@ -120,8 +141,16 @@ export default function IamAccessKeysView() {
       {data && !isLoading && (
         <>
           <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard label="IAM users" value={data.totalUsers} />
-            <StatCard label="Access keys" value={data.totalAccessKeys} />
+            <StatCard
+              label="IAM users"
+              value={data.totalUsers}
+              icon={<UsersIcon className="h-5 w-5" />}
+            />
+            <StatCard
+              label="Access keys"
+              value={data.totalAccessKeys}
+              icon={<AccessKeyIcon className="h-5 w-5" />}
+            />
             <StatCard
               label="Need rotation"
               value={data.accessKeysNeedingRotation}
@@ -129,11 +158,13 @@ export default function IamAccessKeysView() {
                 data.accessKeysNeedingRotation > 0 ? 'warning' : 'success'
               }
               hint={`Max age: ${data.accessKeyRotationMaxAgeDays} days`}
+              icon={<RotationAlertIcon className="h-5 w-5" />}
             />
             <StatCard
               label="Rotation policy"
               value={`${data.accessKeyRotationMaxAgeDays} days`}
               hint="Configured on the API"
+              icon={<PolicyClockIcon className="h-5 w-5" />}
             />
           </div>
 

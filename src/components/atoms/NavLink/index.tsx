@@ -10,6 +10,7 @@ import {
   getCollapsedBadgeClass,
   getIconClass,
   getNavLinkClass,
+  getSubNavLinkClass,
   navLinkStyles,
 } from './styles'
 
@@ -19,6 +20,7 @@ interface NavLinkProps {
   icon?: React.ReactNode
   badge?: string | number
   collapsed?: boolean
+  nested?: boolean
 }
 
 export default function NavLink({
@@ -27,6 +29,7 @@ export default function NavLink({
   icon,
   badge,
   collapsed = false,
+  nested = false,
 }: NavLinkProps) {
   const pathname = usePathname()
   const router = useRouter()
@@ -65,7 +68,11 @@ export default function NavLink({
         })
       }}
       title={collapsed ? name : undefined}
-      className={getNavLinkClass(collapsed, isActive, isNavigating)}
+      className={
+        nested
+          ? getSubNavLinkClass(isActive, isNavigating)
+          : getNavLinkClass(collapsed, isActive, isNavigating)
+      }
       aria-current={isNavItemActive(pathname, normalizedHref) ? 'page' : undefined}
       aria-label={collapsed ? name : undefined}
     >
@@ -77,7 +84,7 @@ export default function NavLink({
       {collapsed && badge !== undefined && (
         <span className={getCollapsedBadgeClass()} aria-hidden="true" />
       )}
-      {isActive && (
+      {isActive && !nested && (
         <span className={getActiveIndicatorClass(collapsed)} aria-hidden="true" />
       )}
     </Link>

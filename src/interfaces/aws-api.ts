@@ -79,3 +79,82 @@ export interface InspectorVulnerabilitiesResponse {
 }
 
 export type InspectorResourceType = 'ecr' | 'ec2'
+
+export interface InboundRule {
+  protocol: string
+  fromPort?: number | null
+  toPort?: number | null
+  portRange: string
+  source: string
+  sourceType: string
+  isPubliclyExposed: boolean
+  description?: string | null
+}
+
+export interface SecurityGroup {
+  groupId: string
+  groupName: string
+  description?: string | null
+  inboundRules: InboundRule[]
+}
+
+export interface Ec2InstancePorts {
+  instanceId: string
+  name?: string | null
+  state: string
+  instanceType?: string | null
+  privateIpAddress?: string | null
+  publicIpAddress?: string | null
+  securityGroups: SecurityGroup[]
+  hasPubliclyExposedPorts: boolean
+  publiclyExposedInboundRules: InboundRule[]
+  recommendation: string
+}
+
+export interface Ec2OpenPortsResponse {
+  region: string
+  totalInstances: number
+  instancesWithPublicPorts: number
+  instances: Ec2InstancePorts[]
+  scannedAt: string
+}
+
+export interface RdsInstancePorts {
+  dbInstanceIdentifier: string
+  engine: string
+  engineVersion?: string | null
+  status: string
+  endpoint?: string | null
+  port?: number | null
+  publiclyAccessible: boolean
+  securityGroups: SecurityGroup[]
+  hasPubliclyExposedPorts: boolean
+  publiclyExposedInboundRules: InboundRule[]
+  recommendation: string
+}
+
+export interface RdsOpenPortsResponse {
+  region: string
+  totalInstances: number
+  instancesWithPublicPorts: number
+  instances: RdsInstancePorts[]
+  scannedAt: string
+}
+
+export type OpenPortsResourceType = 'ec2' | 'rds'
+
+export interface S3PublicBucket {
+  name: string
+  region: string
+  publicAccessReasons: string[]
+  recommendation: string
+  creationDate: string
+}
+
+export interface S3PublicBucketsResponse {
+  region: string
+  totalBucketsInRegion: number
+  publicBucketsCount: number
+  publicBuckets: S3PublicBucket[]
+  scannedAt: string
+}

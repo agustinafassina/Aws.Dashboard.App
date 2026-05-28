@@ -3,8 +3,13 @@ import type { GuideSectionId } from '@/config/siteGuide'
 
 export type SectionKey = 'dashboard' | 'costs' | 'iam'
 
-export type SidebarGroupLabelKey = 'vulnerabilities'
-export type SidebarChildLabelKey = 'dockerImages' | 'ec2Servers'
+export type SidebarGroupLabelKey = 'vulnerabilities' | 'security'
+export type SidebarChildLabelKey =
+  | 'dockerImages'
+  | 'ec2Servers'
+  | 'rdsOpenPorts'
+  | 'ec2OpenPorts'
+  | 's3PublicBuckets'
 
 export type TranslationDictionary = {
   nav: {
