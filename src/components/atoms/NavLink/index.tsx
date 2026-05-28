@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useTransition } from 'react'
+import React, { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { isNavItemActive } from '@/utils/nav'
@@ -33,45 +33,40 @@ export default function NavLink({
 }: NavLinkProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [pendingHref, setPendingHref] = useState<string | null>(null)
-
   const normalizedHref = href.split('?')[0]
+  const [optimisticHref, setOptimisticHref] = useState<string | null>(null)
+
   const isActive =
     isNavItemActive(pathname, normalizedHref) ||
-    pendingHref === normalizedHref
-  const isNavigating = pendingHref === normalizedHref && isPending
+    optimisticHref === normalizedHref
 
   useEffect(() => {
-    setPendingHref(null)
-  }, [pathname])
+    if (isNavItemActive(pathname, normalizedHref)) {
+      setOptimisticHref(null)
+    }
+  }, [pathname, normalizedHref])
+
+  const prefetchRoute = () => {
+    router.prefetch(href)
+  }
 
   return (
     <Link
       href={href}
-      prefetch={true}
-      onClick={(event) => {
-        if (
-          event.metaKey ||
-          event.ctrlKey ||
-          event.shiftKey ||
-          event.altKey ||
-          event.button !== 0
-        ) {
-          return
+      prefetch
+      scroll={false}
+      onPointerEnter={prefetchRoute}
+      onFocus={prefetchRoute}
+      onPointerDown={() => {
+        if (!isNavItemActive(pathname, normalizedHref)) {
+          setOptimisticHref(normalizedHref)
         }
-
-        event.preventDefault()
-        setPendingHref(normalizedHref)
-        startTransition(() => {
-          router.push(href)
-        })
       }}
       title={collapsed ? name : undefined}
       className={
         nested
-          ? getSubNavLinkClass(isActive, isNavigating)
-          : getNavLinkClass(collapsed, isActive, isNavigating)
+          ? getSubNavLinkClass(isActive, false)
+          : getNavLinkClass(collapsed, isActive, false)
       }
       aria-current={isNavItemActive(pathname, normalizedHref) ? 'page' : undefined}
       aria-label={collapsed ? name : undefined}

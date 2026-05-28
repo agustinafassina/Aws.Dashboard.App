@@ -18,9 +18,9 @@ export function resolveHomeView(segments: string[]): HomeViewKey | null {
   if (first === 'iam') return 'iam'
   if (first === 'vulnerabilities' && second === 'docker-image') return 'vuln-docker'
   if (first === 'vulnerabilities' && second === 'ec2-servers') return 'vuln-ec2'
-  if (first === 'vulnerabilities' && second === 'rds-open-ports') return 'vuln-rds-ports'
-  if (first === 'vulnerabilities' && second === 'ec2-open-ports') return 'vuln-ec2-ports'
-  if (first === 'vulnerabilities' && second === 's3-public-buckets')
+  if (first === 'security' && second === 'rds-open-ports') return 'vuln-rds-ports'
+  if (first === 'security' && second === 'ec2-open-ports') return 'vuln-ec2-ports'
+  if (first === 'security' && second === 's3-public-buckets')
     return 'vuln-s3-public-buckets'
 
   return null

@@ -1,14 +1,17 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import NavLink from '@/components/atoms/NavLink'
 import ChevronIcon from '@/components/atoms/Icons/ChevronIcon'
 import SidebarNavGroup from '@/components/molecules/SidebarNavGroup'
 import packageInfo from '../../../../package.json'
 import { sidebarConfig, type SidebarEntry } from '@/config/sidebar'
+import type { SidebarGroupLabelKey } from '@/i18n/types'
+import { findActiveSidebarGroupKey } from '@/utils/nav'
 import { useSidebar } from '@/context/SidebarContext'
 import { useTranslation } from '@/i18n/useTranslation'
+import { prefetchHomeViewModules } from '@/utils/prefetchHomeViews'
 import {
   getAsideClass,
   getFooterClass,
@@ -40,11 +43,38 @@ const SideBar: React.FC = () => {
   const { collapsed, toggle } = useSidebar()
   const { dictionary, sectionTitle, sidebarItemLabel } = useTranslation()
   const options = pathname ? getSidebarOptions(pathname) : null
+  const [expandedGroupKey, setExpandedGroupKey] =
+    useState<SidebarGroupLabelKey | null>(null)
+
+  const sidebarGroups = useMemo(
+    () =>
+      (sidebarConfig['/home'] ?? [])
+        .filter((entry) => entry.kind === 'group')
+        .map((entry) => ({
+          labelKey: entry.labelKey,
+          childPaths: entry.children.map((child) => child.path),
+        })),
+    [],
+  )
+
+  const activeGroupKey = useMemo(
+    () =>
+      findActiveSidebarGroupKey(pathname, sidebarGroups) as SidebarGroupLabelKey | null,
+    [pathname, sidebarGroups],
+  )
 
   useEffect(() => {
     if (!options) return
-    collectPrefetchPaths(options).forEach((path) => router.prefetch(path))
+    collectPrefetchPaths(options).forEach((path) => {
+      router.prefetch(path)
+    })
+    prefetchHomeViewModules()
   }, [options, router])
+
+  useEffect(() => {
+    if (!pathname?.startsWith('/home') || collapsed || !activeGroupKey) return
+    setExpandedGroupKey(activeGroupKey)
+  }, [activeGroupKey, collapsed, pathname])
 
   if (!pathname || !options) return null
 
@@ -108,11 +138,21 @@ const SideBar: React.FC = () => {
               })
             }
 
+            const groupKey = option.labelKey
+            const isExpanded = expandedGroupKey === groupKey
+
             return [
               <SidebarNavGroup
-                key={option.labelKey}
-                name={sidebarItemLabel(option.labelKey)}
+                key={groupKey}
+                name={sidebarItemLabel(groupKey)}
                 icon={<option.icon className="h-5 w-5" />}
+                expanded={isExpanded}
+                isActive={activeGroupKey === groupKey}
+                onToggle={() =>
+                  setExpandedGroupKey((current) =>
+                    current === groupKey ? null : groupKey,
+                  )
+                }
                 items={option.children.map((child) => ({
                   name: sidebarItemLabel(child.labelKey),
                   path: child.path,

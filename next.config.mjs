@@ -3,6 +3,9 @@ const nextConfig = () => {
    * @type {import('next').NextConfig}
    */
   return {
+    experimental: {
+      devtoolSegmentExplorer: false,
+    },
     images: {
       remotePatterns: [
         {

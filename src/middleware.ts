@@ -23,11 +23,10 @@ export default async function middleware(req: NextRequest) {
 
   const existingToken = req.cookies.get('token')?.value
 
-  if (isClientNavigationRequest(req) && existingToken) {
-    return NextResponse.next()
-  }
-
-  if (!shouldRefreshToken(existingToken)) {
+  if (
+    existingToken &&
+    (isClientNavigationRequest(req) || !shouldRefreshToken(existingToken))
+  ) {
     return NextResponse.next()
   }
 

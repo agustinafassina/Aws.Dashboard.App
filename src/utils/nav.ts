@@ -29,3 +29,27 @@ export function isNavGroupActive(
 ): boolean {
   return childPaths.some((path) => isNavItemActive(pathname, path))
 }
+
+export function findActiveSidebarGroupKey(
+  pathname: string | null,
+  groups: ReadonlyArray<{
+    labelKey: string
+    childPaths: string[]
+  }>,
+): string | null {
+  if (!pathname) return null
+
+  let best: { labelKey: string; pathLength: number } | null = null
+
+  for (const group of groups) {
+    for (const path of group.childPaths) {
+      if (!isNavItemActive(pathname, path)) continue
+
+      if (!best || path.length > best.pathLength) {
+        best = { labelKey: group.labelKey, pathLength: path.length }
+      }
+    }
+  }
+
+  return best?.labelKey ?? null
+}

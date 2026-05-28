@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import Button from '@/components/atoms/Button'
-import ServerIcon from '@/components/atoms/Icons/ServerIcon'
+import DockerIcon from '@/components/atoms/Icons/DockerIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import { CardSkeleton } from '@/components/atoms/Skeleton'
 import ErrorState from '@/components/molecules/ErrorState'
@@ -11,59 +11,78 @@ import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities'
 import type { Column } from '@/interfaces/common'
-import type {
-  InspectorFinding,
-  InspectorResourceType,
-} from '@/interfaces/aws-api'
+import type { InspectorFinding } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
 import { AWS_REGIONS, DEFAULT_AWS_REGION } from '@/utils/awsDefaults'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
-import EcrByRepositoryContent from './EcrByRepositoryContent'
-import { inspectorFindingColumns, sortFindingsBySeverity } from './inspectorUi'
+import {
+  groupFindingsByRepository,
+  type EcrRepositoryGroup,
+} from '@/utils/ecrVulnerabilities'
+import { inspectorFindingColumns, severityBadge } from './inspectorUi'
 
-function formatInstanceLabel(finding: InspectorFinding): string {
-  return (
-    finding.resource?.instanceId ??
-    finding.resourceId ??
-    finding.resourceType ??
-    '—'
-  )
-}
-
-const ec2FindingColumns: Column<InspectorFinding>[] = [
-  ...inspectorFindingColumns.slice(0, 3),
+const repositoryColumns: Column<EcrRepositoryGroup>[] = [
   {
-    key: 'resourceId',
-    label: 'Instance',
-    cellClassName: 'max-w-[12rem] truncate whitespace-nowrap font-mono text-xs',
-    render: (_, row) => formatInstanceLabel(row),
+    key: 'repositoryName',
+    label: 'Repository',
+    cellClassName: 'max-w-[14rem] truncate whitespace-nowrap font-mono text-xs',
   },
-  ...inspectorFindingColumns.slice(3),
+  {
+    key: 'imageCount',
+    label: 'Image count',
+    cellClassName: 'whitespace-nowrap',
+    render: (value) => String(value),
+  },
+  {
+    key: 'totalFindings',
+    label: 'Findings',
+    cellClassName: 'whitespace-nowrap',
+    render: (value) => String(value),
+  },
+  {
+    key: 'criticalCount',
+    label: 'Critical',
+    cellClassName: 'whitespace-nowrap',
+    render: (value) => String(value),
+  },
+  {
+    key: 'highCount',
+    label: 'High',
+    cellClassName: 'whitespace-nowrap',
+    render: (value) => String(value),
+  },
+  {
+    key: 'worstSeverity',
+    label: 'Worst severity',
+    cellClassName: 'whitespace-nowrap',
+    render: (value) => severityBadge(String(value)),
+  },
 ]
 
-interface VulnerabilitiesViewProps {
+interface EcrByRepositoryContentProps {
   title: string
   description: string
-  resourceType: InspectorResourceType
 }
 
-function Ec2VulnerabilitiesContent({
+export default function EcrByRepositoryContent({
   title,
   description,
-}: {
-  title: string
-  description: string
-}) {
+}: EcrByRepositoryContentProps) {
   const [region, setRegion] = useState(DEFAULT_AWS_REGION)
   const [appliedRegion, setAppliedRegion] = useState(DEFAULT_AWS_REGION)
 
   const { data, isLoading, isFetching, isError, error, refetch } =
     useInspectorVulnerabilities({
       region: appliedRegion,
-      resourceType: 'ec2',
+      resourceType: 'ecr',
     })
+
+  const repositoryGroups = useMemo(
+    () => groupFindingsByRepository(data?.findings ?? []),
+    [data?.findings],
+  )
 
   const highCriticalCount = useMemo(() => {
     let count = 0
@@ -74,46 +93,59 @@ function Ec2VulnerabilitiesContent({
     return count
   }, [data?.findings])
 
-  const sortedFindings = useMemo(
-    () => sortFindingsBySeverity(data?.findings ?? []),
-    [data?.findings],
-  )
-
   const regionInputClass =
     'h-8 w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
 
   const handleExportPdf = useCallback(() => {
-    if (!sortedFindings.length) return
+    if (!repositoryGroups.length) return
 
     exportTableToPdf({
-      filename: `inspector-ec2-${data?.region ?? appliedRegion}`,
+      filename: `inspector-ecr-repos-${data?.region ?? appliedRegion}`,
       title,
       subtitle: `Region: ${data?.region ?? appliedRegion}`,
       columns: [
-        { header: 'Severity', value: (row) => row.severity },
-        { header: 'Title', value: (row) => row.title },
-        { header: 'Status', value: (row) => row.status },
-        {
-          header: 'Instance',
-          value: (row) => formatInstanceLabel(row),
-        },
-        {
-          header: 'CVE / ID',
-          value: (row) => row.vulnerabilityId ?? '—',
-        },
-        {
-          header: 'Last observed',
-          value: (row) =>
-            row.lastObservedAt ? formatDate(row.lastObservedAt) : '—',
-        },
-        {
-          header: 'Recommendation',
-          value: (row) => row.recommendation ?? '—',
-        },
+        { header: 'Repository', value: (row) => row.repositoryName },
+        { header: 'Image count', value: (row) => String(row.imageCount) },
+        { header: 'Findings', value: (row) => String(row.totalFindings) },
+        { header: 'Critical', value: (row) => String(row.criticalCount) },
+        { header: 'High', value: (row) => String(row.highCount) },
+        { header: 'Worst severity', value: (row) => row.worstSeverity },
       ],
-      rows: sortedFindings,
+      rows: repositoryGroups,
     })
-  }, [appliedRegion, data?.region, sortedFindings, title])
+  }, [appliedRegion, data?.region, repositoryGroups, title])
+
+  const handleExportRepositoryFindingsPdf = useCallback(
+    (group: EcrRepositoryGroup) => {
+      if (!group.findings.length) return
+
+      exportTableToPdf({
+        filename: `inspector-ecr-${group.repositoryName}-${data?.region ?? appliedRegion}`,
+        title: `${title} — ${group.repositoryName}`,
+        subtitle: `Region: ${data?.region ?? appliedRegion}`,
+        columns: [
+          { header: 'Severity', value: (row) => row.severity },
+          { header: 'Title', value: (row) => row.title },
+          { header: 'Status', value: (row) => row.status },
+          {
+            header: 'CVE / ID',
+            value: (row) => row.vulnerabilityId ?? '—',
+          },
+          {
+            header: 'Last observed',
+            value: (row) =>
+              row.lastObservedAt ? formatDate(row.lastObservedAt) : '—',
+          },
+          {
+            header: 'Recommendation',
+            value: (row) => row.recommendation ?? '—',
+          },
+        ],
+        rows: group.findings,
+      })
+    },
+    [appliedRegion, data?.region, title],
+  )
 
   return (
     <div className={pageContentShellMinHeight}>
@@ -181,9 +213,9 @@ function Ec2VulnerabilitiesContent({
         <>
           <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <StatCard
-              label="Total findings"
-              value={data.totalFindings}
-              icon={<ServerIcon className="h-5 w-5" />}
+              label="Repositories"
+              value={repositoryGroups.length}
+              icon={<DockerIcon className="h-5 w-5" />}
             />
             <StatCard
               label="Critical + High"
@@ -192,32 +224,38 @@ function Ec2VulnerabilitiesContent({
               hint="Findings with Critical or High severity"
               icon={<ShieldIcon className="h-5 w-5" />}
             />
-            <StatCard label="Region" value={data.region} />
+            <StatCard
+              label="Total findings"
+              value={data.totalFindings}
+              hint="Across all repositories in the region"
+            />
           </div>
 
           <TableSection
-            title="Findings"
+            title="Repositories"
             onExportPdf={handleExportPdf}
-            exportDisabled={sortedFindings.length === 0}
-            columns={ec2FindingColumns}
-            data={sortedFindings}
-            emptyMessage="No vulnerabilities found for this region and resource type."
-            getRowKey={(row) => row.findingArn}
+            exportDisabled={repositoryGroups.length === 0}
+            columns={repositoryColumns}
+            data={repositoryGroups}
+            emptyMessage="No vulnerabilities found for ECR repositories in this region."
+            getRowKey={(row) => row.repositoryName}
           />
+
+          {repositoryGroups.map((group) => (
+            <div key={group.repositoryName} className="mt-8">
+              <TableSection
+                title={`${group.repositoryName} (${group.totalFindings})`}
+                onExportPdf={() => handleExportRepositoryFindingsPdf(group)}
+                exportDisabled={group.findings.length === 0}
+                columns={inspectorFindingColumns}
+                data={group.findings}
+                emptyMessage="No findings for this repository."
+                getRowKey={(row: InspectorFinding) => row.findingArn}
+              />
+            </div>
+          ))}
         </>
       )}
     </div>
   )
-}
-
-export default function VulnerabilitiesView({
-  title,
-  description,
-  resourceType,
-}: VulnerabilitiesViewProps) {
-  if (resourceType === 'ecr') {
-    return <EcrByRepositoryContent title={title} description={description} />
-  }
-
-  return <Ec2VulnerabilitiesContent title={title} description={description} />
 }

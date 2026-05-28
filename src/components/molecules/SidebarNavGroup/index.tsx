@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import NavLink from '@/components/atoms/NavLink'
 import {
@@ -9,7 +8,6 @@ import {
   getNavLinkClass,
   navLinkStyles,
 } from '@/components/atoms/NavLink/styles'
-import { isNavGroupActive } from '@/utils/nav'
 import type { ComponentType } from 'react'
 
 export interface SidebarNavGroupChild {
@@ -22,34 +20,44 @@ interface SidebarNavGroupProps {
   name: string
   icon: React.ReactNode
   items: SidebarNavGroupChild[]
+  expanded: boolean
+  isActive: boolean
+  onToggle: () => void
 }
 
 export default function SidebarNavGroup({
   name,
   icon,
   items,
+  expanded,
+  isActive,
+  onToggle,
 }: SidebarNavGroupProps) {
-  const pathname = usePathname()
+  const router = useRouter()
   const childPaths = items.map((c) => c.path)
-  const hasActiveChild = isNavGroupActive(pathname, childPaths)
-  const [expanded, setExpanded] = useState(hasActiveChild)
 
-  useEffect(() => {
-    if (hasActiveChild) setExpanded(true)
-  }, [hasActiveChild])
+  const prefetchChildren = () => {
+    childPaths.forEach((path) => router.prefetch(path))
+  }
+
+  const handleToggle = () => {
+    if (!expanded) prefetchChildren()
+    onToggle()
+  }
 
   return (
     <div className="flex flex-col gap-0.5">
       <button
         type="button"
-        onClick={() => setExpanded((open) => !open)}
+        onPointerEnter={prefetchChildren}
+        onClick={handleToggle}
         className={clsx(
-          getNavLinkClass(false, hasActiveChild, false),
+          getNavLinkClass(false, isActive, false),
           'w-full font-medium',
         )}
         aria-expanded={expanded}
       >
-        <span className={getIconClass(hasActiveChild)}>{icon}</span>
+        <span className={getIconClass(isActive)}>{icon}</span>
         <span className={clsx(navLinkStyles.label, 'text-left')}>{name}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +66,7 @@ export default function SidebarNavGroup({
           className={clsx(
             'h-4 w-4 flex-shrink-0 transition-transform duration-200',
             expanded && 'rotate-180',
-            hasActiveChild ? 'text-brand_500 dark:text-brand_300' : 'text-gray_500',
+            isActive ? 'text-brand_500 dark:text-brand_300' : 'text-gray_500',
           )}
           aria-hidden
         >
@@ -72,8 +80,8 @@ export default function SidebarNavGroup({
 
       <div
         className={clsx(
-          'flex w-full min-w-0 flex-col gap-0.5 overflow-hidden transition-all duration-200',
-          expanded ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0',
+          'flex w-full min-w-0 flex-col gap-0.5',
+          expanded ? 'visible' : 'hidden',
         )}
       >
         {items.map((child) => {

@@ -84,17 +84,17 @@ export const sidebarConfig: SidebarConfig = {
       children: [
         {
           labelKey: 'rdsOpenPorts',
-          path: '/home/vulnerabilities/rds-open-ports',
+          path: '/home/security/rds-open-ports',
           icon: DatabaseIcon,
         },
         {
           labelKey: 'ec2OpenPorts',
-          path: '/home/vulnerabilities/ec2-open-ports',
+          path: '/home/security/ec2-open-ports',
           icon: ServerIcon,
         },
         {
           labelKey: 's3PublicBuckets',
-          path: '/home/vulnerabilities/s3-public-buckets',
+          path: '/home/security/s3-public-buckets',
           icon: BucketIcon,
         },
       ],
