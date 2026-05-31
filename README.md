@@ -1,11 +1,5 @@
 # 📊 Dashboard Template — Next.js
 [English](#english) | [Español](#español)
-
-Plantilla de dashboard moderna con Auth0, temas claro/oscuro, internacionalización (ES/EN) y arquitectura escalable.
-
-> 📌 Ver también [MEJORAS.md](./MEJORAS.md) para el roadmap y tareas pendientes.
-
-
 ## English 🇬🇧
 ### 📋 Description
 A production-oriented dashboard template built with **Next.js 15** (App Router), **Auth0**, **Tailwind CSS**, and **NextUI**. It includes a collapsible sidebar, avatar menu (theme + language + guide + logout), sample charts, bilingual UI, and CI-ready scripts.
