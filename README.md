@@ -238,7 +238,6 @@ Pensada para clonar y extender rápido en herramientas internas, paneles admin y
 | Iconos | React Icons |
 
 ### 📦 Requisitos previos
-
 - **Node.js** 18.x o superior
 - **npm**, **yarn**, **pnpm** o **bun**
 - Una aplicación **Auth0** (Regular Web Application)
