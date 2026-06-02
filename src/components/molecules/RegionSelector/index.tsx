@@ -5,7 +5,7 @@ import { useAwsRegion } from '@/context/RegionContext'
 import { useTranslation } from '@/i18n/useTranslation'
 
 const selectClass =
-  'h-9 min-w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 shadow-sm dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
+  'h-9 min-w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 shadow-sm dark:border-gray_700 dark:bg-gray_850 dark:text-gray_100'
 
 export default function RegionSelector() {
   const { region, setRegion, hydrated } = useAwsRegion()

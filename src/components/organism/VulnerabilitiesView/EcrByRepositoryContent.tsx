@@ -10,6 +10,7 @@ import SeverityFilterSelect from '@/components/molecules/SeverityFilterSelect'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useAwsRegion } from '@/context/RegionContext'
+import { usePdfReport } from '@/hooks/usePdfReport'
 import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities'
 import { useSeverityFilter } from '@/hooks/useSeverityFilter'
 import type { Column } from '@/interfaces/common'
@@ -72,6 +73,7 @@ export default function EcrByRepositoryContent({
   description,
 }: EcrByRepositoryContentProps) {
   const { region } = useAwsRegion()
+  const { buildReport } = usePdfReport()
   const { apiSeverity } = useSeverityFilter()
 
   const { data, isLoading, isError, error, refetch } = useInspectorVulnerabilities({
@@ -101,6 +103,13 @@ export default function EcrByRepositoryContent({
       filename: `inspector-ecr-repos-${data?.region ?? region}`,
       title,
       subtitle: `Region: ${data?.region ?? region}`,
+      report: buildReport({
+        region: data?.region ?? region,
+        scannedAt: data?.scannedAt,
+        executiveSummary: [
+          `${data?.totalFindings ?? 0} finding(s) across ${repositoryGroups.length} ECR repositor${repositoryGroups.length === 1 ? 'y' : 'ies'}; ${highCriticalCount} Critical or High.`,
+        ],
+      }),
       columns: [
         { header: 'Repository', value: (row) => row.repositoryName },
         { header: 'Image count', value: (row) => String(row.imageCount) },
@@ -111,7 +120,7 @@ export default function EcrByRepositoryContent({
       ],
       rows: repositoryGroups,
     })
-  }, [region, data?.region, repositoryGroups, title])
+  }, [buildReport, data, highCriticalCount, region, repositoryGroups, title])
 
   const handleExportRepositoryFindingsPdf = useCallback(
     (group: EcrRepositoryGroup) => {
@@ -121,6 +130,13 @@ export default function EcrByRepositoryContent({
         filename: `inspector-ecr-${group.repositoryName}-${data?.region ?? region}`,
         title: `${title} — ${group.repositoryName}`,
         subtitle: `Region: ${data?.region ?? region}`,
+        report: buildReport({
+          region: data?.region ?? region,
+          scannedAt: data?.scannedAt,
+          executiveSummary: [
+            `Repository ${group.repositoryName}: ${group.totalFindings} finding(s) (${group.criticalCount} Critical, ${group.highCount} High).`,
+          ],
+        }),
         columns: [
           { header: 'Severity', value: (row) => row.severity },
           { header: 'Title', value: (row) => row.title },
@@ -142,7 +158,7 @@ export default function EcrByRepositoryContent({
         rows: group.findings,
       })
     },
-    [region, data?.region, title],
+    [buildReport, data, region, title],
   )
 
   return (

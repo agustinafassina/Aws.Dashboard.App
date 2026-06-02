@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getSession } from '@auth0/nextjs-auth0/edge'
+import { AUTH_COOKIE_OPTIONS, AUTH_TOKEN_COOKIE } from '@/constants/auth'
 import { shouldRefreshToken } from '@/utils/jwt'
 
 function isClientNavigationRequest(req: NextRequest) {
@@ -21,7 +22,7 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const existingToken = req.cookies.get('token')?.value
+  const existingToken = req.cookies.get(AUTH_TOKEN_COOKIE)?.value
 
   if (
     existingToken &&
@@ -34,10 +35,10 @@ export default async function middleware(req: NextRequest) {
   const session = await getSession(req, res)
 
   if (session?.accessToken) {
-    res.cookies.set('token', session.accessToken, {
+    res.cookies.set(AUTH_TOKEN_COOKIE, session.accessToken, {
+      ...AUTH_COOKIE_OPTIONS,
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
     })
 
     res.cookies.set({

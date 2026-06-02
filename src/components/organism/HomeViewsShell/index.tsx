@@ -9,6 +9,8 @@ import IamUsersView from '@/components/organism/IamUsersView'
 import VulnerabilitiesView from '@/components/organism/VulnerabilitiesView'
 import OpenPortsView from '@/components/organism/OpenPortsView'
 import S3PublicBucketsView from '@/components/organism/S3PublicBucketsView'
+import UntaggedResourcesView from '@/components/organism/UntaggedResourcesView'
+import ResourcesByProjectTagView from '@/components/organism/ResourcesByProjectTagView'
 import { getHomePathSegments } from '@/utils/homePath'
 import {
   isKnownHomePath,
@@ -26,6 +28,8 @@ const ALL_VIEW_KEYS: HomeViewKey[] = [
   'vuln-rds-ports',
   'vuln-ec2-ports',
   'vuln-s3-public-buckets',
+  'audits-untagged-resources',
+  'audits-resources-by-project',
 ]
 
 function HomeViewPanel({ viewKey }: { viewKey: HomeViewKey }) {
@@ -77,6 +81,10 @@ function HomeViewPanel({ viewKey }: { viewKey: HomeViewKey }) {
           description="S3 buckets that are publicly accessible via policy, ACL, or missing Block Public Access settings."
         />
       )
+    case 'audits-untagged-resources':
+      return <UntaggedResourcesView />
+    case 'audits-resources-by-project':
+      return <ResourcesByProjectTagView />
     default:
       return null
   }
@@ -103,6 +111,11 @@ export default function HomeViewsShell() {
 
     if (segments.length === 1 && segments[0] === 'iam') {
       router.replace('/home/iam/users')
+      return
+    }
+
+    if (segments.length === 1 && segments[0] === 'audits') {
+      router.replace('/home/audits/untagged-resources')
       return
     }
 

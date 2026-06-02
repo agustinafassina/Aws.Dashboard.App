@@ -6,4 +6,6 @@ export function prefetchHomeViewModules(): void {
   void import('@/components/organism/VulnerabilitiesView')
   void import('@/components/organism/OpenPortsView')
   void import('@/components/organism/S3PublicBucketsView')
+  void import('@/components/organism/UntaggedResourcesView')
+  void import('@/components/organism/ResourcesByProjectTagView')
 }

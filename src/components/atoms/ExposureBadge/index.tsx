@@ -6,7 +6,7 @@ export default function ExposureBadge({ exposed }: ExposureBadgeProps) {
   if (exposed) {
     return (
       <span
-        className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red_50 text-red_900 dark:bg-red_900/30 dark:text-red_200"
+        className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-warning_100 text-warning_800 dark:bg-brand_500/20 dark:text-brand_300"
         title="Open ports exposed to the internet"
         aria-label="Open ports exposed to the internet"
       >

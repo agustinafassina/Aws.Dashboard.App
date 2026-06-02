@@ -2,10 +2,12 @@ import { cn } from '@/styles/cn'
 import { skeletonPulse } from '@/styles/shared'
 
 export const navBarStyles = {
-  leftCluster: 'flex items-center gap-3 min-w-0',
+  leftCluster: 'flex min-w-0 items-center gap-3',
   loadingLeft: 'flex items-center gap-3',
   logoLink: 'flex shrink-0 items-center hover:opacity-90 transition-opacity',
   logoImage: 'object-contain',
+  titleDivider:
+    'hidden h-8 w-px shrink-0 bg-gray_200 sm:block dark:bg-gray_700',
 } as const
 
 export function getNavBarClass(isDark: boolean) {
@@ -27,7 +29,7 @@ export function getTitleSkeletonClass(isDark: boolean) {
 
 export function getSectionTitleClass(isDark: boolean) {
   return cn(
-    'truncate text-lg font-semibold tracking-tight',
+    'truncate text-base font-semibold tracking-tight sm:text-lg',
     isDark ? 'text-white' : 'text-gray_900',
   )
 }

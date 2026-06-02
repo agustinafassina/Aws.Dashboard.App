@@ -22,10 +22,10 @@ const lightChartTheme: ChartTheme = {
   tooltipBg: '#FFFFFF',
   tooltipBorder: '#EAEAEA',
   tooltipText: '#3f3f46',
-  primary: '#3f3f46',
-  primaryFill: '#e4e4e7',
-  secondary: '#71717a',
-  secondaryFill: 'rgba(113, 113, 122, 0.15)',
+  primary: '#5F346F',
+  primaryFill: 'rgba(95, 52, 111, 0.2)',
+  secondary: '#A871BC',
+  secondaryFill: 'rgba(168, 113, 188, 0.18)',
 }
 
 const darkChartTheme: ChartTheme = {
@@ -37,10 +37,10 @@ const darkChartTheme: ChartTheme = {
   tooltipBg: '#27272a',
   tooltipBorder: '#757575',
   tooltipText: '#f4f4f5',
-  primary: '#d4d4d8',
-  primaryFill: 'rgba(212, 212, 216, 0.2)',
-  secondary: '#a1a1aa',
-  secondaryFill: 'rgba(161, 161, 170, 0.12)',
+  primary: '#A871BC',
+  primaryFill: 'rgba(168, 113, 188, 0.22)',
+  secondary: '#C498D8',
+  secondaryFill: 'rgba(196, 152, 216, 0.16)',
 }
 
 export function getChartTheme(isDark: boolean): ChartTheme {

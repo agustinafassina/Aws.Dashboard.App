@@ -189,3 +189,40 @@ export interface S3PublicBucketsResponse {
   publicBuckets: S3PublicBucket[]
   scannedAt: string
 }
+
+export interface UntaggedResource {
+  resourceType: string
+  resourceId: string
+  name: string | null
+  region: string
+  state: string | null
+  recommendation: string
+}
+
+export interface UntaggedResourcesResponse {
+  region: string
+  requiredTagKey: string
+  totalResourcesScanned: number
+  untaggedResourcesCount: number
+  resources: UntaggedResource[]
+  scannedAt: string
+}
+
+export interface TaggedResource {
+  resourceType: string
+  resourceId: string
+  name: string | null
+  region: string
+  state: string | null
+  projectTagValue: string
+}
+
+export interface ResourcesByProjectTagResponse {
+  region: string
+  projectTagKey: string
+  projectTagValue: string
+  totalResourcesScanned: number
+  matchingResourcesCount: number
+  resources: TaggedResource[]
+  scannedAt: string
+}

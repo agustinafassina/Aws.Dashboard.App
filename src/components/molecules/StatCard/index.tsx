@@ -16,9 +16,9 @@ interface StatCardProps {
 
 const variantClasses = {
   default:
-    'bg-white dark:bg-gray_800 border-gray_200 dark:border-gray_700',
+    'bg-white dark:bg-gray_850 border-gray_200 dark:border-gray_750',
   warning:
-    'bg-red_50/40 dark:bg-red_50/10 border-red_200/50 dark:border-red_200/30',
+    'bg-warning_50 border-warning_200 dark:bg-brand_500/10 dark:border-brand_400/30',
   success:
     'bg-success_50 dark:bg-success_100/10 border-success_500/25 dark:border-success_500/20',
 }
@@ -47,14 +47,25 @@ export default function StatCard({
     >
       {icon ? (
         <div
-          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-lg bg-brand_50 text-brand_500 dark:bg-gray_750 dark:text-brand_300"
+          className={cn(
+            'absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-lg',
+            variant === 'warning'
+              ? 'bg-warning_100 text-warning_700 dark:bg-brand_500/20 dark:text-brand_300'
+              : 'bg-brand_50 text-brand_500 dark:bg-gray_800 dark:text-brand_300',
+          )}
           aria-hidden
         >
           {icon}
         </div>
       ) : null}
       <p
-        className={`text-xs font-semibold uppercase tracking-wide text-gray_700 dark:text-gray_400 ${icon ? 'pr-12' : ''}`}
+        className={cn(
+          'text-xs font-semibold uppercase tracking-wide',
+          variant === 'warning'
+            ? 'text-warning_800 dark:text-gray_400'
+            : 'text-gray_700 dark:text-gray_400',
+          icon ? 'pr-12' : '',
+        )}
       >
         {label}
       </p>
@@ -70,7 +81,10 @@ export default function StatCard({
       ) : (
         <p
           className={cn(
-            'mt-2 text-2xl font-bold text-gray_900 dark:text-gray_100',
+            'mt-2 text-2xl font-bold',
+            variant === 'warning'
+              ? 'text-warning_900 dark:text-gray_100'
+              : 'text-gray_900 dark:text-gray_100',
             equalHeight && 'line-clamp-2 leading-tight',
           )}
         >

@@ -19,7 +19,6 @@ import TopProjectIcon from '@/components/atoms/Icons/TopProjectIcon'
 import SpendIcon from '@/components/atoms/Icons/SpendIcon'
 import LoadingSpinner from '@/components/atoms/LoadingSpinner'
 import { CardSkeleton, BarChartSkeleton } from '@/components/atoms/Skeleton'
-import LastScanTag from '@/components/atoms/LastScanTag'
 import StatCard from '@/components/molecules/StatCard'
 import {
   dashboardScanHref,
@@ -298,7 +297,7 @@ export default function DashboardSummary() {
                 />
                 <Bar
                   dataKey="amount"
-                  fill="var(--color-primary)"
+                  fill="#5F346F"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -342,10 +341,9 @@ export default function DashboardSummary() {
                         {d.loadError}
                       </span>
                     ) : scan.scannedAt ? (
-                      <LastScanTag
-                        label={dictionary.pageHeader.lastScan}
-                        value={formatDateTime(scan.scannedAt)}
-                      />
+                      <span className="text-xs font-mono text-gray_800 dark:text-gray_200">
+                        {formatDateTime(scan.scannedAt)}
+                      </span>
                     ) : (
                       <span className="text-xs text-gray_600 dark:text-gray_400">
                         {d.noScan}

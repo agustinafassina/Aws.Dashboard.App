@@ -21,6 +21,7 @@ import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useCostByProject } from '@/hooks/useCostByProject'
 import { useCostDateRange } from '@/hooks/useCostDateRange'
+import { usePdfReport } from '@/hooks/usePdfReport'
 import type { Column } from '@/interfaces/common'
 import type { ProjectCost } from '@/interfaces/aws-api'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
@@ -39,6 +40,7 @@ const projectColumns: Column<ProjectCost>[] = [
 ]
 
 export default function CostsView() {
+  const { buildReport } = usePdfReport()
   const { appliedRange, setAppliedRange } = useCostDateRange()
   const [startDate, setStartDate] = useState(appliedRange.startDate)
   const [endDate, setEndDate] = useState(appliedRange.endDate)
@@ -93,6 +95,14 @@ export default function CostsView() {
       filename: `costs-by-project-${data.startDate}-${data.endDate}`,
       title: 'Costs by project',
       subtitle: `Tag key: ${data.projectTagKey} · Range: ${formatDate(data.startDate)} → ${formatDate(data.endDate)}`,
+      report: buildReport({
+        scope: 'costs',
+        scannedAt: data.scannedAt,
+        executiveSummary: [
+          `Total spend in range: ${formatCurrency(data.totalAmount, data.currency)} across ${data.projects.length} project(s).`,
+          `Tag key used for grouping: ${data.projectTagKey}.`,
+        ],
+      }),
       columns: [
         { header: 'Project', value: (row) => row.project },
         {
@@ -103,7 +113,7 @@ export default function CostsView() {
       ],
       rows: data.projects,
     })
-  }, [data])
+  }, [buildReport, data])
 
   const dateInputClass =
     'h-8 w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
@@ -230,7 +240,7 @@ export default function CostsView() {
                         formatCurrency(value, data.currency)
                       }
                     />
-                    <Bar dataKey="amount" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="amount" fill="#5F346F" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

@@ -38,64 +38,79 @@ const config = {
         // blacks
         black_10: '#1A1818',
 
-        // Grays
-        gray_10: '#CDD5DB',
-        gray_25: '#F9FAF7',
-        gray_50: '#FBFCFA',
-        gray_75: '#F5EFF7',
-        gray_100: '#FBFBFB',
-        gray_150: '#FDFDFC',
-        gray_160: '#F2F3ED',
-        gray_200: '#ECEDE6',
-        gray_300: '#EAEAEA',
-        gray_350: '#E5E5E5',
-        gray_400: '#C9C9C9',
-        gray_500: '#C6C6C6',
-        gray_600: '#919191',
-        gray_700: '#878787',
-        gray_750: '#757575',
-        gray_800: '#6D6D6D',
-        gray_850: '#5A5A5A',
-        gray_900: '#322F35',
+        // Grays (cool slate)
+        gray_10: '#E2E8F0',
+        gray_25: '#FAFCFF',
+        gray_50: '#F8FAFC',
+        gray_75: '#F1F5F9',
+        gray_100: '#F5F7FB',
+        gray_150: '#EEF2F7',
+        gray_160: '#E9EEF6',
+        gray_200: '#E2E8F0',
+        gray_300: '#CBD5E1',
+        gray_350: '#BFCADC',
+        gray_400: '#94A3B8',
+        gray_500: '#7B8AA0',
+        gray_600: '#64748B',
+        gray_700: '#475569',
+        gray_750: '#334155',
+        gray_800: '#1E293B',
+        gray_850: '#172033',
+        gray_900: '#0F172A',
 
-        // Blues
-        blue_50: '#E2EFFF',
-        blue_100: '#E0F7FA',
-        blue_200: '#3B7DCC1A',
-        blue_300: '#14CBCD1A',
-        blue_400: '#14CBCD',
-        blue_500: '#3B7DCC',
-        blue_600: '#0078D4',
-        blue_700: '#0056B3',
+        // Accent (lilac / violet)
+        blue_50: '#F6EDF9',
+        blue_100: '#EBD9F2',
+        blue_200: '#A871BC33',
+        blue_300: '#8B4EA533',
+        blue_400: '#B985C8',
+        blue_500: '#A871BC',
+        blue_600: '#8B4EA5',
+        blue_700: '#6F3D86',
 
-        // Brand — neutral gray / charcoal (no blue tint)
-        brand_50: '#f4f4f5',
-        brand_100: '#e4e4e7',
-        brand_200: '#a1a1aa',
-        brand_300: '#d4d4d8',
-        brand_400: '#71717a',
-        brand_500: '#3f3f46',
-        brand_600: '#18181b',
-        brand_700: '#52525b',
-        brand_900: '#27272a',
+        // Brand (lilac / plum)
+        brand_50: '#F7F0FA',
+        brand_100: '#EEDFF4',
+        brand_200: '#DABDE7',
+        brand_300: '#C498D8',
+        brand_400: '#A871BC',
+        brand_500: '#8B4EA5',
+        brand_600: '#744188',
+        brand_700: '#5F346F',
+        brand_800: '#4B2859',
+        brand_900: '#3A1F45',
 
         // oranges
-        orange_300: '#F3BC6E4D',
-        orange: '#FFA221',
+        orange_300: '#FDBA742E',
+        orange: '#FB923C',
 
         // Reds
-        red_50: '#EE4E241A',
-        red_100: '#D13438',
-        red_200: '#EE4E24',
-        red_300: '#FF91914D',
-        red_900: '#FF2121',
+        red_50: '#FEE2E2',
+        red_100: '#F87171',
+        red_200: '#EF4444',
+        red_300: '#FCA5A54D',
+        red_900: '#7F1D1D',
+
+        // Warning (lilac accent — KPI highlights, light theme)
+        warning_50: '#F6EFFA',
+        warning_100: '#EDDFF6',
+        warning_200: '#DABDE7',
+        warning_700: '#5F346F',
+        warning_800: '#452650',
+        warning_900: '#452650',
+
+        // Success
+        success_50: '#DCFCE7',
+        success_100: '#BBF7D0',
+        success_500: '#22C55E',
+        success_700: '#15803D',
 
         // Base colors
         black: '#000000',
         white: '#FFFFFF',
       },
       backgroundImage: {
-        linearGradientBlue: 'linear-gradient(200deg, #14CBCD, #3B7DCC)',
+        linearGradientBlue: 'linear-gradient(135deg, #A871BC, #5F346F)',
       },
       fontSize: {
         'cp-xl': '22px',
@@ -111,7 +126,7 @@ const config = {
           '--gray_800': theme('colors.gray_800'),
 
           // Blues
-          '--blue_300': '#8DE6E7',
+          '--blue_300': '#D5B3E2',
           '--blue_400': theme('colors.blue_400'),
           '--blue_500': theme('colors.blue_500'),
 
@@ -119,7 +134,7 @@ const config = {
           '--brand_400': theme('colors.brand_400'),
 
           // Reds
-          '--red_400': '#D13438',
+          '--red_400': '#EF4444',
 
           // Base colors
           '--white': '#FFFFFF',

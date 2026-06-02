@@ -56,10 +56,10 @@ export default function DataTable<T extends object>({
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray_200 dark:border-gray_700 bg-white dark:bg-gray_800 shadow-sm">
+    <div className="overflow-x-auto rounded-xl border border-gray_200 dark:border-gray_750 bg-white dark:bg-gray_850 shadow-sm">
       <table className="w-full min-w-max text-left text-sm">
         <thead>
-          <tr className="border-b border-gray_200 dark:border-gray_700 bg-gray_100 dark:bg-gray_800/50">
+          <tr className="border-b border-gray_200 dark:border-gray_750 bg-gray_100 dark:bg-gray_800/35">
             {columns.map((col) => (
               <th
                 key={String(col.key)}
@@ -75,7 +75,7 @@ export default function DataTable<T extends object>({
           {filteredData.map((row, index) => (
             <tr
               key={getRowKey(row, index)}
-              className="border-b border-gray_100 dark:border-gray_800 last:border-0 transition-colors hover:bg-brand_50/70 dark:hover:bg-gray_800/40"
+              className="border-b border-gray_100 dark:border-gray_800 last:border-0 transition-colors hover:bg-brand_50/70 dark:hover:bg-gray_800/30"
             >
               {columns.map((col) => {
                 const value = row[col.key]

@@ -3,7 +3,7 @@ import type { GuideSectionId } from '@/config/siteGuide'
 
 export type SectionKey = 'dashboard' | 'costs'
 
-export type SidebarGroupLabelKey = 'iam' | 'vulnerabilities' | 'security'
+export type SidebarGroupLabelKey = 'iam' | 'vulnerabilities' | 'security' | 'audits'
 export type SidebarChildLabelKey =
   | 'iamUsers'
   | 'iamAccessKeys'
@@ -12,6 +12,8 @@ export type SidebarChildLabelKey =
   | 'rdsOpenPorts'
   | 'ec2OpenPorts'
   | 's3PublicBuckets'
+  | 'untaggedResources'
+  | 'resourcesByProject'
 
 export type DashboardScanModuleKey =
   | 'costs'
@@ -68,6 +70,29 @@ export type TranslationDictionary = {
     loading: string
     modules: Record<DashboardScanModuleKey, string>
   }
+  dashboardExport: {
+    title: string
+    groupAriaLabel: string
+    downloadPdf: string
+    downloadCsv: string
+    disabledWhileLoading: string
+    kpiSection: string
+    topProjectsSection: string
+    scansSection: string
+    costRangeLabel: string
+    summaryRegional: string
+    summaryCosts: string
+    columns: {
+      metric: string
+      value: string
+      project: string
+      amount: string
+      module: string
+      scannedAt: string
+      region: string
+      costRange: string
+    }
+  }
   sidebar: {
     ariaLabel: string
     menuTitle: string
@@ -96,10 +121,65 @@ export type TranslationDictionary = {
   export: {
     downloadPdf: string
   }
+  pdfReport: {
+    brandTitle: string
+    generatedAt: string
+    region: string
+    executiveSummary: string
+    scopeAccount: string
+    scopeCosts: string
+  }
   table: {
     searchPlaceholder: string
     searchAriaLabel: string
     noSearchResults: string
+  }
+  audits: {
+    untaggedResources: {
+      title: string
+      description: string
+      requiredTagLabel: string
+      regionLabel: string
+      tableTitle: string
+      emptyMessage: string
+      stats: {
+        scanned: string
+        untagged: string
+        untaggedHint: string
+        region: string
+      }
+      columns: {
+        type: string
+        id: string
+        name: string
+        state: string
+        recommendation: string
+      }
+    }
+    resourcesByProject: {
+      title: string
+      description: string
+      tagKeyLabel: string
+      regionLabel: string
+      projectInputLabel: string
+      projectInputPlaceholder: string
+      scanButton: string
+      tableTitle: string
+      emptyMessage: string
+      stats: {
+        scanned: string
+        matching: string
+        matchingHint: string
+        region: string
+      }
+      columns: {
+        type: string
+        id: string
+        name: string
+        projectTag: string
+        state: string
+      }
+    }
   }
   guide: {
     metaTitle: string

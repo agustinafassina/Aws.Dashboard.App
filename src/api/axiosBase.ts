@@ -1,8 +1,9 @@
 'use client'
+
 import { ReactNode, useEffect } from 'react'
 import axios, { InternalAxiosRequestConfig } from 'axios'
-import { getCookie } from 'cookies-next'
 import { useRouter } from 'next/navigation'
+import { resolveAuthToken } from '@/utils/authToken'
 
 const axiosBase = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -16,16 +17,28 @@ const axiosBaseJson = axios.create({
   withCredentials: false,
 })
 
+function redirectToLogin() {
+  if (typeof window === 'undefined') return
+  const returnTo = encodeURIComponent(
+    `${window.location.pathname}${window.location.search}`,
+  )
+  window.location.href = `/api/auth/login?returnTo=${returnTo}`
+}
+
 axiosBase.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = getCookie('token')
+  async (config: InternalAxiosRequestConfig) => {
+    const token = await resolveAuthToken()
 
     if (!token) {
-      throw new Error('No token available')
+      redirectToLogin()
+      return Promise.reject(new Error('No auth token available'))
     }
 
-    config.headers.set('Content-Type', 'application/json')
     config.headers.set('Authorization', `Bearer ${token}`)
+
+    if (!config.headers.has('Content-Type') && config.data !== undefined) {
+      config.headers.set('Content-Type', 'application/json')
+    }
 
     return config
   },
@@ -36,16 +49,21 @@ const cancelSource = axios.CancelToken.source()
 
 const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
+
   useEffect(() => {
+    void resolveAuthToken()
+
     const responseInterceptor = axiosBase.interceptors.response.use(
       (response) => response,
       (error: unknown) => {
         const status = (error as { response?: { status?: number } })?.response
           ?.status
+
         if (status === 401) {
-          router.push('/api/auth/logout')
-          return
+          redirectToLogin()
+          return Promise.reject(error)
         }
+
         return Promise.reject(error)
       },
     )

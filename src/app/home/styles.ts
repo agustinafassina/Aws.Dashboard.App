@@ -1,7 +1,7 @@
 export const homeLayoutStyles = {
   wrapper: 'flex h-[calc(100vh-4.75rem)] flex-col',
   row: 'flex min-w-0 w-full flex-grow',
-  main: 'min-w-0 flex-1 overflow-x-auto bg-brand_50 dark:bg-gray_800',
+  main: 'min-w-0 flex-1 overflow-x-auto bg-gray_50 dark:bg-gray_900',
 } as const
 
 import { pageContentShellMinHeight } from '@/styles/pageShell'

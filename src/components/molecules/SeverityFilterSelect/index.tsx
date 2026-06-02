@@ -5,7 +5,7 @@ import { useTranslation } from '@/i18n/useTranslation'
 import { SEVERITY_FILTER_VALUES } from '@/utils/urlSearchParams'
 
 const selectClass =
-  'h-8 min-w-[9.5rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
+  'h-8 min-w-[9.5rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_700 dark:bg-gray_850 dark:text-gray_100'
 
 export default function SeverityFilterSelect() {
   const { severity, setSeverity } = useSeverityFilter()

@@ -16,11 +16,13 @@ import {
 } from '@/components/organism/Iam/iamShared'
 import { useIamRiskyPolicies } from '@/hooks/useIamRiskyPolicies'
 import { useIamUsersWithoutMfa } from '@/hooks/useIamUsersWithoutMfa'
+import { usePdfReport } from '@/hooks/usePdfReport'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 export default function IamUsersView() {
+  const { buildReport } = usePdfReport()
   const mfaQuery = useIamUsersWithoutMfa()
   const policiesQuery = useIamRiskyPolicies()
 
@@ -34,6 +36,14 @@ export default function IamUsersView() {
       filename: 'iam-users-without-mfa',
       title: 'IAM users without MFA',
       subtitle: `${mfaQuery.data?.usersWithoutMfa ?? 0} console users without MFA`,
+      report: buildReport({
+        scope: 'account',
+        scannedAt: mfaQuery.data?.scannedAt,
+        executiveSummary: [
+          `${mfaQuery.data?.usersWithoutMfa ?? 0} of ${mfaQuery.data?.usersWithConsoleAccess ?? 0} console users lack MFA.`,
+          `Total IAM users scanned: ${mfaQuery.data?.totalUsers ?? 0}.`,
+        ],
+      }),
       columns: [
         { header: 'User', value: (row) => row.userName },
         { header: 'Email', value: (row) => row.email ?? '—' },
@@ -46,7 +56,7 @@ export default function IamUsersView() {
       ],
       rows: users,
     })
-  }, [mfaQuery.data])
+  }, [buildReport, mfaQuery.data])
 
   const handleExportPoliciesPdf = useCallback(() => {
     const policies = policiesQuery.data?.policies ?? []
@@ -56,6 +66,14 @@ export default function IamUsersView() {
       filename: 'iam-risky-policies',
       title: 'IAM risky policies (*:*)',
       subtitle: `${policiesQuery.data?.riskyPolicyCount ?? 0} customer managed policies`,
+      report: buildReport({
+        scope: 'account',
+        scannedAt: policiesQuery.data?.scannedAt,
+        executiveSummary: [
+          `${policiesQuery.data?.riskyPolicyCount ?? 0} customer-managed polic${(policiesQuery.data?.riskyPolicyCount ?? 0) === 1 ? 'y' : 'ies'} grant broad (*:*) permissions.`,
+          `Review and restrict permissions to least privilege.`,
+        ],
+      }),
       columns: [
         { header: 'Policy', value: (row) => row.policyName },
         { header: 'Risk', value: (row) => row.riskReason },
@@ -64,7 +82,7 @@ export default function IamUsersView() {
       ],
       rows: policies,
     })
-  }, [policiesQuery.data])
+  }, [buildReport, policiesQuery.data])
 
   const scannedAt = mfaQuery.data?.scannedAt
     ? formatDateTime(mfaQuery.data.scannedAt)

@@ -10,6 +10,7 @@ import SeverityFilterSelect from '@/components/molecules/SeverityFilterSelect'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useAwsRegion } from '@/context/RegionContext'
+import { usePdfReport } from '@/hooks/usePdfReport'
 import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities'
 import { useSeverityFilter } from '@/hooks/useSeverityFilter'
 import type { Column } from '@/interfaces/common'
@@ -58,6 +59,7 @@ function Ec2VulnerabilitiesContent({
   description: string
 }) {
   const { region } = useAwsRegion()
+  const { buildReport } = usePdfReport()
   const { apiSeverity } = useSeverityFilter()
 
   const { data, isLoading, isError, error, refetch } = useInspectorVulnerabilities({
@@ -87,6 +89,13 @@ function Ec2VulnerabilitiesContent({
       filename: `inspector-ec2-${data?.region ?? region}`,
       title,
       subtitle: `Region: ${data?.region ?? region}`,
+      report: buildReport({
+        region: data?.region ?? region,
+        scannedAt: data?.scannedAt,
+        executiveSummary: [
+          `${data?.totalFindings ?? 0} Inspector finding(s); ${highCriticalCount} Critical or High severity.`,
+        ],
+      }),
       columns: [
         { header: 'Severity', value: (row) => row.severity },
         { header: 'Title', value: (row) => row.title },
@@ -111,7 +120,7 @@ function Ec2VulnerabilitiesContent({
       ],
       rows: sortedFindings,
     })
-  }, [region, data?.region, sortedFindings, title])
+  }, [buildReport, data, highCriticalCount, region, sortedFindings, title])
 
   return (
     <div className={pageContentShellMinHeight}>

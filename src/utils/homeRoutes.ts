@@ -8,6 +8,8 @@ export type HomeViewKey =
   | 'vuln-rds-ports'
   | 'vuln-ec2-ports'
   | 'vuln-s3-public-buckets'
+  | 'audits-untagged-resources'
+  | 'audits-resources-by-project'
 
 export function resolveHomeView(segments: string[]): HomeViewKey | null {
   if (segments.length === 0) return 'dashboard'
@@ -24,6 +26,10 @@ export function resolveHomeView(segments: string[]): HomeViewKey | null {
   if (first === 'security' && second === 'ec2-open-ports') return 'vuln-ec2-ports'
   if (first === 'security' && second === 's3-public-buckets')
     return 'vuln-s3-public-buckets'
+  if (first === 'audits' && second === 'untagged-resources')
+    return 'audits-untagged-resources'
+  if (first === 'audits' && second === 'resources-by-project')
+    return 'audits-resources-by-project'
 
   return null
 }

@@ -16,11 +16,13 @@ import {
   getIamApiErrorMessage,
 } from '@/components/organism/Iam/iamShared'
 import { useIamAccessKeys } from '@/hooks/useIamAccessKeys'
+import { usePdfReport } from '@/hooks/usePdfReport'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 export default function IamAccessKeysView() {
+  const { buildReport } = usePdfReport()
   const keysQuery = useIamAccessKeys()
 
   const sortedKeys = useMemo(
@@ -45,6 +47,14 @@ export default function IamAccessKeysView() {
       filename: 'iam-access-keys',
       title: 'IAM access keys',
       subtitle: `Users: ${keysQuery.data.totalUsers} · Keys: ${keysQuery.data.totalAccessKeys}`,
+      report: buildReport({
+        scope: 'account',
+        scannedAt: keysQuery.data.scannedAt,
+        executiveSummary: [
+          `${keysQuery.data.totalAccessKeys} access key(s) across ${keysQuery.data.totalUsers} user(s).`,
+          `${keysQuery.data.accessKeysNeedingRotation} key(s) need rotation; ${keysQuery.data.accessKeysNeverUsed} never used.`,
+        ],
+      }),
       columns: [
         { header: 'User', value: (row) => row.userName },
         { header: 'Access key', value: (row) => maskAccessKeyId(row.accessKeyId) },
@@ -58,7 +68,7 @@ export default function IamAccessKeysView() {
       ],
       rows: sortedKeys,
     })
-  }, [keysQuery.data, sortedKeys])
+  }, [buildReport, keysQuery.data, sortedKeys])
 
   return (
     <div className={pageContentShellMinHeight}>

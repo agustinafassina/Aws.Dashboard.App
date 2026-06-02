@@ -9,6 +9,8 @@ import DockerIcon from '@/components/atoms/Icons/DockerIcon'
 import ServerIcon from '@/components/atoms/Icons/ServerIcon'
 import DatabaseIcon from '@/components/atoms/Icons/DatabaseIcon'
 import BucketIcon from '@/components/atoms/Icons/BucketIcon'
+import AuditIcon from '@/components/atoms/Icons/AuditIcon'
+import ProjectsIcon from '@/components/atoms/Icons/ProjectsIcon'
 import { ComponentType } from 'react'
 import type { SectionKey, SidebarGroupLabelKey, SidebarChildLabelKey } from '@/i18n/types'
 
@@ -109,6 +111,23 @@ export const sidebarConfig: SidebarConfig = {
           labelKey: 's3PublicBuckets',
           path: '/home/security/s3-public-buckets',
           icon: BucketIcon,
+        },
+      ],
+    },
+    {
+      kind: 'group',
+      labelKey: 'audits',
+      icon: AuditIcon,
+      children: [
+        {
+          labelKey: 'untaggedResources',
+          path: '/home/audits/untagged-resources',
+          icon: ProjectsIcon,
+        },
+        {
+          labelKey: 'resourcesByProject',
+          path: '/home/audits/resources-by-project',
+          icon: ProjectsIcon,
         },
       ],
     },

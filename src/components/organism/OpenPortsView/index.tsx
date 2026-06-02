@@ -10,6 +10,7 @@ import PageHeader from '@/components/molecules/PageHeader'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useAwsRegion } from '@/context/RegionContext'
+import { usePdfReport } from '@/hooks/usePdfReport'
 import { useEc2OpenPorts } from '@/hooks/useEc2OpenPorts'
 import { useRdsOpenPorts } from '@/hooks/useRdsOpenPorts'
 import type { Column } from '@/interfaces/common'
@@ -139,6 +140,7 @@ export default function OpenPortsView({
   description,
 }: OpenPortsViewProps) {
   const { region } = useAwsRegion()
+  const { buildReport } = usePdfReport()
 
   const ec2Query = useEc2OpenPorts(region)
   const rdsQuery = useRdsOpenPorts(region)
@@ -163,6 +165,13 @@ export default function OpenPortsView({
         filename: `ec2-open-ports-${data.region}`,
         title,
         subtitle: `Region: ${data.region}`,
+        report: buildReport({
+          region: data.region,
+          scannedAt: data.scannedAt,
+          executiveSummary: [
+            `${data.instancesWithPublicPorts} of ${data.totalInstances} EC2 instance(s) expose inbound ports to the internet.`,
+          ],
+        }),
         columns: [
           { header: 'Instance', value: (row) => row.instanceId },
           { header: 'Name', value: (row) => row.name ?? '—' },
@@ -187,6 +196,13 @@ export default function OpenPortsView({
       filename: `rds-open-ports-${data.region}`,
       title,
       subtitle: `Region: ${data.region}`,
+      report: buildReport({
+        region: data.region,
+        scannedAt: data.scannedAt,
+        executiveSummary: [
+          `${data.instancesWithPublicPorts} of ${data.totalInstances} RDS instance(s) expose inbound ports to the internet.`,
+        ],
+      }),
       columns: [
         { header: 'Instance', value: (row) => row.dbInstanceIdentifier },
         {
@@ -211,7 +227,7 @@ export default function OpenPortsView({
       ],
       rows: sortedInstances as RdsInstancePorts[],
     })
-  }, [data, resourceType, sortedInstances, title])
+  }, [buildReport, data, resourceType, sortedInstances, title])
 
   return (
     <div className={pageContentShellMinHeight}>

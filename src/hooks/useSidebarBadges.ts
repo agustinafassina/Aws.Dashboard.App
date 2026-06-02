@@ -7,6 +7,7 @@ import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities
 import { useEc2OpenPorts } from '@/hooks/useEc2OpenPorts'
 import { useRdsOpenPorts } from '@/hooks/useRdsOpenPorts'
 import { useS3PublicBuckets } from '@/hooks/useS3PublicBuckets'
+import { useUntaggedResources } from '@/hooks/useUntaggedResources'
 import { useAwsRegion } from '@/context/RegionContext'
 import { formatSidebarBadge } from '@/utils/formatSidebarBadge'
 import type {
@@ -33,6 +34,7 @@ export function useSidebarBadges() {
   const ec2PortsQuery = useEc2OpenPorts(region)
   const rdsPortsQuery = useRdsOpenPorts(region)
   const s3Query = useS3PublicBuckets(region)
+  const untaggedQuery = useUntaggedResources(region)
 
   const counts = useMemo<Record<SidebarCountableKey, number>>(
     () => ({
@@ -56,6 +58,9 @@ export function useSidebarBadges() {
         (rdsPortsQuery.data?.instancesWithPublicPorts ?? 0) +
         (ec2PortsQuery.data?.instancesWithPublicPorts ?? 0) +
         (s3Query.data?.publicBucketsCount ?? 0),
+      untaggedResources: untaggedQuery.data?.untaggedResourcesCount ?? 0,
+      resourcesByProject: 0,
+      audits: untaggedQuery.data?.untaggedResourcesCount ?? 0,
     }),
     [
       iamKeysQuery.data,
@@ -65,6 +70,7 @@ export function useSidebarBadges() {
       ec2PortsQuery.data,
       rdsPortsQuery.data,
       s3Query.data,
+      untaggedQuery.data,
     ],
   )
 
@@ -80,7 +86,8 @@ export function useSidebarBadges() {
     inspectorEc2Query.isLoading ||
     ec2PortsQuery.isLoading ||
     rdsPortsQuery.isLoading ||
-    s3Query.isLoading
+    s3Query.isLoading ||
+    untaggedQuery.isLoading
 
   return { getBadge, getSectionBadge, counts, isLoading, region }
 }

@@ -9,6 +9,7 @@ import PageHeader from '@/components/molecules/PageHeader'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useAwsRegion } from '@/context/RegionContext'
+import { usePdfReport } from '@/hooks/usePdfReport'
 import { useS3PublicBuckets } from '@/hooks/useS3PublicBuckets'
 import type { Column } from '@/interfaces/common'
 import type { S3PublicBucket } from '@/interfaces/aws-api'
@@ -61,6 +62,7 @@ export default function S3PublicBucketsView({
   description,
 }: S3PublicBucketsViewProps) {
   const { region } = useAwsRegion()
+  const { buildReport } = usePdfReport()
 
   const { data, isLoading, isError, error, refetch } = useS3PublicBuckets(region)
 
@@ -76,6 +78,13 @@ export default function S3PublicBucketsView({
       filename: `s3-public-buckets-${data.region}`,
       title,
       subtitle: `Region: ${data.region}`,
+      report: buildReport({
+        region: data.region,
+        scannedAt: data.scannedAt,
+        executiveSummary: [
+          `${data.publicBucketsCount} of ${data.totalBucketsInRegion} S3 bucket(s) in this region allow public access.`,
+        ],
+      }),
       columns: [
         { header: 'Bucket', value: (row) => row.name },
         { header: 'Region', value: (row) => row.region },
@@ -91,7 +100,7 @@ export default function S3PublicBucketsView({
       ],
       rows: sortedBuckets,
     })
-  }, [data, sortedBuckets, title])
+  }, [buildReport, data, sortedBuckets, title])
 
   return (
     <div className={pageContentShellMinHeight}>

@@ -6,6 +6,8 @@ export const dashboardSectionStyles = {
     'mb-6 flex flex-wrap items-start justify-between gap-x-4 gap-y-3',
   welcome:
     'min-w-0 text-lg font-semibold text-gray_900 dark:text-gray_100',
+  headerRight: 'flex flex-shrink-0 flex-col items-end gap-2',
+  exportActions: 'flex flex-wrap items-center justify-end gap-2',
 } as const
 
 export const dashboardSummaryStyles = {
@@ -18,14 +20,14 @@ export const dashboardSummaryStyles = {
     'block h-[8.75rem] rounded-xl transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand_500',
   kpiSkeleton: 'h-[8.75rem]',
   chartSection:
-    'mb-6 rounded-xl border border-gray_200 bg-white p-4 shadow-sm dark:border-gray_700 dark:bg-gray_800',
+    'mb-6 rounded-xl border border-gray_200 bg-white p-4 shadow-sm dark:border-gray_750 dark:bg-gray_850',
   chartTitle:
     'mb-4 text-sm font-semibold uppercase tracking-wide text-gray_800 dark:text-gray_400',
   chartWrap: 'h-64 w-full',
   scanSection:
-    'rounded-xl border border-gray_200 bg-white shadow-sm dark:border-gray_700 dark:bg-gray_800',
+    'rounded-xl border border-gray_200 bg-white shadow-sm dark:border-gray_750 dark:bg-gray_850',
   scanTitle:
-    'border-b border-gray_200 px-4 py-3 text-sm font-semibold uppercase tracking-wide text-gray_800 dark:border-gray_700 dark:text-gray_400',
+    'border-b border-gray_200 px-4 py-3 text-sm font-semibold uppercase tracking-wide text-gray_800 dark:border-gray_750 dark:text-gray_400',
   scanTable: 'w-full text-sm',
   scanRow:
     'border-b border-gray_100 last:border-0 dark:border-gray_750',
