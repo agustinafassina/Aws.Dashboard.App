@@ -30,7 +30,7 @@ export default function SidebarNavItem({
         href={href}
         prefetch
         className={clsx(
-          'group ml-8 flex items-center gap-2.5 rounded-lg border-l-2 py-2 pl-3 pr-3 text-[13px] transition-all duration-200',
+          'group ml-8 flex items-center gap-2.5 rounded-lg border-l-2 py-2.5 pl-3 pr-3 text-sm transition-all duration-200',
           isActive
             ? [
                 'border-brand_500 bg-brand_50 font-semibold text-brand_900',

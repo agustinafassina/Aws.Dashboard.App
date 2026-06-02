@@ -18,7 +18,7 @@ export function getNavLinkClass(
 
 export function getSubNavLinkClass(isActive: boolean, isNavigating: boolean) {
   return cn(
-    'relative flex w-full min-w-0 items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-150',
+    'relative flex w-full min-w-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
     'hover:bg-brand_50/60 dark:hover:bg-gray_800/60',
     isActive &&
       'bg-brand_100 text-brand_700 shadow-sm dark:bg-gray_800 dark:text-brand_300',
