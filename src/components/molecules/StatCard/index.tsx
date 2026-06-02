@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import LoadingSpinner from '@/components/atoms/LoadingSpinner'
 import { cn } from '@/styles/cn'
 
 interface StatCardProps {
@@ -9,6 +10,8 @@ interface StatCardProps {
   icon?: ReactNode
   className?: string
   equalHeight?: boolean
+  isLoading?: boolean
+  loadingLabel?: string
 }
 
 const variantClasses = {
@@ -28,6 +31,8 @@ export default function StatCard({
   icon,
   className,
   equalHeight = false,
+  isLoading = false,
+  loadingLabel,
 }: StatCardProps) {
   return (
     <div
@@ -35,8 +40,10 @@ export default function StatCard({
         'relative rounded-xl border p-4 shadow-sm transition-colors',
         equalHeight && 'flex h-full min-h-[8.75rem] flex-col',
         variantClasses[variant],
+        isLoading && 'opacity-90',
         className,
       )}
+      aria-busy={isLoading}
     >
       {icon ? (
         <div
@@ -51,14 +58,25 @@ export default function StatCard({
       >
         {label}
       </p>
-      <p
-        className={cn(
-          'mt-2 text-2xl font-bold text-gray_900 dark:text-gray_100',
-          equalHeight && 'line-clamp-2 leading-tight',
-        )}
-      >
-        {value}
-      </p>
+      {isLoading ? (
+        <div
+          className={cn(
+            'mt-2 flex min-h-[2rem] items-center',
+            equalHeight && 'flex-1',
+          )}
+        >
+          <LoadingSpinner size="md" label={loadingLabel} />
+        </div>
+      ) : (
+        <p
+          className={cn(
+            'mt-2 text-2xl font-bold text-gray_900 dark:text-gray_100',
+            equalHeight && 'line-clamp-2 leading-tight',
+          )}
+        >
+          {value}
+        </p>
+      )}
       {equalHeight ? (
         <p className="mt-auto line-clamp-2 pt-1 text-xs text-gray_700 dark:text-gray_400">
           {hint ?? '\u00A0'}

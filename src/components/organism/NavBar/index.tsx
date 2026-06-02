@@ -8,6 +8,7 @@ import { getCookie } from 'cookies-next'
 import { jwtDecode } from 'jwt-decode'
 import Image from 'next/image'
 import Link from 'next/link'
+import RegionSelector from '@/components/molecules/RegionSelector'
 import UserMenu from '@/components/molecules/UserMenu'
 import { NavBarUserSkeleton } from '@/components/atoms/Skeleton'
 import { CustomJwtPayload } from '@/interfaces/payload-jwt'
@@ -97,14 +98,17 @@ export default function NavBar() {
         )}
       </div>
 
-      {user && Object.keys(user).length > 0 ? (
-        <UserMenu
-          user={user}
-          jobTitle={accessTokenDecoded?.user_jobtitle_ad}
-        />
-      ) : (
-        <NavBarUserSkeleton />
-      )}
+      <div className="flex shrink-0 items-center gap-3">
+        <RegionSelector />
+        {user && Object.keys(user).length > 0 ? (
+          <UserMenu
+            user={user}
+            jobTitle={accessTokenDecoded?.user_jobtitle_ad}
+          />
+        ) : (
+          <NavBarUserSkeleton />
+        )}
+      </div>
     </nav>
   )
 }

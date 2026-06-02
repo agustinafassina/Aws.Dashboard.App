@@ -8,8 +8,9 @@ import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities
 import { useEc2OpenPorts } from '@/hooks/useEc2OpenPorts'
 import { useRdsOpenPorts } from '@/hooks/useRdsOpenPorts'
 import { useS3PublicBuckets } from '@/hooks/useS3PublicBuckets'
-import { DEFAULT_AWS_REGION } from '@/utils/awsDefaults'
-import { defaultCostDateRange, formatCurrency } from '@/utils/formatters'
+import { useAwsRegion } from '@/context/RegionContext'
+import { useCostDateRange } from '@/hooks/useCostDateRange'
+import { formatCurrency } from '@/utils/formatters'
 import { countHighCriticalFindings } from '@/utils/inspectorMetrics'
 
 import type { DashboardScanModuleKey } from '@/i18n/types'
@@ -24,10 +25,13 @@ export interface DashboardScanEntry {
 }
 
 export function useDashboardSummary() {
-  const region = DEFAULT_AWS_REGION
-  const costRange = useMemo(() => defaultCostDateRange(), [])
+  const { region } = useAwsRegion()
+  const { appliedRange: costRange } = useCostDateRange()
 
-  const costsQuery = useCostByProject(costRange.startDate, costRange.endDate)
+  const costsQuery = useCostByProject(
+    costRange.startDate,
+    costRange.endDate,
+  )
   const iamKeysQuery = useIamAccessKeys()
   const iamUsersQuery = useIamUsersWithoutMfa()
   const inspectorEcrQuery = useInspectorVulnerabilities({
@@ -71,49 +75,49 @@ export function useDashboardSummary() {
       {
         key: 'costs',
         scannedAt: costsQuery.data?.scannedAt ?? null,
-        isLoading: costsQuery.isLoading,
+        isLoading: costsQuery.isLoading || costsQuery.isFetching,
         isError: costsQuery.isError,
       },
       {
         key: 'iamUsers',
         scannedAt: iamUsersQuery.data?.scannedAt ?? null,
-        isLoading: iamUsersQuery.isLoading,
+        isLoading: iamUsersQuery.isLoading || iamUsersQuery.isFetching,
         isError: iamUsersQuery.isError,
       },
       {
         key: 'iamAccessKeys',
         scannedAt: iamKeysQuery.data?.scannedAt ?? null,
-        isLoading: iamKeysQuery.isLoading,
+        isLoading: iamKeysQuery.isLoading || iamKeysQuery.isFetching,
         isError: iamKeysQuery.isError,
       },
       {
         key: 'inspectorEcr',
         scannedAt: inspectorEcrQuery.data?.scannedAt ?? null,
-        isLoading: inspectorEcrQuery.isLoading,
+        isLoading: inspectorEcrQuery.isLoading || inspectorEcrQuery.isFetching,
         isError: inspectorEcrQuery.isError,
       },
       {
         key: 'inspectorEc2',
         scannedAt: inspectorEc2Query.data?.scannedAt ?? null,
-        isLoading: inspectorEc2Query.isLoading,
+        isLoading: inspectorEc2Query.isLoading || inspectorEc2Query.isFetching,
         isError: inspectorEc2Query.isError,
       },
       {
         key: 'ec2Ports',
         scannedAt: ec2PortsQuery.data?.scannedAt ?? null,
-        isLoading: ec2PortsQuery.isLoading,
+        isLoading: ec2PortsQuery.isLoading || ec2PortsQuery.isFetching,
         isError: ec2PortsQuery.isError,
       },
       {
         key: 'rdsPorts',
         scannedAt: rdsPortsQuery.data?.scannedAt ?? null,
-        isLoading: rdsPortsQuery.isLoading,
+        isLoading: rdsPortsQuery.isLoading || rdsPortsQuery.isFetching,
         isError: rdsPortsQuery.isError,
       },
       {
         key: 's3',
         scannedAt: s3Query.data?.scannedAt ?? null,
-        isLoading: s3Query.isLoading,
+        isLoading: s3Query.isLoading || s3Query.isFetching,
         isError: s3Query.isError,
       },
     ],
@@ -155,13 +159,34 @@ export function useDashboardSummary() {
 
   const isInitialLoading =
     costsQuery.isLoading &&
+    !costsQuery.data &&
     iamKeysQuery.isLoading &&
+    !iamKeysQuery.data &&
     iamUsersQuery.isLoading &&
+    !iamUsersQuery.data &&
     inspectorEcrQuery.isLoading &&
+    !inspectorEcrQuery.data &&
     inspectorEc2Query.isLoading &&
+    !inspectorEc2Query.data &&
     ec2PortsQuery.isLoading &&
+    !ec2PortsQuery.data &&
     rdsPortsQuery.isLoading &&
-    s3Query.isLoading
+    !rdsPortsQuery.data &&
+    s3Query.isLoading &&
+    !s3Query.data
+
+  const isRegionalFetching =
+    inspectorEcrQuery.isFetching ||
+    inspectorEc2Query.isFetching ||
+    ec2PortsQuery.isFetching ||
+    rdsPortsQuery.isFetching ||
+    s3Query.isFetching
+
+  const isAnyFetching =
+    isRegionalFetching ||
+    costsQuery.isFetching ||
+    iamKeysQuery.isFetching ||
+    iamUsersQuery.isFetching
 
   return {
     region,
@@ -186,5 +211,7 @@ export function useDashboardSummary() {
     s3PublicBuckets: s3Query.data?.publicBucketsCount ?? 0,
     scans,
     isInitialLoading,
+    isRegionalFetching,
+    isAnyFetching,
   }
 }

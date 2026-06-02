@@ -1,7 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
-import Button from '@/components/atoms/Button'
+import { useCallback, useMemo } from 'react'
 import DatabaseIcon from '@/components/atoms/Icons/DatabaseIcon'
 import ServerIcon from '@/components/atoms/Icons/ServerIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
@@ -10,6 +9,7 @@ import ErrorState from '@/components/molecules/ErrorState'
 import PageHeader from '@/components/molecules/PageHeader'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
+import { useAwsRegion } from '@/context/RegionContext'
 import { useEc2OpenPorts } from '@/hooks/useEc2OpenPorts'
 import { useRdsOpenPorts } from '@/hooks/useRdsOpenPorts'
 import type { Column } from '@/interfaces/common'
@@ -21,7 +21,6 @@ import type {
 } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { AWS_REGIONS, DEFAULT_AWS_REGION } from '@/utils/awsDefaults'
 import { formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 import ExposureBadge, { exposureLabel } from '@/components/atoms/ExposureBadge'
@@ -139,13 +138,12 @@ export default function OpenPortsView({
   title,
   description,
 }: OpenPortsViewProps) {
-  const [region, setRegion] = useState(DEFAULT_AWS_REGION)
-  const [appliedRegion, setAppliedRegion] = useState(DEFAULT_AWS_REGION)
+  const { region } = useAwsRegion()
 
-  const ec2Query = useEc2OpenPorts(appliedRegion)
-  const rdsQuery = useRdsOpenPorts(appliedRegion)
+  const ec2Query = useEc2OpenPorts(region)
+  const rdsQuery = useRdsOpenPorts(region)
   const query = resourceType === 'ec2' ? ec2Query : rdsQuery
-  const { data, isLoading, isFetching, isError, error, refetch } = query
+  const { data, isLoading, isError, error, refetch } = query
 
   const sortedInstances = useMemo(() => {
     const instances = data?.instances ?? []
@@ -156,9 +154,6 @@ export default function OpenPortsView({
       return 0
     })
   }, [data?.instances])
-
-  const regionInputClass =
-    'h-8 w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
 
   const handleExportPdf = useCallback(() => {
     if (!data?.instances.length) return
@@ -224,31 +219,6 @@ export default function OpenPortsView({
         title={title}
         description={description}
         scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
-        actions={
-          <div className="inline-flex flex-nowrap items-center gap-2">
-            <label className="flex items-center gap-1.5">
-              <span className="text-xs text-gray_600 dark:text-gray_400">Region</span>
-              <select
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className={regionInputClass}
-              >
-                {AWS_REGIONS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Button
-              className="h-8 min-w-0 bg-brand_600 px-3 text-xs text-white transition-colors hover:bg-brand_700 disabled:opacity-50"
-              disabled={!region || isFetching}
-              onClick={() => setAppliedRegion(region)}
-            >
-              {isFetching ? '…' : 'Scan'}
-            </Button>
-          </div>
-        }
       />
 
       {isLoading && (

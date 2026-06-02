@@ -1,7 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
-import Button from '@/components/atoms/Button'
+import { useCallback, useMemo } from 'react'
 import BucketIcon from '@/components/atoms/Icons/BucketIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import { CardSkeleton } from '@/components/atoms/Skeleton'
@@ -9,12 +8,12 @@ import ErrorState from '@/components/molecules/ErrorState'
 import PageHeader from '@/components/molecules/PageHeader'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
+import { useAwsRegion } from '@/context/RegionContext'
 import { useS3PublicBuckets } from '@/hooks/useS3PublicBuckets'
 import type { Column } from '@/interfaces/common'
 import type { S3PublicBucket } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { AWS_REGIONS, DEFAULT_AWS_REGION } from '@/utils/awsDefaults'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
@@ -61,19 +60,14 @@ export default function S3PublicBucketsView({
   title,
   description,
 }: S3PublicBucketsViewProps) {
-  const [region, setRegion] = useState(DEFAULT_AWS_REGION)
-  const [appliedRegion, setAppliedRegion] = useState(DEFAULT_AWS_REGION)
+  const { region } = useAwsRegion()
 
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    useS3PublicBuckets(appliedRegion)
+  const { data, isLoading, isError, error, refetch } = useS3PublicBuckets(region)
 
   const sortedBuckets = useMemo(() => {
     const buckets = data?.publicBuckets ?? []
     return [...buckets].sort((a, b) => a.name.localeCompare(b.name))
   }, [data?.publicBuckets])
-
-  const regionInputClass =
-    'h-8 w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
 
   const handleExportPdf = useCallback(() => {
     if (!data?.publicBuckets.length) return
@@ -105,31 +99,6 @@ export default function S3PublicBucketsView({
         title={title}
         description={description}
         scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
-        actions={
-          <div className="inline-flex flex-nowrap items-center gap-2">
-            <label className="flex items-center gap-1.5">
-              <span className="text-xs text-gray_600 dark:text-gray_400">Region</span>
-              <select
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className={regionInputClass}
-              >
-                {AWS_REGIONS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Button
-              className="h-8 min-w-0 bg-brand_600 px-3 text-xs text-white transition-colors hover:bg-brand_700 disabled:opacity-50"
-              disabled={!region || isFetching}
-              onClick={() => setAppliedRegion(region)}
-            >
-              {isFetching ? '…' : 'Scan'}
-            </Button>
-          </div>
-        }
       />
 
       {isLoading && (

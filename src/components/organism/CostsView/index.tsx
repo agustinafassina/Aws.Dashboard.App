@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -20,16 +20,12 @@ import PageHeader from '@/components/molecules/PageHeader'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
 import { useCostByProject } from '@/hooks/useCostByProject'
+import { useCostDateRange } from '@/hooks/useCostDateRange'
 import type { Column } from '@/interfaces/common'
 import type { ProjectCost } from '@/interfaces/aws-api'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
-import {
-  defaultCostDateRange,
-  formatCurrency,
-  formatDate,
-  formatDateTime,
-} from '@/utils/formatters'
+import { formatCurrency, formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 const projectColumns: Column<ProjectCost>[] = [
@@ -43,10 +39,9 @@ const projectColumns: Column<ProjectCost>[] = [
 ]
 
 export default function CostsView() {
-  const defaults = defaultCostDateRange()
-  const [startDate, setStartDate] = useState(defaults.startDate)
-  const [endDate, setEndDate] = useState(defaults.endDate)
-  const [appliedRange, setAppliedRange] = useState(defaults)
+  const { appliedRange, setAppliedRange } = useCostDateRange()
+  const [startDate, setStartDate] = useState(appliedRange.startDate)
+  const [endDate, setEndDate] = useState(appliedRange.endDate)
 
   const { data, isLoading, isFetching, error, refetch, isError } =
     useCostByProject(appliedRange.startDate, appliedRange.endDate)
@@ -83,6 +78,11 @@ export default function CostsView() {
       setAppliedRange({ startDate, endDate })
     }
   }
+
+  useEffect(() => {
+    setStartDate(appliedRange.startDate)
+    setEndDate(appliedRange.endDate)
+  }, [appliedRange.startDate, appliedRange.endDate])
 
   const dateRangeInvalid = Boolean(startDate && endDate && startDate > endDate)
 

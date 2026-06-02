@@ -4,6 +4,18 @@ const es: TranslationDictionary = {
   nav: {
     mainAriaLabel: 'Navegación principal',
     goToDashboard: 'Ir al dashboard',
+    regionLabel: 'Región',
+  },
+  filters: {
+    severityLabel: 'Severidad',
+    severityOptions: {
+      all: 'Todas',
+      'CRITICAL,HIGH': 'Crítica + Alta',
+      CRITICAL: 'Crítica',
+      HIGH: 'Alta',
+      MEDIUM: 'Media',
+      LOW: 'Baja',
+    },
   },
   sections: {
     dashboard: 'Dashboard',
@@ -18,6 +30,9 @@ const es: TranslationDictionary = {
   },
   dashboardSummary: {
     regionHint: 'Escaneos regionales en {{region}}',
+    regionTagLabel: 'Escaneos regionales',
+    costTagLabel: 'Costos',
+    refreshingData: 'Actualizando datos de la región…',
     costRangeHint: 'Costos: {{from}} → {{to}}',
     monthSpend: 'Gasto del mes',
     topProject: 'Proyecto principal',

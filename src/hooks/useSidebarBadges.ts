@@ -7,7 +7,7 @@ import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities
 import { useEc2OpenPorts } from '@/hooks/useEc2OpenPorts'
 import { useRdsOpenPorts } from '@/hooks/useRdsOpenPorts'
 import { useS3PublicBuckets } from '@/hooks/useS3PublicBuckets'
-import { DEFAULT_AWS_REGION } from '@/utils/awsDefaults'
+import { useAwsRegion } from '@/context/RegionContext'
 import { formatSidebarBadge } from '@/utils/formatSidebarBadge'
 import type {
   SectionKey,
@@ -18,7 +18,7 @@ import type {
 export type SidebarCountableKey = SidebarChildLabelKey | SidebarGroupLabelKey
 
 export function useSidebarBadges() {
-  const region = DEFAULT_AWS_REGION
+  const { region } = useAwsRegion()
 
   const iamKeysQuery = useIamAccessKeys()
   const iamUsersQuery = useIamUsersWithoutMfa()

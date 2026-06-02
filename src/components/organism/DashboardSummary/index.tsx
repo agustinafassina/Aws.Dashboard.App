@@ -17,17 +17,21 @@ import ServerIcon from '@/components/atoms/Icons/ServerIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import TopProjectIcon from '@/components/atoms/Icons/TopProjectIcon'
 import SpendIcon from '@/components/atoms/Icons/SpendIcon'
+import LoadingSpinner from '@/components/atoms/LoadingSpinner'
 import { CardSkeleton, BarChartSkeleton } from '@/components/atoms/Skeleton'
 import LastScanTag from '@/components/atoms/LastScanTag'
 import StatCard from '@/components/molecules/StatCard'
 import {
-  DASHBOARD_SCAN_LINKS,
+  dashboardScanHref,
+  dashboardSectionHref,
   DASHBOARD_SECTION_LINKS,
 } from '@/config/dashboardLinks'
+import { useAwsRegion } from '@/context/RegionContext'
 import { useDashboardSummary } from '@/hooks/useDashboardSummary'
+import { useCostDateRange } from '@/hooks/useCostDateRange'
 import type { DashboardScanModuleKey } from '@/i18n/types'
 import { useTranslation } from '@/i18n/useTranslation'
-import { formatCurrency, formatDate, formatDateTime } from '@/utils/formatters'
+import { formatCurrency, formatDateTime } from '@/utils/formatters'
 import { dashboardSummaryStyles } from './styles'
 
 function KpiLink({
@@ -44,21 +48,22 @@ function KpiLink({
   )
 }
 
-function displayValue(
-  loading: boolean,
-  value: string | number,
-  loadingLabel: string,
-): string | number {
-  if (loading) return loadingLabel
-  return value
+function isQueryBusy(query: { isLoading: boolean; isFetching: boolean }) {
+  return query.isLoading || query.isFetching
 }
 
 export default function DashboardSummary() {
   const { dictionary, format } = useTranslation()
   const d = dictionary.dashboardSummary
+  const { region: urlRegion } = useAwsRegion()
+  const { appliedRange } = useCostDateRange()
+  const urlParams = {
+    region: urlRegion,
+    from: appliedRange.startDate,
+    to: appliedRange.endDate,
+  }
   const {
     region,
-    costRange,
     costsQuery,
     iamKeysQuery,
     inspectorEcrQuery,
@@ -78,7 +83,13 @@ export default function DashboardSummary() {
     s3PublicBuckets,
     scans,
     isInitialLoading,
+    isRegionalFetching,
+    isAnyFetching,
   } = useDashboardSummary()
+
+  const costsBusy = isQueryBusy(costsQuery)
+  const findingsBusy =
+    isQueryBusy(inspectorEcrQuery) || isQueryBusy(inspectorEc2Query)
 
   const moduleLabel = (key: DashboardScanModuleKey) => d.modules[key]
 
@@ -100,25 +111,28 @@ export default function DashboardSummary() {
 
   return (
     <>
-      <p className={dashboardSummaryStyles.regionHint}>
-        {format(d.regionHint, { region })}
-        {' · '}
-        {format(d.costRangeHint, {
-          from: formatDate(costRange.startDate),
-          to: formatDate(costRange.endDate),
-        })}
-      </p>
+      {isRegionalFetching && (
+        <div
+          className={dashboardSummaryStyles.refreshingBanner}
+          role="status"
+          aria-live="polite"
+        >
+          <LoadingSpinner size="sm" label={d.refreshingData} />
+          <span>{d.refreshingData}</span>
+        </div>
+      )}
 
-      <div className={dashboardSummaryStyles.kpiGrid}>
-        <KpiLink href={DASHBOARD_SECTION_LINKS.costs}>
+      <div
+        className={dashboardSummaryStyles.kpiGrid}
+        aria-busy={isAnyFetching}
+      >
+        <KpiLink href={dashboardSectionHref(DASHBOARD_SECTION_LINKS.costs, urlParams)}>
           <StatCard
             equalHeight
+            isLoading={costsBusy}
+            loadingLabel={d.loading}
             label={d.monthSpend}
-            value={displayValue(
-              costsQuery.isLoading,
-              monthSpendFormatted ?? d.noData,
-              d.loading,
-            )}
+            value={monthSpendFormatted ?? d.noData}
             hint={
               costsQuery.isError
                 ? d.loadError
@@ -130,15 +144,13 @@ export default function DashboardSummary() {
           />
         </KpiLink>
 
-        <KpiLink href={DASHBOARD_SECTION_LINKS.costs}>
+        <KpiLink href={dashboardSectionHref(DASHBOARD_SECTION_LINKS.costs, urlParams)}>
           <StatCard
             equalHeight
+            isLoading={costsBusy}
+            loadingLabel={d.loading}
             label={d.topProject}
-            value={displayValue(
-              costsQuery.isLoading,
-              topProject?.project ?? d.noData,
-              d.loading,
-            )}
+            value={topProject?.project ?? d.noData}
             hint={
               costsQuery.isError
                 ? d.loadError
@@ -148,83 +160,111 @@ export default function DashboardSummary() {
           />
         </KpiLink>
 
-        <KpiLink href={DASHBOARD_SECTION_LINKS.keysRotation}>
+        <KpiLink
+          href={dashboardSectionHref(DASHBOARD_SECTION_LINKS.keysRotation, {
+            region: urlRegion,
+          })}
+        >
           <StatCard
             equalHeight
+            isLoading={isQueryBusy(iamKeysQuery)}
+            loadingLabel={d.loading}
             label={d.keysRotation}
-            value={displayValue(
-              iamKeysQuery.isLoading,
-              keysNeedingRotation,
-              d.loading,
-            )}
-            variant={keysNeedingRotation > 0 ? 'warning' : 'default'}
+            value={keysNeedingRotation}
+            variant={
+              !isQueryBusy(iamKeysQuery) && keysNeedingRotation > 0
+                ? 'warning'
+                : 'default'
+            }
             hint={iamKeysQuery.isError ? d.loadError : undefined}
             icon={<AccessKeyIcon className="h-5 w-5" />}
           />
         </KpiLink>
 
-        <KpiLink href={DASHBOARD_SECTION_LINKS.criticalFindings}>
+        <KpiLink
+          href={dashboardSectionHref(DASHBOARD_SECTION_LINKS.criticalFindings, {
+            region: urlRegion,
+            severity: 'CRITICAL,HIGH',
+          })}
+        >
           <StatCard
             equalHeight
+            isLoading={findingsBusy}
+            loadingLabel={d.loading}
             label={d.criticalHighFindings}
-            value={displayValue(
-              inspectorEcrQuery.isLoading || inspectorEc2Query.isLoading,
-              criticalHighFindings,
-              d.loading,
-            )}
-            variant={criticalHighFindings > 0 ? 'warning' : 'default'}
+            value={criticalHighFindings}
+            variant={
+              !findingsBusy && criticalHighFindings > 0 ? 'warning' : 'default'
+            }
             hint={format(d.findingsHint, { region })}
             icon={<ShieldIcon className="h-5 w-5" />}
           />
         </KpiLink>
 
-        <KpiLink href={DASHBOARD_SECTION_LINKS.rdsPublicPorts}>
+        <KpiLink
+          href={dashboardSectionHref(DASHBOARD_SECTION_LINKS.rdsPublicPorts, {
+            region: urlRegion,
+          })}
+        >
           <StatCard
             equalHeight
+            isLoading={isQueryBusy(rdsPortsQuery)}
+            loadingLabel={d.loading}
             label={d.rdsPublicPorts}
-            value={displayValue(
-              rdsPortsQuery.isLoading,
-              rdsPublicPorts,
-              d.loading,
-            )}
-            variant={rdsPublicPorts > 0 ? 'warning' : 'default'}
+            value={rdsPublicPorts}
+            variant={
+              !isQueryBusy(rdsPortsQuery) && rdsPublicPorts > 0
+                ? 'warning'
+                : 'default'
+            }
             hint={format(d.instancesHint, { region })}
             icon={<DatabaseIcon className="h-5 w-5" />}
           />
         </KpiLink>
 
-        <KpiLink href={DASHBOARD_SECTION_LINKS.ec2PublicPorts}>
+        <KpiLink
+          href={dashboardSectionHref(DASHBOARD_SECTION_LINKS.ec2PublicPorts, {
+            region: urlRegion,
+          })}
+        >
           <StatCard
             equalHeight
+            isLoading={isQueryBusy(ec2PortsQuery)}
+            loadingLabel={d.loading}
             label={d.ec2PublicPorts}
-            value={displayValue(
-              ec2PortsQuery.isLoading,
-              ec2PublicPorts,
-              d.loading,
-            )}
-            variant={ec2PublicPorts > 0 ? 'warning' : 'default'}
+            value={ec2PublicPorts}
+            variant={
+              !isQueryBusy(ec2PortsQuery) && ec2PublicPorts > 0
+                ? 'warning'
+                : 'default'
+            }
             hint={format(d.instancesHint, { region })}
             icon={<ServerIcon className="h-5 w-5" />}
           />
         </KpiLink>
 
-        <KpiLink href={DASHBOARD_SECTION_LINKS.s3PublicBuckets}>
+        <KpiLink
+          href={dashboardSectionHref(
+            DASHBOARD_SECTION_LINKS.s3PublicBuckets,
+            { region: urlRegion },
+          )}
+        >
           <StatCard
             equalHeight
+            isLoading={isQueryBusy(s3Query)}
+            loadingLabel={d.loading}
             label={d.s3PublicBuckets}
-            value={displayValue(
-              s3Query.isLoading,
-              s3PublicBuckets,
-              d.loading,
-            )}
-            variant={s3PublicBuckets > 0 ? 'warning' : 'default'}
+            value={s3PublicBuckets}
+            variant={
+              !isQueryBusy(s3Query) && s3PublicBuckets > 0 ? 'warning' : 'default'
+            }
             hint={format(d.instancesHint, { region })}
             icon={<BucketIcon className="h-5 w-5" />}
           />
         </KpiLink>
       </div>
 
-      {topProjectsChart.length > 0 && costCurrency && (
+      {topProjectsChart.length > 0 && costCurrency && !costsBusy && (
         <section className={dashboardSummaryStyles.chartSection}>
           <h3 className={dashboardSummaryStyles.chartTitle}>
             {d.topProjectsChart}
@@ -267,9 +307,8 @@ export default function DashboardSummary() {
         </section>
       )}
 
-      {costsQuery.isLoading && topProjectsChart.length === 0 && (
-        <BarChartSkeleton />
-      )}
+      {(costsBusy || (isRegionalFetching && topProjectsChart.length === 0)) &&
+        topProjectsChart.length === 0 && <BarChartSkeleton />}
 
       <section className={dashboardSummaryStyles.scanSection}>
         <h3 className={dashboardSummaryStyles.scanTitle}>{d.lastScanTitle}</h3>
@@ -297,9 +336,7 @@ export default function DashboardSummary() {
                 <td className={`${dashboardSummaryStyles.scanCell} text-right`}>
                   <div className="flex flex-wrap items-center justify-end gap-3">
                     {scan.isLoading ? (
-                      <span className="text-xs text-gray_600 dark:text-gray_400">
-                        {d.loading}
-                      </span>
+                      <LoadingSpinner size="sm" label={d.loading} />
                     ) : scan.isError ? (
                       <span className="text-xs text-red_900 dark:text-red_200">
                         {d.loadError}
@@ -315,7 +352,18 @@ export default function DashboardSummary() {
                       </span>
                     )}
                     <Link
-                      href={DASHBOARD_SCAN_LINKS[scan.key]}
+                      href={dashboardScanHref(scan.key, {
+                        region: urlRegion,
+                        ...(scan.key === 'costs'
+                          ? {
+                              from: appliedRange.startDate,
+                              to: appliedRange.endDate,
+                            }
+                          : scan.key === 'inspectorEcr' ||
+                              scan.key === 'inspectorEc2'
+                            ? { severity: 'CRITICAL,HIGH' }
+                            : {}),
+                      })}
                       className={dashboardSummaryStyles.scanLink}
                     >
                       {d.viewSection}

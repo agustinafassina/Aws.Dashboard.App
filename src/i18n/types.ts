@@ -27,6 +27,14 @@ export type TranslationDictionary = {
   nav: {
     mainAriaLabel: string
     goToDashboard: string
+    regionLabel: string
+  }
+  filters: {
+    severityLabel: string
+    severityOptions: Record<
+      'all' | 'CRITICAL,HIGH' | 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW',
+      string
+    >
   }
   sections: Record<SectionKey, string>
   homeContent: Record<SectionKey, string>
@@ -35,6 +43,9 @@ export type TranslationDictionary = {
   }
   dashboardSummary: {
     regionHint: string
+    regionTagLabel: string
+    costTagLabel: string
+    refreshingData: string
     costRangeHint: string
     monthSpend: string
     topProject: string

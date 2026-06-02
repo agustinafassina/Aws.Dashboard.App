@@ -1,20 +1,21 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
-import Button from '@/components/atoms/Button'
+import { useCallback, useMemo } from 'react'
 import DockerIcon from '@/components/atoms/Icons/DockerIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import { CardSkeleton } from '@/components/atoms/Skeleton'
 import ErrorState from '@/components/molecules/ErrorState'
 import PageHeader from '@/components/molecules/PageHeader'
+import SeverityFilterSelect from '@/components/molecules/SeverityFilterSelect'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
+import { useAwsRegion } from '@/context/RegionContext'
 import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities'
+import { useSeverityFilter } from '@/hooks/useSeverityFilter'
 import type { Column } from '@/interfaces/common'
 import type { InspectorFinding } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { AWS_REGIONS, DEFAULT_AWS_REGION } from '@/utils/awsDefaults'
 import { formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 import {
@@ -70,14 +71,14 @@ export default function EcrByRepositoryContent({
   title,
   description,
 }: EcrByRepositoryContentProps) {
-  const [region, setRegion] = useState(DEFAULT_AWS_REGION)
-  const [appliedRegion, setAppliedRegion] = useState(DEFAULT_AWS_REGION)
+  const { region } = useAwsRegion()
+  const { apiSeverity } = useSeverityFilter()
 
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    useInspectorVulnerabilities({
-      region: appliedRegion,
-      resourceType: 'ecr',
-    })
+  const { data, isLoading, isError, error, refetch } = useInspectorVulnerabilities({
+    region,
+    resourceType: 'ecr',
+    severity: apiSeverity,
+  })
 
   const repositoryGroups = useMemo(
     () => groupFindingsByRepository(data?.findings ?? []),
@@ -93,16 +94,13 @@ export default function EcrByRepositoryContent({
     return count
   }, [data?.findings])
 
-  const regionInputClass =
-    'h-8 w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
-
   const handleExportPdf = useCallback(() => {
     if (!repositoryGroups.length) return
 
     exportTableToPdf({
-      filename: `inspector-ecr-repos-${data?.region ?? appliedRegion}`,
+      filename: `inspector-ecr-repos-${data?.region ?? region}`,
       title,
-      subtitle: `Region: ${data?.region ?? appliedRegion}`,
+      subtitle: `Region: ${data?.region ?? region}`,
       columns: [
         { header: 'Repository', value: (row) => row.repositoryName },
         { header: 'Image count', value: (row) => String(row.imageCount) },
@@ -113,16 +111,16 @@ export default function EcrByRepositoryContent({
       ],
       rows: repositoryGroups,
     })
-  }, [appliedRegion, data?.region, repositoryGroups, title])
+  }, [region, data?.region, repositoryGroups, title])
 
   const handleExportRepositoryFindingsPdf = useCallback(
     (group: EcrRepositoryGroup) => {
       if (!group.findings.length) return
 
       exportTableToPdf({
-        filename: `inspector-ecr-${group.repositoryName}-${data?.region ?? appliedRegion}`,
+        filename: `inspector-ecr-${group.repositoryName}-${data?.region ?? region}`,
         title: `${title} — ${group.repositoryName}`,
-        subtitle: `Region: ${data?.region ?? appliedRegion}`,
+        subtitle: `Region: ${data?.region ?? region}`,
         columns: [
           { header: 'Severity', value: (row) => row.severity },
           { header: 'Title', value: (row) => row.title },
@@ -144,7 +142,7 @@ export default function EcrByRepositoryContent({
         rows: group.findings,
       })
     },
-    [appliedRegion, data?.region, title],
+    [region, data?.region, title],
   )
 
   return (
@@ -158,31 +156,7 @@ export default function EcrByRepositoryContent({
             ? 'Results capped; increase Inspector limits in API config.'
             : undefined
         }
-        actions={
-          <div className="inline-flex flex-nowrap items-center gap-2">
-            <label className="flex items-center gap-1.5">
-              <span className="text-xs text-gray_600 dark:text-gray_400">Region</span>
-              <select
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className={regionInputClass}
-              >
-                {AWS_REGIONS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Button
-              className="h-8 min-w-0 bg-brand_600 px-3 text-xs text-white transition-colors hover:bg-brand_700 disabled:opacity-50"
-              disabled={!region || isFetching}
-              onClick={() => setAppliedRegion(region)}
-            >
-              {isFetching ? '…' : 'Scan'}
-            </Button>
-          </div>
-        }
+        actions={<SeverityFilterSelect />}
       />
 
       {isLoading && (

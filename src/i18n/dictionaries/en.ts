@@ -4,6 +4,18 @@ const en: TranslationDictionary = {
   nav: {
     mainAriaLabel: 'Main navigation',
     goToDashboard: 'Go to dashboard',
+    regionLabel: 'Region',
+  },
+  filters: {
+    severityLabel: 'Severity',
+    severityOptions: {
+      all: 'All',
+      'CRITICAL,HIGH': 'Critical + High',
+      CRITICAL: 'Critical',
+      HIGH: 'High',
+      MEDIUM: 'Medium',
+      LOW: 'Low',
+    },
   },
   sections: {
     dashboard: 'Dashboard',
@@ -18,6 +30,9 @@ const en: TranslationDictionary = {
   },
   dashboardSummary: {
     regionHint: 'Regional scans use {{region}}',
+    regionTagLabel: 'Regional scans',
+    costTagLabel: 'Costs',
+    refreshingData: 'Refreshing data for this region…',
     costRangeHint: 'Costs: {{from}} → {{to}}',
     monthSpend: 'Month spend',
     topProject: 'Top project',

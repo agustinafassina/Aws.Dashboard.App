@@ -2,11 +2,16 @@ import { pageContentShellMinHeight } from '@/styles/pageShell'
 
 export const dashboardSectionStyles = {
   shell: pageContentShellMinHeight,
-  welcome: 'mb-6 text-lg font-semibold text-gray_900 dark:text-gray_100',
+  header:
+    'mb-6 flex flex-wrap items-start justify-between gap-x-4 gap-y-3',
+  welcome:
+    'min-w-0 text-lg font-semibold text-gray_900 dark:text-gray_100',
 } as const
 
 export const dashboardSummaryStyles = {
-  regionHint: 'mb-4 text-xs text-gray_600 dark:text-gray_400',
+  metaTags: 'flex flex-shrink-0 flex-wrap items-center justify-end gap-2',
+  refreshingBanner:
+    'mb-4 flex items-center gap-2 rounded-lg border border-brand_200 bg-brand_50/60 px-3 py-2 text-xs font-medium text-brand_800 dark:border-brand_500/30 dark:bg-brand_500/10 dark:text-brand_200',
   kpiGrid:
     'mb-6 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4',
   kpiLink:
