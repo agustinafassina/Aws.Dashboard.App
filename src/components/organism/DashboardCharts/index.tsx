@@ -13,7 +13,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { useTranslation } from '@/i18n/useTranslation'
 import { getChartTheme } from './chartTheme'
 import { usageTrendData, weeklyActivityData } from './mockData'
 import { dashboardChartsStyles } from './styles'
@@ -51,7 +50,6 @@ function ChartTooltip({
 }
 
 export default function DashboardCharts() {
-  const { dictionary } = useTranslation()
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -87,7 +85,7 @@ export default function DashboardCharts() {
           className={dashboardChartsStyles.cardTitle}
           style={{ color: theme.title }}
         >
-          {dictionary.dashboardCharts.weeklyActivity}
+          Weekly activity
         </h3>
         <div className={dashboardChartsStyles.chartWrap}>
           <ResponsiveContainer width="100%" height="100%">
@@ -132,7 +130,7 @@ export default function DashboardCharts() {
           className={dashboardChartsStyles.cardTitle}
           style={{ color: theme.title }}
         >
-          {dictionary.dashboardCharts.usageTrend}
+          Usage trend
         </h3>
         <div className={dashboardChartsStyles.chartWrap}>
           <ResponsiveContainer width="100%" height="100%">

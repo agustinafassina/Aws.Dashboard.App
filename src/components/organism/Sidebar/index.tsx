@@ -11,6 +11,11 @@ import type { SidebarGroupLabelKey } from '@/i18n/types'
 import { findActiveSidebarGroupKey } from '@/utils/nav'
 import { useSidebar } from '@/context/SidebarContext'
 import { useTranslation } from '@/i18n/useTranslation'
+/**
+ * Badges en el menú — deshabilitados por ahora.
+ * Para reactivar: importar useSidebarBadges y pasar getBadge / getSectionBadge a NavLink y SidebarNavGroup.
+ */
+// import { useSidebarBadges } from '@/hooks/useSidebarBadges'
 import { prefetchHomeViewModules } from '@/utils/prefetchHomeViews'
 import {
   getAsideClass,
@@ -42,6 +47,7 @@ const SideBar: React.FC = () => {
   const router = useRouter()
   const { collapsed, toggle } = useSidebar()
   const { dictionary, sectionTitle, sidebarItemLabel } = useTranslation()
+  // const { getBadge, getSectionBadge } = useSidebarBadges()
   const options = pathname ? getSidebarOptions(pathname) : null
   const [expandedGroupKey, setExpandedGroupKey] =
     useState<SidebarGroupLabelKey | null>(null)

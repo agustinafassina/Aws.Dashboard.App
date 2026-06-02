@@ -11,6 +11,15 @@ export type SidebarChildLabelKey =
   | 'ec2OpenPorts'
   | 's3PublicBuckets'
 
+export type DashboardScanModuleKey =
+  | 'costs'
+  | 'iam'
+  | 'inspectorEcr'
+  | 'inspectorEc2'
+  | 'ec2Ports'
+  | 'rdsPorts'
+  | 's3'
+
 export type TranslationDictionary = {
   nav: {
     mainAriaLabel: string
@@ -18,9 +27,29 @@ export type TranslationDictionary = {
   }
   sections: Record<SectionKey, string>
   homeContent: Record<SectionKey, string>
-  dashboardCharts: {
-    weeklyActivity: string
-    usageTrend: string
+  dashboardSummary: {
+    regionHint: string
+    costRangeHint: string
+    monthSpend: string
+    topProject: string
+    keysRotation: string
+    criticalHighFindings: string
+    findingsHint: string
+    rdsPublicPorts: string
+    ec2PublicPorts: string
+    s3PublicBuckets: string
+    instancesHint: string
+    topProjectsChart: string
+    lastScanTitle: string
+    lastScanModule: string
+    lastScanAt: string
+    viewSection: string
+    noScan: string
+    noData: string
+    noSpendInRange: string
+    loadError: string
+    loading: string
+    modules: Record<DashboardScanModuleKey, string>
   }
   sidebar: {
     ariaLabel: string

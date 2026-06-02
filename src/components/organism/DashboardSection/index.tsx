@@ -1,8 +1,8 @@
 'use client'
 
 import { useTranslation } from '@/i18n/useTranslation'
-import DashboardCharts from '@/components/organism/DashboardCharts'
-import { dashboardSectionStyles } from '@/components/organism/DashboardCharts/styles'
+import DashboardSummary from '@/components/organism/DashboardSummary'
+import { dashboardSectionStyles } from '@/components/organism/DashboardSummary/styles'
 
 export default function DashboardSection() {
   const { dictionary } = useTranslation()
@@ -12,7 +12,7 @@ export default function DashboardSection() {
       <h2 className={dashboardSectionStyles.welcome}>
         {dictionary.homeContent.dashboard}
       </h2>
-      <DashboardCharts />
+      <DashboardSummary />
     </div>
   )
 }

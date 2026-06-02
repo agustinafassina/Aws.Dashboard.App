@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { cn } from '@/styles/cn'
 
 interface StatCardProps {
   label: string
@@ -6,6 +7,8 @@ interface StatCardProps {
   hint?: string
   variant?: 'default' | 'warning' | 'success'
   icon?: ReactNode
+  className?: string
+  equalHeight?: boolean
 }
 
 const variantClasses = {
@@ -23,10 +26,17 @@ export default function StatCard({
   hint,
   variant = 'default',
   icon,
+  className,
+  equalHeight = false,
 }: StatCardProps) {
   return (
     <div
-      className={`relative rounded-xl border p-4 shadow-sm transition-colors ${variantClasses[variant]}`}
+      className={cn(
+        'relative rounded-xl border p-4 shadow-sm transition-colors',
+        equalHeight && 'flex h-full min-h-[8.75rem] flex-col',
+        variantClasses[variant],
+        className,
+      )}
     >
       {icon ? (
         <div
@@ -41,11 +51,22 @@ export default function StatCard({
       >
         {label}
       </p>
-      <p className="mt-2 text-2xl font-bold text-gray_900 dark:text-gray_100">
+      <p
+        className={cn(
+          'mt-2 text-2xl font-bold text-gray_900 dark:text-gray_100',
+          equalHeight && 'line-clamp-2 leading-tight',
+        )}
+      >
         {value}
       </p>
-      {hint && (
-        <p className="mt-1 text-xs text-gray_700 dark:text-gray_400">{hint}</p>
+      {equalHeight ? (
+        <p className="mt-auto line-clamp-2 pt-1 text-xs text-gray_700 dark:text-gray_400">
+          {hint ?? '\u00A0'}
+        </p>
+      ) : (
+        hint && (
+          <p className="mt-1 text-xs text-gray_700 dark:text-gray_400">{hint}</p>
+        )
       )}
     </div>
   )

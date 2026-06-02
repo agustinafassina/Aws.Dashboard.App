@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import NavLink from '@/components/atoms/NavLink'
 import {
+  getBadgeClass,
   getIconClass,
   getNavLinkClass,
   navLinkStyles,
@@ -14,6 +15,7 @@ export interface SidebarNavGroupChild {
   name: string
   path: string
   icon?: ComponentType<{ width?: number; height?: number; className?: string }>
+  badge?: string | number
 }
 
 interface SidebarNavGroupProps {
@@ -23,6 +25,7 @@ interface SidebarNavGroupProps {
   expanded: boolean
   isActive: boolean
   onToggle: () => void
+  badge?: string | number
 }
 
 export default function SidebarNavGroup({
@@ -32,6 +35,7 @@ export default function SidebarNavGroup({
   expanded,
   isActive,
   onToggle,
+  badge,
 }: SidebarNavGroupProps) {
   const router = useRouter()
   const childPaths = items.map((c) => c.path)
@@ -59,6 +63,9 @@ export default function SidebarNavGroup({
       >
         <span className={getIconClass(isActive)}>{icon}</span>
         <span className={clsx(navLinkStyles.label, 'text-left')}>{name}</span>
+        {badge !== undefined && (
+          <span className={getBadgeClass(isActive)}>{badge}</span>
+        )}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
@@ -97,6 +104,7 @@ export default function SidebarNavGroup({
                 ) : undefined
               }
               nested
+              badge={child.badge}
             />
           )
         })}
