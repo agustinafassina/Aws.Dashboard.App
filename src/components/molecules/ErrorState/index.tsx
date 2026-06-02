@@ -12,7 +12,7 @@ export default function ErrorState({
 }: ErrorStateProps) {
   return (
     <div
-      className="flex flex-col items-center justify-center gap-4 rounded-xl border border-red_200/40 bg-red_50/20 dark:bg-red_50/5 p-8 text-center"
+      className="mb-8 flex flex-col items-center justify-center gap-4 rounded-xl border border-red_200/40 bg-red_50/20 p-8 text-center last:mb-0 dark:bg-red_50/5"
       role="alert"
     >
       <p className="text-sm text-red_900 dark:text-red_200">{message}</p>

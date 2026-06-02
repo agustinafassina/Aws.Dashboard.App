@@ -242,7 +242,7 @@ export default function EcrByRepositoryContent({
           />
 
           {repositoryGroups.map((group) => (
-            <div key={group.repositoryName} className="mt-8">
+            <div key={group.repositoryName}>
               <TableSection
                 title={`${group.repositoryName} (${group.totalFindings})`}
                 onExportPdf={() => handleExportRepositoryFindingsPdf(group)}

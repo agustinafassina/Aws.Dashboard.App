@@ -8,12 +8,13 @@ const es: TranslationDictionary = {
   sections: {
     dashboard: 'Dashboard',
     costs: 'Costos',
-    iam: 'Usuarios Iam',
   },
   homeContent: {
     dashboard: 'Bienvenido al Dashboard',
     costs: 'Resumen de costos',
-    iam: 'Usuarios Iam',
+  },
+  pageHeader: {
+    lastScan: 'Último escaneo',
   },
   dashboardSummary: {
     regionHint: 'Escaneos regionales en {{region}}',
@@ -39,7 +40,8 @@ const es: TranslationDictionary = {
     loading: '…',
     modules: {
       costs: 'Costos',
-      iam: 'IAM access keys',
+      iamUsers: 'IAM users (MFA)',
+      iamAccessKeys: 'IAM access keys',
       inspectorEcr: 'Vulnerabilidades ECR',
       inspectorEc2: 'Vulnerabilidades EC2',
       ec2Ports: 'EC2 open ports',
@@ -55,6 +57,9 @@ const es: TranslationDictionary = {
     collapseMenu: 'Colapsar menú',
     version: 'Versión',
     items: {
+      iam: 'IAM',
+      iamUsers: 'Users',
+      iamAccessKeys: 'Access keys',
       vulnerabilities: 'Vulnerabilidades',
       security: 'Seguridad',
       dockerImages: 'Imágenes Docker',

@@ -1,6 +1,8 @@
 import LargeIcon from '@/components/atoms/Icons/LargeIcon'
 import BookIcon from '@/components/atoms/Icons/BookIcon'
+import AccessKeyIcon from '@/components/atoms/Icons/AccessKeyIcon'
 import UserIcon from '@/components/atoms/Icons/UserIcon'
+import UsersIcon from '@/components/atoms/Icons/UsersIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import SecurityIcon from '@/components/atoms/Icons/SecurityIcon'
 import DockerIcon from '@/components/atoms/Icons/DockerIcon'
@@ -55,10 +57,21 @@ export const sidebarConfig: SidebarConfig = {
       icon: BookIcon,
     },
     {
-      kind: 'link',
-      sectionKey: 'iam',
-      path: '/home/iam',
+      kind: 'group',
+      labelKey: 'iam',
       icon: UserIcon,
+      children: [
+        {
+          labelKey: 'iamUsers',
+          path: '/home/iam/users',
+          icon: UsersIcon,
+        },
+        {
+          labelKey: 'iamAccessKeys',
+          path: '/home/iam/access-keys',
+          icon: AccessKeyIcon,
+        },
+      ],
     },
     {
       kind: 'group',

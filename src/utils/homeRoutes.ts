@@ -1,7 +1,8 @@
 export type HomeViewKey =
   | 'dashboard'
   | 'costs'
-  | 'iam'
+  | 'iam-users'
+  | 'iam-access-keys'
   | 'vuln-docker'
   | 'vuln-ec2'
   | 'vuln-rds-ports'
@@ -15,7 +16,8 @@ export function resolveHomeView(segments: string[]): HomeViewKey | null {
 
   if (first === 'dashboard') return 'dashboard'
   if (first === 'costs') return 'costs'
-  if (first === 'iam') return 'iam'
+  if (first === 'iam' && second === 'users') return 'iam-users'
+  if (first === 'iam' && second === 'access-keys') return 'iam-access-keys'
   if (first === 'vulnerabilities' && second === 'docker-image') return 'vuln-docker'
   if (first === 'vulnerabilities' && second === 'ec2-servers') return 'vuln-ec2'
   if (first === 'security' && second === 'rds-open-ports') return 'vuln-rds-ports'

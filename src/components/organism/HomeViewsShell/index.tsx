@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import DashboardSection from '@/components/organism/DashboardSection'
 import CostsView from '@/components/organism/CostsView'
 import IamAccessKeysView from '@/components/organism/IamAccessKeysView'
+import IamUsersView from '@/components/organism/IamUsersView'
 import VulnerabilitiesView from '@/components/organism/VulnerabilitiesView'
 import OpenPortsView from '@/components/organism/OpenPortsView'
 import S3PublicBucketsView from '@/components/organism/S3PublicBucketsView'
@@ -18,7 +19,8 @@ import {
 const ALL_VIEW_KEYS: HomeViewKey[] = [
   'dashboard',
   'costs',
-  'iam',
+  'iam-users',
+  'iam-access-keys',
   'vuln-docker',
   'vuln-ec2',
   'vuln-rds-ports',
@@ -32,7 +34,9 @@ function HomeViewPanel({ viewKey }: { viewKey: HomeViewKey }) {
       return <DashboardSection />
     case 'costs':
       return <CostsView />
-    case 'iam':
+    case 'iam-users':
+      return <IamUsersView />
+    case 'iam-access-keys':
       return <IamAccessKeysView />
     case 'vuln-docker':
       return (
@@ -94,6 +98,11 @@ export default function HomeViewsShell() {
 
     if (segments.length === 0) {
       router.replace('/home/dashboard')
+      return
+    }
+
+    if (segments.length === 1 && segments[0] === 'iam') {
+      router.replace('/home/iam/users')
       return
     }
 

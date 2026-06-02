@@ -8,12 +8,13 @@ const en: TranslationDictionary = {
   sections: {
     dashboard: 'Dashboard',
     costs: 'Costs',
-    iam: 'Iam Users',
   },
   homeContent: {
     dashboard: 'Welcome to Dashboard',
     costs: 'Costs Overview',
-    iam: 'Iam Users',
+  },
+  pageHeader: {
+    lastScan: 'Last scan',
   },
   dashboardSummary: {
     regionHint: 'Regional scans use {{region}}',
@@ -39,7 +40,8 @@ const en: TranslationDictionary = {
     loading: '…',
     modules: {
       costs: 'Costs',
-      iam: 'IAM access keys',
+      iamUsers: 'IAM users (MFA)',
+      iamAccessKeys: 'IAM access keys',
       inspectorEcr: 'ECR vulnerabilities',
       inspectorEc2: 'EC2 vulnerabilities',
       ec2Ports: 'EC2 open ports',
@@ -55,6 +57,9 @@ const en: TranslationDictionary = {
     collapseMenu: 'Collapse menu',
     version: 'Version',
     items: {
+      iam: 'IAM',
+      iamUsers: 'Users',
+      iamAccessKeys: 'Access keys',
       vulnerabilities: 'Vulnerabilities',
       security: 'Security',
       dockerImages: 'Docker images',

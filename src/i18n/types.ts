@@ -1,10 +1,12 @@
 import type { Locale } from '@/context/LanguageContext'
 import type { GuideSectionId } from '@/config/siteGuide'
 
-export type SectionKey = 'dashboard' | 'costs' | 'iam'
+export type SectionKey = 'dashboard' | 'costs'
 
-export type SidebarGroupLabelKey = 'vulnerabilities' | 'security'
+export type SidebarGroupLabelKey = 'iam' | 'vulnerabilities' | 'security'
 export type SidebarChildLabelKey =
+  | 'iamUsers'
+  | 'iamAccessKeys'
   | 'dockerImages'
   | 'ec2Servers'
   | 'rdsOpenPorts'
@@ -13,7 +15,8 @@ export type SidebarChildLabelKey =
 
 export type DashboardScanModuleKey =
   | 'costs'
-  | 'iam'
+  | 'iamUsers'
+  | 'iamAccessKeys'
   | 'inspectorEcr'
   | 'inspectorEc2'
   | 'ec2Ports'
@@ -27,6 +30,9 @@ export type TranslationDictionary = {
   }
   sections: Record<SectionKey, string>
   homeContent: Record<SectionKey, string>
+  pageHeader: {
+    lastScan: string
+  }
   dashboardSummary: {
     regionHint: string
     costRangeHint: string

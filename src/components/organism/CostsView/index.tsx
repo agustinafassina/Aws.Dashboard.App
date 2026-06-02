@@ -28,6 +28,7 @@ import {
   defaultCostDateRange,
   formatCurrency,
   formatDate,
+  formatDateTime,
 } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
@@ -112,6 +113,7 @@ export default function CostsView() {
       <PageHeader
         title="Costs"
         description="AWS spend grouped by project tag for the selected date range."
+        scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
         meta={
           data && !dateRangeInvalid ? (
             <>

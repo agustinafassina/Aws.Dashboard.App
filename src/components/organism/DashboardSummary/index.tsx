@@ -18,6 +18,7 @@ import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import TopProjectIcon from '@/components/atoms/Icons/TopProjectIcon'
 import SpendIcon from '@/components/atoms/Icons/SpendIcon'
 import { CardSkeleton, BarChartSkeleton } from '@/components/atoms/Skeleton'
+import LastScanTag from '@/components/atoms/LastScanTag'
 import StatCard from '@/components/molecules/StatCard'
 import {
   DASHBOARD_SCAN_LINKS,
@@ -59,7 +60,7 @@ export default function DashboardSummary() {
     region,
     costRange,
     costsQuery,
-    iamQuery,
+    iamKeysQuery,
     inspectorEcrQuery,
     inspectorEc2Query,
     ec2PortsQuery,
@@ -147,17 +148,17 @@ export default function DashboardSummary() {
           />
         </KpiLink>
 
-        <KpiLink href={DASHBOARD_SECTION_LINKS.iam}>
+        <KpiLink href={DASHBOARD_SECTION_LINKS.keysRotation}>
           <StatCard
             equalHeight
             label={d.keysRotation}
             value={displayValue(
-              iamQuery.isLoading,
+              iamKeysQuery.isLoading,
               keysNeedingRotation,
               d.loading,
             )}
             variant={keysNeedingRotation > 0 ? 'warning' : 'default'}
-            hint={iamQuery.isError ? d.loadError : undefined}
+            hint={iamKeysQuery.isError ? d.loadError : undefined}
             icon={<AccessKeyIcon className="h-5 w-5" />}
           />
         </KpiLink>
@@ -275,14 +276,15 @@ export default function DashboardSummary() {
         <table className={dashboardSummaryStyles.scanTable}>
           <thead>
             <tr className={dashboardSummaryStyles.scanRow}>
-              <th className={`${dashboardSummaryStyles.scanCellMuted} text-left font-semibold`}>
+              <th
+                className={`${dashboardSummaryStyles.scanCellMuted} text-left font-semibold`}
+              >
                 {d.lastScanModule}
               </th>
-              <th className={`${dashboardSummaryStyles.scanCellMuted} text-left font-semibold`}>
+              <th
+                className={`${dashboardSummaryStyles.scanCellMuted} text-right font-semibold`}
+              >
                 {d.lastScanAt}
-              </th>
-              <th className={`${dashboardSummaryStyles.scanCellMuted} text-right font-semibold`}>
-                {d.viewSection}
               </th>
             </tr>
           </thead>
@@ -292,22 +294,33 @@ export default function DashboardSummary() {
                 <td className={dashboardSummaryStyles.scanCell}>
                   {moduleLabel(scan.key)}
                 </td>
-                <td className={dashboardSummaryStyles.scanCellMuted}>
-                  {scan.isLoading
-                    ? d.loading
-                    : scan.isError
-                      ? d.loadError
-                      : scan.scannedAt
-                        ? formatDateTime(scan.scannedAt)
-                        : d.noScan}
-                </td>
                 <td className={`${dashboardSummaryStyles.scanCell} text-right`}>
-                  <Link
-                    href={DASHBOARD_SCAN_LINKS[scan.key]}
-                    className={dashboardSummaryStyles.scanLink}
-                  >
-                    {d.viewSection}
-                  </Link>
+                  <div className="flex flex-wrap items-center justify-end gap-3">
+                    {scan.isLoading ? (
+                      <span className="text-xs text-gray_600 dark:text-gray_400">
+                        {d.loading}
+                      </span>
+                    ) : scan.isError ? (
+                      <span className="text-xs text-red_900 dark:text-red_200">
+                        {d.loadError}
+                      </span>
+                    ) : scan.scannedAt ? (
+                      <LastScanTag
+                        label={dictionary.pageHeader.lastScan}
+                        value={formatDateTime(scan.scannedAt)}
+                      />
+                    ) : (
+                      <span className="text-xs text-gray_600 dark:text-gray_400">
+                        {d.noScan}
+                      </span>
+                    )}
+                    <Link
+                      href={DASHBOARD_SCAN_LINKS[scan.key]}
+                      className={dashboardSummaryStyles.scanLink}
+                    >
+                      {d.viewSection}
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}

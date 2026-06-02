@@ -27,7 +27,7 @@ export default function TableSection<T extends object>({
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <section>
+    <section className="mb-8 min-w-0 last:mb-0">
       <SectionTableHeader
         title={title}
         onExportPdf={onExportPdf}

@@ -24,6 +24,7 @@ export interface IamAccessKey {
   lastUsedService: string | null
   lastUsedRegion: string | null
   needsRotation: boolean
+  isNeverUsed: boolean
   recommendation: string
 }
 
@@ -31,8 +32,38 @@ export interface IamAccessKeysResponse {
   totalUsers: number
   totalAccessKeys: number
   accessKeysNeedingRotation: number
+  accessKeysNeverUsed: number
   accessKeyRotationMaxAgeDays: number
   accessKeys: IamAccessKey[]
+  scannedAt: string
+}
+
+export interface IamUserWithoutMfa {
+  userName: string
+  email: string | null
+  userCreated: string | null
+  recommendation: string
+}
+
+export interface IamUsersWithoutMfaResponse {
+  totalUsers: number
+  usersWithConsoleAccess: number
+  usersWithoutMfa: number
+  users: IamUserWithoutMfa[]
+  scannedAt: string
+}
+
+export interface IamRiskyPolicy {
+  policyArn: string
+  policyName: string
+  riskReason: string
+  recommendation: string
+}
+
+export interface IamRiskyPoliciesResponse {
+  totalCustomerPoliciesScanned: number
+  riskyPolicyCount: number
+  policies: IamRiskyPolicy[]
   scannedAt: string
 }
 

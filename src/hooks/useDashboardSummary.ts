@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import { useCostByProject } from '@/hooks/useCostByProject'
 import { useIamAccessKeys } from '@/hooks/useIamAccessKeys'
+import { useIamUsersWithoutMfa } from '@/hooks/useIamUsersWithoutMfa'
 import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities'
 import { useEc2OpenPorts } from '@/hooks/useEc2OpenPorts'
 import { useRdsOpenPorts } from '@/hooks/useRdsOpenPorts'
@@ -27,7 +28,8 @@ export function useDashboardSummary() {
   const costRange = useMemo(() => defaultCostDateRange(), [])
 
   const costsQuery = useCostByProject(costRange.startDate, costRange.endDate)
-  const iamQuery = useIamAccessKeys()
+  const iamKeysQuery = useIamAccessKeys()
+  const iamUsersQuery = useIamUsersWithoutMfa()
   const inspectorEcrQuery = useInspectorVulnerabilities({
     region,
     resourceType: 'ecr',
@@ -73,10 +75,16 @@ export function useDashboardSummary() {
         isError: costsQuery.isError,
       },
       {
-        key: 'iam',
-        scannedAt: iamQuery.data?.scannedAt ?? null,
-        isLoading: iamQuery.isLoading,
-        isError: iamQuery.isError,
+        key: 'iamUsers',
+        scannedAt: iamUsersQuery.data?.scannedAt ?? null,
+        isLoading: iamUsersQuery.isLoading,
+        isError: iamUsersQuery.isError,
+      },
+      {
+        key: 'iamAccessKeys',
+        scannedAt: iamKeysQuery.data?.scannedAt ?? null,
+        isLoading: iamKeysQuery.isLoading,
+        isError: iamKeysQuery.isError,
       },
       {
         key: 'inspectorEcr',
@@ -113,9 +121,12 @@ export function useDashboardSummary() {
       costsQuery.data?.scannedAt,
       costsQuery.isLoading,
       costsQuery.isError,
-      iamQuery.data?.scannedAt,
-      iamQuery.isLoading,
-      iamQuery.isError,
+      iamUsersQuery.data?.scannedAt,
+      iamUsersQuery.isLoading,
+      iamUsersQuery.isError,
+      iamKeysQuery.data?.scannedAt,
+      iamKeysQuery.isLoading,
+      iamKeysQuery.isError,
       inspectorEcrQuery.data?.scannedAt,
       inspectorEcrQuery.isLoading,
       inspectorEcrQuery.isError,
@@ -144,7 +155,8 @@ export function useDashboardSummary() {
 
   const isInitialLoading =
     costsQuery.isLoading &&
-    iamQuery.isLoading &&
+    iamKeysQuery.isLoading &&
+    iamUsersQuery.isLoading &&
     inspectorEcrQuery.isLoading &&
     inspectorEc2Query.isLoading &&
     ec2PortsQuery.isLoading &&
@@ -155,7 +167,8 @@ export function useDashboardSummary() {
     region,
     costRange,
     costsQuery,
-    iamQuery,
+    iamKeysQuery,
+    iamUsersQuery,
     inspectorEcrQuery,
     inspectorEc2Query,
     ec2PortsQuery,
@@ -166,7 +179,7 @@ export function useDashboardSummary() {
     topProjectHint,
     topProjectsChart,
     costCurrency: costsQuery.data?.currency,
-    keysNeedingRotation: iamQuery.data?.accessKeysNeedingRotation ?? 0,
+    keysNeedingRotation: iamKeysQuery.data?.accessKeysNeedingRotation ?? 0,
     criticalHighFindings,
     rdsPublicPorts: rdsPortsQuery.data?.instancesWithPublicPorts ?? 0,
     ec2PublicPorts: ec2PortsQuery.data?.instancesWithPublicPorts ?? 0,
