@@ -7,6 +7,7 @@ import {
   getBadgeClass,
   getIconClass,
   getNavLinkClass,
+  nestedNavGroupStyles,
   navLinkStyles,
 } from '@/components/atoms/NavLink/styles'
 import type { ComponentType } from 'react'
@@ -50,7 +51,7 @@ export default function SidebarNavGroup({
   }
 
   return (
-    <div className="flex flex-col gap-0.5">
+    <div className="flex w-full min-w-0 flex-col gap-0.5">
       <button
         type="button"
         onPointerEnter={prefetchChildren}
@@ -87,7 +88,7 @@ export default function SidebarNavGroup({
 
       <div
         className={clsx(
-          'flex w-full min-w-0 flex-col gap-0.5',
+          nestedNavGroupStyles.childrenWrap,
           expanded ? 'visible' : 'hidden',
         )}
       >

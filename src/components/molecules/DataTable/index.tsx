@@ -62,7 +62,7 @@ export default function DataTable<T extends object>({
           <tr className="border-b border-gray_200 dark:border-gray_750 bg-gray_100 dark:bg-gray_800/35">
             {columns.map((col) => (
               <th
-                key={String(col.key)}
+                key={`${String(col.key)}-${col.label}`}
                 className={`whitespace-nowrap px-4 py-3 font-semibold text-gray_900 dark:text-gray_200 ${col.headerClassName ?? col.className ?? ''}`}
                 style={col.width ? { width: col.width } : undefined}
               >
@@ -81,7 +81,7 @@ export default function DataTable<T extends object>({
                 const value = row[col.key]
                 return (
                   <td
-                    key={String(col.key)}
+                    key={`${String(col.key)}-${col.label}`}
                     className={`px-4 py-3 text-gray_900 dark:text-gray_200 ${col.cellClassName ?? col.className ?? ''}`}
                   >
                     {col.render

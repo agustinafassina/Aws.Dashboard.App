@@ -4,15 +4,18 @@ import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import DashboardSection from '@/components/organism/DashboardSection'
 import CostsView from '@/components/organism/CostsView'
+import CostsAnalyzeView from '@/components/organism/CostsAnalyzeView'
 import IamAccessKeysView from '@/components/organism/IamAccessKeysView'
 import IamUsersView from '@/components/organism/IamUsersView'
 import VulnerabilitiesView from '@/components/organism/VulnerabilitiesView'
+import Ec2ServerDetailContent from '@/components/organism/VulnerabilitiesView/Ec2ServerDetailContent'
 import OpenPortsView from '@/components/organism/OpenPortsView'
 import S3PublicBucketsView from '@/components/organism/S3PublicBucketsView'
 import UntaggedResourcesView from '@/components/organism/UntaggedResourcesView'
 import ResourcesByProjectTagView from '@/components/organism/ResourcesByProjectTagView'
 import { getHomePathSegments } from '@/utils/homePath'
 import {
+  getEc2DetailInstanceId,
   isKnownHomePath,
   resolveHomeView,
   type HomeViewKey,
@@ -21,10 +24,12 @@ import {
 const ALL_VIEW_KEYS: HomeViewKey[] = [
   'dashboard',
   'costs',
+  'costs-analyze',
   'iam-users',
   'iam-access-keys',
   'vuln-docker',
   'vuln-ec2',
+  'vuln-ec2-detail',
   'vuln-rds-ports',
   'vuln-ec2-ports',
   'vuln-s3-public-buckets',
@@ -32,12 +37,20 @@ const ALL_VIEW_KEYS: HomeViewKey[] = [
   'audits-resources-by-project',
 ]
 
-function HomeViewPanel({ viewKey }: { viewKey: HomeViewKey }) {
+function HomeViewPanel({
+  viewKey,
+  segments,
+}: {
+  viewKey: HomeViewKey
+  segments: string[]
+}) {
   switch (viewKey) {
     case 'dashboard':
       return <DashboardSection />
     case 'costs':
       return <CostsView />
+    case 'costs-analyze':
+      return <CostsAnalyzeView />
     case 'iam-users':
       return <IamUsersView />
     case 'iam-access-keys':
@@ -54,10 +67,15 @@ function HomeViewPanel({ viewKey }: { viewKey: HomeViewKey }) {
       return (
         <VulnerabilitiesView
           title="EC2 server vulnerabilities"
-          description="Amazon Inspector findings for EC2 instances."
+          description="Amazon Inspector findings grouped by EC2 instance."
           resourceType="ec2"
         />
       )
+    case 'vuln-ec2-detail': {
+      const instanceId = getEc2DetailInstanceId(segments)
+      if (!instanceId) return null
+      return <Ec2ServerDetailContent instanceId={instanceId} />
+    }
     case 'vuln-rds-ports':
       return (
         <OpenPortsView
@@ -146,7 +164,7 @@ export default function HomeViewsShell() {
           className={viewKey === activeView ? 'contents' : 'hidden'}
           aria-hidden={viewKey !== activeView}
         >
-          <HomeViewPanel viewKey={viewKey} />
+          <HomeViewPanel viewKey={viewKey} segments={segments} />
         </div>
       ))}
     </>

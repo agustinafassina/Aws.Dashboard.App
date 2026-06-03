@@ -18,7 +18,6 @@ import {
 import { useIamAccessKeys } from '@/hooks/useIamAccessKeys'
 import { usePdfReport } from '@/hooks/usePdfReport'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
-import { formatDate, formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 export default function IamAccessKeysView() {
@@ -75,9 +74,6 @@ export default function IamAccessKeysView() {
       <PageHeader
         title="IAM access keys"
         description="Access keys across IAM users, including age, last usage, and rotation recommendations."
-        scannedAt={
-          keysQuery.data ? formatDateTime(keysQuery.data.scannedAt) : undefined
-        }
       />
 
       {keysQuery.isLoading && (

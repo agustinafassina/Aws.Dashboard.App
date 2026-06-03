@@ -16,13 +16,25 @@ export function getNavLinkClass(
   )
 }
 
+export const nestedNavGroupStyles = {
+  childrenWrap:
+    'mt-0.5 flex w-full min-w-0 flex-col gap-0.5 rounded-lg bg-brand_50/70 py-1 dark:bg-gray_850/90',
+} as const
+
 export function getSubNavLinkClass(isActive: boolean, isNavigating: boolean) {
   return cn(
-    'relative flex w-full min-w-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
-    'hover:bg-brand_50/60 dark:hover:bg-gray_800/60',
-    isActive &&
-      'bg-brand_100 text-brand_700 shadow-sm dark:bg-gray_800 dark:text-brand_300',
-    !isActive && 'text-gray_600 dark:text-gray_400',
+    'relative flex w-full min-w-0 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-all duration-150',
+    isActive
+      ? [
+          'bg-brand_100/80 font-semibold text-brand_800',
+          'dark:border-l-2 dark:border-brand_400 dark:bg-brand_500/15 dark:text-brand_100',
+        ]
+      : [
+          'font-medium text-brand_700/85',
+          'hover:bg-brand_100/45 hover:text-brand_800',
+          'dark:border-l-2 dark:border-transparent',
+          'dark:text-gray_400 dark:hover:bg-gray_800/50 dark:hover:text-gray-200',
+        ],
     isNavigating && 'opacity-75',
   )
 }
@@ -31,6 +43,13 @@ export function getIconClass(isActive: boolean) {
   return cn('flex-shrink-0 transition-colors', {
     'text-brand_400 dark:text-brand_300': isActive,
     'text-gray_500': !isActive,
+  })
+}
+
+export function getSubIconClass(isActive: boolean) {
+  return cn('flex-shrink-0 transition-colors', {
+    'text-brand_600 dark:text-brand_300': isActive,
+    'text-brand_500/70 dark:text-gray_500': !isActive,
   })
 }
 

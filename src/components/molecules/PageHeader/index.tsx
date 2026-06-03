@@ -1,13 +1,10 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import LastScanTag from '@/components/atoms/LastScanTag'
-import { useTranslation } from '@/i18n/useTranslation'
 
 interface PageHeaderProps {
   title: string
   description?: string
-  scannedAt?: string
   meta?: ReactNode
   actions?: ReactNode
 }
@@ -15,12 +12,9 @@ interface PageHeaderProps {
 export default function PageHeader({
   title,
   description,
-  scannedAt,
   meta,
   actions,
 }: PageHeaderProps) {
-  const { dictionary } = useTranslation()
-
   return (
     <header className="mb-6">
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
@@ -38,17 +32,11 @@ export default function PageHeader({
           ) : null}
         </div>
 
-        {(scannedAt || actions) && (
-          <div className="flex flex-shrink-0 flex-col items-end gap-2">
-            {scannedAt ? (
-              <LastScanTag
-                label={dictionary.pageHeader.lastScan}
-                value={scannedAt}
-              />
-            ) : null}
-            {actions ? <div className="flex flex-col items-end gap-1">{actions}</div> : null}
+        {actions ? (
+          <div className="flex flex-shrink-0 flex-col items-end gap-1">
+            {actions}
           </div>
-        )}
+        ) : null}
       </div>
     </header>
   )

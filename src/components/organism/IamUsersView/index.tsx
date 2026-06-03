@@ -18,7 +18,7 @@ import { useIamRiskyPolicies } from '@/hooks/useIamRiskyPolicies'
 import { useIamUsersWithoutMfa } from '@/hooks/useIamUsersWithoutMfa'
 import { usePdfReport } from '@/hooks/usePdfReport'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
-import { formatDate, formatDateTime } from '@/utils/formatters'
+import { formatDate } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 export default function IamUsersView() {
@@ -84,24 +84,17 @@ export default function IamUsersView() {
     })
   }, [buildReport, policiesQuery.data])
 
-  const scannedAt = mfaQuery.data?.scannedAt
-    ? formatDateTime(mfaQuery.data.scannedAt)
-    : policiesQuery.data?.scannedAt
-      ? formatDateTime(policiesQuery.data.scannedAt)
-      : undefined
-
   return (
     <div className={pageContentShellMinHeight}>
       <PageHeader
         title="IAM users"
         description="Console users without MFA and customer managed policies with wildcard (*:*) permissions."
-        scannedAt={scannedAt}
       />
 
       {isInitialLoading && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
               <CardSkeleton key={i} />
             ))}
           </div>
@@ -111,20 +104,23 @@ export default function IamUsersView() {
 
       {!isInitialLoading && (
         <>
-          <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {mfaQuery.data && (
               <>
                 <StatCard
+                  compact
                   label="IAM users"
                   value={mfaQuery.data.totalUsers}
-                  icon={<UsersIcon className="h-5 w-5" />}
+                  icon={<UsersIcon className="h-4 w-4" />}
                 />
                 <StatCard
+                  compact
                   label="Console users"
                   value={mfaQuery.data.usersWithConsoleAccess}
                   icon={<UserIcon />}
                 />
                 <StatCard
+                  compact
                   label="Without MFA"
                   value={mfaQuery.data.usersWithoutMfa}
                   variant={
@@ -137,13 +133,14 @@ export default function IamUsersView() {
             )}
             {policiesQuery.data && (
               <StatCard
+                compact
                 label="Risky policies (*:*)"
                 value={policiesQuery.data.riskyPolicyCount}
                 variant={
                   policiesQuery.data.riskyPolicyCount > 0 ? 'warning' : 'success'
                 }
                 hint={`${policiesQuery.data.totalCustomerPoliciesScanned} customer policies scanned`}
-                icon={<SecurityIcon className="h-5 w-5" />}
+                icon={<SecurityIcon className="h-4 w-4" />}
               />
             )}
           </div>

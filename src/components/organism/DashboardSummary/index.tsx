@@ -20,17 +20,16 @@ import SpendIcon from '@/components/atoms/Icons/SpendIcon'
 import LoadingSpinner from '@/components/atoms/LoadingSpinner'
 import { CardSkeleton, BarChartSkeleton } from '@/components/atoms/Skeleton'
 import StatCard from '@/components/molecules/StatCard'
-import {
-  dashboardScanHref,
-  dashboardSectionHref,
-  DASHBOARD_SECTION_LINKS,
-} from '@/config/dashboardLinks'
+import { dashboardSectionHref, DASHBOARD_SECTION_LINKS } from '@/config/dashboardLinks'
 import { useAwsRegion } from '@/context/RegionContext'
 import { useDashboardSummary } from '@/hooks/useDashboardSummary'
 import { useCostDateRange } from '@/hooks/useCostDateRange'
-import type { DashboardScanModuleKey } from '@/i18n/types'
 import { useTranslation } from '@/i18n/useTranslation'
-import { formatCurrency, formatDateTime } from '@/utils/formatters'
+import { formatCurrency } from '@/utils/formatters'
+import {
+  getInspectorLoadedCount,
+  isInspectorResultCapped,
+} from '@/utils/inspectorDisplay'
 import { dashboardSummaryStyles } from './styles'
 
 function KpiLink({
@@ -80,7 +79,6 @@ export default function DashboardSummary() {
     rdsPublicPorts,
     ec2PublicPorts,
     s3PublicBuckets,
-    scans,
     isInitialLoading,
     isRegionalFetching,
     isAnyFetching,
@@ -89,8 +87,17 @@ export default function DashboardSummary() {
   const costsBusy = isQueryBusy(costsQuery)
   const findingsBusy =
     isQueryBusy(inspectorEcrQuery) || isQueryBusy(inspectorEc2Query)
-
-  const moduleLabel = (key: DashboardScanModuleKey) => d.modules[key]
+  const inspectorCapped =
+    isInspectorResultCapped(inspectorEcrQuery.data) ||
+    isInspectorResultCapped(inspectorEc2Query.data)
+  const inspectorCappedCount = Math.max(
+    inspectorEcrQuery.data?.hasMoreFindings
+      ? getInspectorLoadedCount(inspectorEcrQuery.data)
+      : 0,
+    inspectorEc2Query.data?.hasMoreFindings
+      ? getInspectorLoadedCount(inspectorEc2Query.data)
+      : 0,
+  )
 
   if (isInitialLoading) {
     return (
@@ -195,7 +202,13 @@ export default function DashboardSummary() {
             variant={
               !findingsBusy && criticalHighFindings > 0 ? 'warning' : 'default'
             }
-            hint={format(d.findingsHint, { region })}
+            hint={
+              inspectorCapped
+                ? format(d.findingsCappedHint, {
+                    count: String(inspectorCappedCount),
+                  })
+                : format(d.findingsHint, { region })
+            }
             icon={<ShieldIcon className="h-5 w-5" />}
           />
         </KpiLink>
@@ -308,71 +321,6 @@ export default function DashboardSummary() {
 
       {(costsBusy || (isRegionalFetching && topProjectsChart.length === 0)) &&
         topProjectsChart.length === 0 && <BarChartSkeleton />}
-
-      <section className={dashboardSummaryStyles.scanSection}>
-        <h3 className={dashboardSummaryStyles.scanTitle}>{d.lastScanTitle}</h3>
-        <table className={dashboardSummaryStyles.scanTable}>
-          <thead>
-            <tr className={dashboardSummaryStyles.scanRow}>
-              <th
-                className={`${dashboardSummaryStyles.scanCellMuted} text-left font-semibold`}
-              >
-                {d.lastScanModule}
-              </th>
-              <th
-                className={`${dashboardSummaryStyles.scanCellMuted} text-right font-semibold`}
-              >
-                {d.lastScanAt}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {scans.map((scan) => (
-              <tr key={scan.key} className={dashboardSummaryStyles.scanRow}>
-                <td className={dashboardSummaryStyles.scanCell}>
-                  {moduleLabel(scan.key)}
-                </td>
-                <td className={`${dashboardSummaryStyles.scanCell} text-right`}>
-                  <div className="flex flex-wrap items-center justify-end gap-3">
-                    {scan.isLoading ? (
-                      <LoadingSpinner size="sm" label={d.loading} />
-                    ) : scan.isError ? (
-                      <span className="text-xs text-red_900 dark:text-red_200">
-                        {d.loadError}
-                      </span>
-                    ) : scan.scannedAt ? (
-                      <span className="text-xs font-mono text-gray_800 dark:text-gray_200">
-                        {formatDateTime(scan.scannedAt)}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-gray_600 dark:text-gray_400">
-                        {d.noScan}
-                      </span>
-                    )}
-                    <Link
-                      href={dashboardScanHref(scan.key, {
-                        region: urlRegion,
-                        ...(scan.key === 'costs'
-                          ? {
-                              from: appliedRange.startDate,
-                              to: appliedRange.endDate,
-                            }
-                          : scan.key === 'inspectorEcr' ||
-                              scan.key === 'inspectorEc2'
-                            ? { severity: 'CRITICAL,HIGH' }
-                            : {}),
-                      })}
-                      className={dashboardSummaryStyles.scanLink}
-                    >
-                      {d.viewSection}
-                    </Link>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
     </>
   )
 }

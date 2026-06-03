@@ -26,7 +26,7 @@ import type { Column } from '@/interfaces/common'
 import type { ProjectCost } from '@/interfaces/aws-api'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
-import { formatCurrency, formatDate, formatDateTime } from '@/utils/formatters'
+import { formatCurrency, formatDate } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 const projectColumns: Column<ProjectCost>[] = [
@@ -123,7 +123,6 @@ export default function CostsView() {
       <PageHeader
         title="Costs"
         description="AWS spend grouped by project tag for the selected date range."
-        scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
         meta={
           data && !dateRangeInvalid ? (
             <>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { isNavItemActive } from '@/utils/nav'
@@ -10,6 +10,7 @@ import {
   getCollapsedBadgeClass,
   getIconClass,
   getNavLinkClass,
+  getSubIconClass,
   getSubNavLinkClass,
   navLinkStyles,
 } from './styles'
@@ -34,17 +35,7 @@ export default function NavLink({
   const pathname = usePathname()
   const router = useRouter()
   const normalizedHref = href.split('?')[0]
-  const [optimisticHref, setOptimisticHref] = useState<string | null>(null)
-
-  const isActive =
-    isNavItemActive(pathname, normalizedHref) ||
-    optimisticHref === normalizedHref
-
-  useEffect(() => {
-    if (isNavItemActive(pathname, normalizedHref)) {
-      setOptimisticHref(null)
-    }
-  }, [pathname, normalizedHref])
+  const isActive = isNavItemActive(pathname, normalizedHref)
 
   const prefetchRoute = () => {
     router.prefetch(href)
@@ -57,21 +48,20 @@ export default function NavLink({
       scroll={false}
       onPointerEnter={prefetchRoute}
       onFocus={prefetchRoute}
-      onPointerDown={() => {
-        if (!isNavItemActive(pathname, normalizedHref)) {
-          setOptimisticHref(normalizedHref)
-        }
-      }}
       title={collapsed ? name : undefined}
       className={
         nested
           ? getSubNavLinkClass(isActive, false)
           : getNavLinkClass(collapsed, isActive, false)
       }
-      aria-current={isNavItemActive(pathname, normalizedHref) ? 'page' : undefined}
+      aria-current={isActive ? 'page' : undefined}
       aria-label={collapsed ? name : undefined}
     >
-      {icon && <span className={getIconClass(isActive)}>{icon}</span>}
+      {icon && (
+        <span className={nested ? getSubIconClass(isActive) : getIconClass(isActive)}>
+          {icon}
+        </span>
+      )}
       {!collapsed && <span className={navLinkStyles.label}>{name}</span>}
       {!collapsed && badge !== undefined && (
         <span className={getBadgeClass(isActive)}>{badge}</span>
