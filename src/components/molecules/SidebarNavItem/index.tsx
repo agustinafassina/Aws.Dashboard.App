@@ -108,7 +108,7 @@ export default function SidebarNavItem({
             'flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-semibold',
             isActive
               ? 'bg-white/25 text-white dark:bg-brand_600/30 dark:text-brand_200'
-              : 'bg-gray_200 text-gray_700 dark:bg-gray_750 dark:text-gray_300',
+              : 'bg-brand_100 text-brand_700 dark:bg-brand_900/60 dark:text-brand_200',
           )}
         >
           {badge}

@@ -147,6 +147,7 @@ export default function DashboardSummary() {
                   : d.noSpendInRange
             }
             icon={<SpendIcon className="h-5 w-5" />}
+            iconTone={0}
           />
         </KpiLink>
 
@@ -163,6 +164,7 @@ export default function DashboardSummary() {
                 : topProjectHint
             }
             icon={<TopProjectIcon className="h-5 w-5" />}
+            iconTone={1}
           />
         </KpiLink>
 
@@ -184,6 +186,7 @@ export default function DashboardSummary() {
             }
             hint={iamKeysQuery.isError ? d.loadError : undefined}
             icon={<AccessKeyIcon className="h-5 w-5" />}
+            iconTone={2}
           />
         </KpiLink>
 
@@ -210,6 +213,7 @@ export default function DashboardSummary() {
                 : format(d.findingsHint, { region })
             }
             icon={<ShieldIcon className="h-5 w-5" />}
+            iconTone={3}
           />
         </KpiLink>
 
@@ -231,6 +235,7 @@ export default function DashboardSummary() {
             }
             hint={format(d.instancesHint, { region })}
             icon={<DatabaseIcon className="h-5 w-5" />}
+            iconTone={4}
           />
         </KpiLink>
 
@@ -252,6 +257,7 @@ export default function DashboardSummary() {
             }
             hint={format(d.instancesHint, { region })}
             icon={<ServerIcon className="h-5 w-5" />}
+            iconTone={5}
           />
         </KpiLink>
 
@@ -272,6 +278,7 @@ export default function DashboardSummary() {
             }
             hint={format(d.instancesHint, { region })}
             icon={<BucketIcon className="h-5 w-5" />}
+            iconTone={6}
           />
         </KpiLink>
       </div>

@@ -61,13 +61,13 @@ export function getBadgeClass(isActive: boolean) {
   return cn(
     'flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-semibold',
     isActive
-      ? 'bg-brand_200/20 text-brand_700 dark:bg-brand_900/30 dark:text-brand_300'
-      : 'bg-gray_200 text-gray_600 dark:bg-gray_700 dark:text-gray_400',
+      ? 'bg-brand_200 text-brand_800 dark:bg-brand_700/50 dark:text-brand_100'
+      : 'bg-brand_100 text-brand_700 dark:bg-brand_900/60 dark:text-brand_200',
   )
 }
 
 export function getCollapsedBadgeClass() {
-  return 'absolute right-1 top-1 h-2 w-2 rounded-full bg-brand_400 dark:bg-brand_300'
+  return 'absolute right-1 top-1 h-2 w-2 rounded-full bg-brand_500 dark:bg-brand_400'
 }
 
 export function getActiveIndicatorClass(collapsed: boolean) {

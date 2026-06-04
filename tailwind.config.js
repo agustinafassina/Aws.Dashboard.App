@@ -58,27 +58,28 @@ const config = {
         gray_850: '#172033',
         gray_900: '#0F172A',
 
-        // Accent (lilac / violet)
-        blue_50: '#F6EDF9',
-        blue_100: '#EBD9F2',
-        blue_200: '#A871BC33',
-        blue_300: '#8B4EA533',
-        blue_400: '#B985C8',
-        blue_500: '#A871BC',
-        blue_600: '#8B4EA5',
-        blue_700: '#6F3D86',
+        // Accent (lilac — aligned with brand scale)
+        blue_50: '#F4EEF7',
+        blue_100: '#E1CEE8',
+        blue_200: '#CEAFD9',
+        blue_300: '#BB90CB',
+        blue_400: '#A871BC',
+        blue_500: '#9552AD',
+        blue_600: '#7F4694',
+        blue_700: '#5F346F',
 
         // Brand (lilac / plum)
-        brand_50: '#F7F0FA',
-        brand_100: '#EEDFF4',
-        brand_200: '#DABDE7',
-        brand_300: '#C498D8',
+        brand_50: '#F4EEF7',
+        brand_100: '#E1CEE8',
+        brand_200: '#CEAFD9',
+        brand_300: '#BB90CB',
         brand_400: '#A871BC',
-        brand_500: '#8B4EA5',
-        brand_600: '#744188',
+        brand_500: '#9552AD',
+        brand_600: '#7F4694',
         brand_700: '#5F346F',
-        brand_800: '#4B2859',
-        brand_900: '#3A1F45',
+        brand_800: '#452650',
+        brand_900: '#2A1731',
+        brand_950: '#0F0811',
 
         // oranges
         orange_300: '#FDBA742E',
@@ -91,13 +92,13 @@ const config = {
         red_300: '#FCA5A54D',
         red_900: '#7F1D1D',
 
-        // Warning (lilac accent — KPI highlights, light theme)
-        warning_50: '#F6EFFA',
-        warning_100: '#EDDFF6',
-        warning_200: '#DABDE7',
+        // Warning (lilac accent — KPI highlights)
+        warning_50: '#F4EEF7',
+        warning_100: '#E1CEE8',
+        warning_200: '#CEAFD9',
         warning_700: '#5F346F',
         warning_800: '#452650',
-        warning_900: '#452650',
+        warning_900: '#2A1731',
 
         // Success
         success_50: '#DCFCE7',
@@ -110,7 +111,7 @@ const config = {
         white: '#FFFFFF',
       },
       backgroundImage: {
-        linearGradientBlue: 'linear-gradient(135deg, #A871BC, #5F346F)',
+        linearGradientBlue: 'linear-gradient(135deg, #A871BC, #9552AD, #5F346F)',
       },
       fontSize: {
         'cp-xl': '22px',
@@ -126,7 +127,7 @@ const config = {
           '--gray_800': theme('colors.gray_800'),
 
           // Blues
-          '--blue_300': '#D5B3E2',
+          '--blue_300': '#BB90CB',
           '--blue_400': theme('colors.blue_400'),
           '--blue_500': theme('colors.blue_500'),
 

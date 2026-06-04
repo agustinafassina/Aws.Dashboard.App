@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import LoadingSpinner from '@/components/atoms/LoadingSpinner'
 import { cn } from '@/styles/cn'
+import { getStatCardIconToneClass } from '@/styles/statCardTones'
 
 interface StatCardProps {
   label: string
@@ -8,6 +9,7 @@ interface StatCardProps {
   hint?: string
   variant?: 'default' | 'warning' | 'success'
   icon?: ReactNode
+  iconTone?: number
   className?: string
   equalHeight?: boolean
   compact?: boolean
@@ -30,6 +32,7 @@ export default function StatCard({
   hint,
   variant = 'default',
   icon,
+  iconTone = 0,
   className,
   equalHeight = false,
   compact = false,
@@ -55,8 +58,10 @@ export default function StatCard({
             'absolute flex items-center justify-center rounded-lg',
             compact ? 'right-2.5 top-2.5 h-7 w-7' : 'right-4 top-4 h-9 w-9',
             variant === 'warning'
-              ? 'bg-warning_100 text-warning_700 dark:bg-brand_500/20 dark:text-brand_300'
-              : 'bg-brand_50 text-brand_500 dark:bg-gray_800 dark:text-brand_300',
+              ? 'bg-brand_100 text-brand_700 dark:bg-brand_600/30 dark:text-brand_100'
+              : variant === 'success'
+                ? 'bg-success_50 text-success_700 dark:bg-success_100/15 dark:text-success_500'
+                : getStatCardIconToneClass(iconTone),
           )}
           aria-hidden
         >

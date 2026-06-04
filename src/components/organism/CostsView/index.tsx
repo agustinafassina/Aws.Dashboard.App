@@ -198,18 +198,21 @@ export default function CostsView() {
               label="Total spend"
               value={formatCurrency(data.totalAmount, data.currency)}
               icon={<SpendIcon className="h-5 w-5" />}
+              iconTone={0}
             />
             <StatCard
               label="Projects"
               value={data.projects.length}
               hint="With cost in the selected range"
               icon={<ProjectsIcon className="h-5 w-5" />}
+              iconTone={1}
             />
             <StatCard
               label={topProjectStat.label}
               value={topProjectStat.value}
               hint={topProjectStat.hint}
               icon={<TopProjectIcon className="h-5 w-5" />}
+              iconTone={2}
             />
           </div>
 

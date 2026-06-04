@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 
 interface PageHeaderProps {
   title: string
-  description?: string
+  description?: ReactNode
   meta?: ReactNode
   actions?: ReactNode
 }
@@ -22,11 +22,11 @@ export default function PageHeader({
           <h1 className="text-2xl font-bold text-gray_900 dark:text-gray_100">
             {title}
           </h1>
-          {description && (
-            <p className="mt-1 text-sm text-gray_700 dark:text-gray_400">
+          {description ? (
+            <div className="mt-1 text-sm text-gray_700 dark:text-gray_400">
               {description}
-            </p>
-          )}
+            </div>
+          ) : null}
           {meta ? (
             <p className="mt-1 text-xs text-gray_700 dark:text-gray_500">{meta}</p>
           ) : null}
