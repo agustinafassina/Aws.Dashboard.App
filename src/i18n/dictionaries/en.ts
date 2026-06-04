@@ -17,6 +17,13 @@ const en: TranslationDictionary = {
       LOW: 'Low',
     },
   },
+  inspector: {
+    resultsCapped:
+      'Showing the first {{count}} findings; Inspector may have more in this region.',
+    totalFindingsHint: 'Loaded in this scan',
+    totalFindingsCappedHint:
+      'Only the first {{count}} are loaded (API limit); the total in AWS can be higher.',
+  },
   sections: {
     dashboard: 'Dashboard',
     costs: 'Costs',
@@ -27,6 +34,12 @@ const en: TranslationDictionary = {
   },
   pageHeader: {
     lastScan: 'Last scan',
+  },
+  costsAnalyze: {
+    title: 'Analyze costs',
+    description:
+      'Tools to explore spend trends, compare periods, and detect AWS cost anomalies.',
+    comingSoon: 'This section will be available soon.',
   },
   dashboardSummary: {
     regionHint: 'Regional scans use {{region}}',
@@ -39,6 +52,8 @@ const en: TranslationDictionary = {
     keysRotation: 'Keys need rotation',
     criticalHighFindings: 'Critical / high findings',
     findingsHint: 'ECR + EC2 · {{region}}',
+    findingsCappedHint:
+      'ECR + EC2 · at least {{count}} loaded (Inspector may have more)',
     rdsPublicPorts: 'RDS public exposure',
     ec2PublicPorts: 'EC2 public exposure',
     s3PublicBuckets: 'Public S3 buckets',
@@ -95,6 +110,9 @@ const en: TranslationDictionary = {
     collapseMenu: 'Collapse menu',
     version: 'Version',
     items: {
+      costs: 'Costs',
+      costsOverview: 'Costs',
+      costsAnalyze: 'Analyze costs',
       iam: 'IAM',
       iamUsers: 'Users',
       iamAccessKeys: 'Access keys',
@@ -114,7 +132,20 @@ const en: TranslationDictionary = {
     untaggedResources: {
       title: 'Untagged resources',
       description:
-        'EC2, RDS, and S3 in the selected region missing the project tag used for cost allocation.',
+        'Resources in the selected region missing the project tag used for cost allocation, including EC2, RDS, S3, Lambda, and the services below.',
+      services: [
+        { name: 'EC2', detail: 'Instances' },
+        { name: 'RDS', detail: 'Databases' },
+        { name: 'S3', detail: 'Buckets in the region' },
+        { name: 'Lambda', detail: 'Functions' },
+        { name: 'SES', detail: 'Email identities' },
+        { name: 'DynamoDB', detail: 'Tables' },
+        { name: 'SQS', detail: 'Queues' },
+        { name: 'SNS', detail: 'Topics' },
+        { name: 'WAF', detail: 'Regional Web ACLs (WAFv2)' },
+        { name: 'CloudWatch', detail: 'Metric and composite alarms' },
+        { name: 'CloudWatch Logs', detail: 'Log groups' },
+      ],
       requiredTagLabel: 'Required tag',
       regionLabel: 'Region',
       tableTitle: 'Untagged resources',

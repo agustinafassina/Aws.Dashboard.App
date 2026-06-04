@@ -17,7 +17,6 @@ import type { Column } from '@/interfaces/common'
 import type { TaggedResource } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 export default function ResourcesByProjectTagView() {
@@ -113,7 +112,6 @@ export default function ResourcesByProjectTagView() {
       <PageHeader
         title={t.title}
         description={t.description}
-        scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
         meta={
           data ? (
             <>
@@ -182,6 +180,7 @@ export default function ResourcesByProjectTagView() {
               label={t.stats.scanned}
               value={data.totalResourcesScanned}
               icon={<ServerIcon className="h-5 w-5" />}
+              iconTone={0}
             />
             <StatCard
               isLoading={isBusy}
@@ -191,6 +190,7 @@ export default function ResourcesByProjectTagView() {
               variant={!isBusy && data.matchingResourcesCount > 0 ? 'success' : 'default'}
               hint={t.stats.matchingHint}
               icon={<ProjectsIcon className="h-5 w-5" />}
+              iconTone={1}
             />
             <StatCard
               isLoading={isBusy}

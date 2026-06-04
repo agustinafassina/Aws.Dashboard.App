@@ -7,15 +7,15 @@ export function severityBadge(severity: string) {
   const normalized = severity.toUpperCase()
   const styles: Record<string, string> = {
     CRITICAL:
-      'bg-red_50 text-red_900 dark:bg-red_50/20 dark:text-red_200',
+      'bg-brand_900 text-brand_100 dark:bg-brand_800 dark:text-brand_100',
     HIGH:
-      'bg-orange_300/50 text-gray_900 dark:bg-orange_300/20 dark:text-orange',
+      'bg-brand_700 text-brand_50 dark:bg-brand_700/50 dark:text-brand_100',
     MEDIUM:
-      'bg-orange_300/35 text-gray_900 dark:bg-orange_300/20 dark:text-orange',
+      'bg-brand_400 text-white dark:bg-brand_500/45 dark:text-brand_50',
     LOW:
-      'bg-brand_100 text-brand_700 dark:bg-blue_200/30 dark:text-brand_300',
+      'bg-brand_200 text-brand_800 dark:bg-brand_600/35 dark:text-brand_100',
     INFORMATIONAL:
-      'bg-gray_200 text-gray_800 dark:bg-gray_700 dark:text-gray_300',
+      'bg-brand_100 text-brand_700 dark:bg-brand_900/50 dark:text-brand_200',
   }
   const className =
     styles[normalized] ??

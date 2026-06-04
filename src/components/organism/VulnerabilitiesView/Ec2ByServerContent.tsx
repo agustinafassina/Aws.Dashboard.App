@@ -1,7 +1,8 @@
 'use client'
 
 import { useCallback, useMemo } from 'react'
-import DockerIcon from '@/components/atoms/Icons/DockerIcon'
+import Link from 'next/link'
+import ServerIcon from '@/components/atoms/Icons/ServerIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import { CardSkeleton } from '@/components/atoms/Skeleton'
 import ErrorState from '@/components/molecules/ErrorState'
@@ -9,38 +10,31 @@ import PageHeader from '@/components/molecules/PageHeader'
 import SeverityFilterSelect from '@/components/molecules/SeverityFilterSelect'
 import TableSection from '@/components/molecules/TableSection'
 import StatCard from '@/components/molecules/StatCard'
+import { ec2ServerDetailHref } from '@/config/vulnerabilityLinks'
 import { useAwsRegion } from '@/context/RegionContext'
 import { usePdfReport } from '@/hooks/usePdfReport'
 import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities'
 import { useSeverityFilter } from '@/hooks/useSeverityFilter'
 import { useTranslation } from '@/i18n/useTranslation'
 import type { Column } from '@/interfaces/common'
-import type { InspectorFinding } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { formatDate } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 import {
-  groupFindingsByRepository,
-  type EcrRepositoryGroup,
-} from '@/utils/ecrVulnerabilities'
+  groupFindingsByInstance,
+  type Ec2InstanceGroup,
+} from '@/utils/ec2Vulnerabilities'
 import {
   formatInspectorTotalDisplay,
   getInspectorLoadedCount,
 } from '@/utils/inspectorDisplay'
-import { inspectorFindingColumns, severityBadge } from './inspectorUi'
+import { severityBadge } from './inspectorUi'
 
-const repositoryColumns: Column<EcrRepositoryGroup>[] = [
+const instanceColumns: Column<Ec2InstanceGroup>[] = [
   {
-    key: 'repositoryName',
-    label: 'Repository',
+    key: 'instanceId',
+    label: 'Instance',
     cellClassName: 'max-w-[14rem] truncate whitespace-nowrap font-mono text-xs',
-  },
-  {
-    key: 'imageCount',
-    label: 'Image count',
-    cellClassName: 'whitespace-nowrap',
-    render: (value) => String(value),
   },
   {
     key: 'totalFindings',
@@ -66,17 +60,44 @@ const repositoryColumns: Column<EcrRepositoryGroup>[] = [
     cellClassName: 'whitespace-nowrap',
     render: (value) => severityBadge(String(value)),
   },
+  {
+    key: 'instanceId',
+    label: 'View',
+    cellClassName: 'whitespace-nowrap text-right',
+    headerClassName: 'text-right',
+    render: (_value, row) => (
+      <ViewInstanceLink instanceId={row.instanceId} />
+    ),
+  },
 ]
 
-interface EcrByRepositoryContentProps {
+function ViewInstanceLink({ instanceId }: { instanceId: string }) {
+  const { region } = useAwsRegion()
+  const { severity } = useSeverityFilter()
+  const href = ec2ServerDetailHref(instanceId, {
+    region,
+    ...(severity ? { severity } : {}),
+  })
+
+  return (
+    <Link
+      href={href}
+      className="text-xs font-semibold text-brand_600 hover:text-brand_700 dark:text-brand_300 dark:hover:text-brand_200"
+    >
+      View
+    </Link>
+  )
+}
+
+interface Ec2ByServerContentProps {
   title: string
   description: string
 }
 
-export default function EcrByRepositoryContent({
+export default function Ec2ByServerContent({
   title,
   description,
-}: EcrByRepositoryContentProps) {
+}: Ec2ByServerContentProps) {
   const { region } = useAwsRegion()
   const { buildReport } = usePdfReport()
   const { apiSeverity } = useSeverityFilter()
@@ -85,12 +106,12 @@ export default function EcrByRepositoryContent({
 
   const { data, isLoading, isError, error, refetch } = useInspectorVulnerabilities({
     region,
-    resourceType: 'ecr',
+    resourceType: 'ec2',
     severity: apiSeverity,
   })
 
-  const repositoryGroups = useMemo(
-    () => groupFindingsByRepository(data?.findings ?? []),
+  const instanceGroups = useMemo(
+    () => groupFindingsByInstance(data?.findings ?? []),
     [data?.findings],
   )
 
@@ -104,69 +125,29 @@ export default function EcrByRepositoryContent({
   }, [data?.findings])
 
   const handleExportPdf = useCallback(() => {
-    if (!repositoryGroups.length) return
+    if (!instanceGroups.length) return
 
     exportTableToPdf({
-      filename: `inspector-ecr-repos-${data?.region ?? region}`,
+      filename: `inspector-ec2-instances-${data?.region ?? region}`,
       title,
       subtitle: `Region: ${data?.region ?? region}`,
       report: buildReport({
         region: data?.region ?? region,
         scannedAt: data?.scannedAt,
         executiveSummary: [
-          `${data ? formatInspectorTotalDisplay(data) : 0} finding(s) across ${repositoryGroups.length} ECR repositor${repositoryGroups.length === 1 ? 'y' : 'ies'}; ${highCriticalCount} Critical or High.`,
+          `${data ? formatInspectorTotalDisplay(data) : 0} finding(s) across ${instanceGroups.length} EC2 instance(s); ${highCriticalCount} Critical or High.`,
         ],
       }),
       columns: [
-        { header: 'Repository', value: (row) => row.repositoryName },
-        { header: 'Image count', value: (row) => String(row.imageCount) },
+        { header: 'Instance', value: (row) => row.instanceId },
         { header: 'Findings', value: (row) => String(row.totalFindings) },
         { header: 'Critical', value: (row) => String(row.criticalCount) },
         { header: 'High', value: (row) => String(row.highCount) },
         { header: 'Worst severity', value: (row) => row.worstSeverity },
       ],
-      rows: repositoryGroups,
+      rows: instanceGroups,
     })
-  }, [buildReport, data, highCriticalCount, region, repositoryGroups, title])
-
-  const handleExportRepositoryFindingsPdf = useCallback(
-    (group: EcrRepositoryGroup) => {
-      if (!group.findings.length) return
-
-      exportTableToPdf({
-        filename: `inspector-ecr-${group.repositoryName}-${data?.region ?? region}`,
-        title: `${title} — ${group.repositoryName}`,
-        subtitle: `Region: ${data?.region ?? region}`,
-        report: buildReport({
-          region: data?.region ?? region,
-          scannedAt: data?.scannedAt,
-          executiveSummary: [
-            `Repository ${group.repositoryName}: ${group.totalFindings} finding(s) (${group.criticalCount} Critical, ${group.highCount} High).`,
-          ],
-        }),
-        columns: [
-          { header: 'Severity', value: (row) => row.severity },
-          { header: 'Title', value: (row) => row.title },
-          { header: 'Status', value: (row) => row.status },
-          {
-            header: 'CVE / ID',
-            value: (row) => row.vulnerabilityId ?? '—',
-          },
-          {
-            header: 'Last observed',
-            value: (row) =>
-              row.lastObservedAt ? formatDate(row.lastObservedAt) : '—',
-          },
-          {
-            header: 'Recommendation',
-            value: (row) => row.recommendation ?? '—',
-          },
-        ],
-        rows: group.findings,
-      })
-    },
-    [buildReport, data, region, title],
-  )
+  }, [buildReport, data, highCriticalCount, instanceGroups, region, title])
 
   return (
     <div className={pageContentShellMinHeight}>
@@ -211,9 +192,9 @@ export default function EcrByRepositoryContent({
         <>
           <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <StatCard
-              label="Repositories"
-              value={repositoryGroups.length}
-              icon={<DockerIcon className="h-5 w-5" />}
+              label="Instances"
+              value={instanceGroups.length}
+              icon={<ServerIcon className="h-5 w-5" />}
               iconTone={0}
             />
             <StatCard
@@ -234,34 +215,20 @@ export default function EcrByRepositoryContent({
                     })
                   : ins.totalFindingsHint
               }
-              icon={<DockerIcon className="h-5 w-5" />}
+              icon={<ServerIcon className="h-5 w-5" />}
               iconTone={2}
             />
           </div>
 
           <TableSection
-            title="Repositories"
+            title="Instances"
             onExportPdf={handleExportPdf}
-            exportDisabled={repositoryGroups.length === 0}
-            columns={repositoryColumns}
-            data={repositoryGroups}
-            emptyMessage="No vulnerabilities found for ECR repositories in this region."
-            getRowKey={(row) => row.repositoryName}
+            exportDisabled={instanceGroups.length === 0}
+            columns={instanceColumns}
+            data={instanceGroups}
+            emptyMessage="No vulnerabilities found for EC2 instances in this region."
+            getRowKey={(row) => row.instanceId}
           />
-
-          {repositoryGroups.map((group) => (
-            <div key={group.repositoryName}>
-              <TableSection
-                title={`${group.repositoryName} (${group.totalFindings})`}
-                onExportPdf={() => handleExportRepositoryFindingsPdf(group)}
-                exportDisabled={group.findings.length === 0}
-                columns={inspectorFindingColumns}
-                data={group.findings}
-                emptyMessage="No findings for this repository."
-                getRowKey={(row: InspectorFinding) => row.findingArn}
-              />
-            </div>
-          ))}
         </>
       )}
     </div>

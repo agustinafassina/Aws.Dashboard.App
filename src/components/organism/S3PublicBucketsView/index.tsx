@@ -15,7 +15,7 @@ import type { Column } from '@/interfaces/common'
 import type { S3PublicBucket } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { formatDate, formatDateTime } from '@/utils/formatters'
+import { formatDate } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 const columns: Column<S3PublicBucket>[] = [
@@ -107,7 +107,6 @@ export default function S3PublicBucketsView({
       <PageHeader
         title={title}
         description={description}
-        scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
       />
 
       {isLoading && (
@@ -141,6 +140,7 @@ export default function S3PublicBucketsView({
               label="Total buckets"
               value={data.totalBucketsInRegion}
               icon={<BucketIcon className="h-5 w-5" />}
+              iconTone={0}
             />
             <StatCard
               label="Public buckets"
@@ -148,6 +148,7 @@ export default function S3PublicBucketsView({
               variant={data.publicBucketsCount > 0 ? 'warning' : 'success'}
               hint="Buckets with public policy, ACL, or Block Public Access gaps"
               icon={<ShieldIcon className="h-5 w-5" />}
+              iconTone={1}
             />
             <StatCard label="Region" value={data.region} />
           </div>

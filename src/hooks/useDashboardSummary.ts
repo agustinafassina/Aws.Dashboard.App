@@ -70,36 +70,6 @@ export function useDashboardSummary() {
     countHighCriticalFindings(inspectorEcrQuery.data?.findings) +
     countHighCriticalFindings(inspectorEc2Query.data?.findings)
 
-  const latestScannedAt = useMemo(() => {
-    let latest: Date | null = null
-    const candidates = [
-      costsQuery.data?.scannedAt,
-      iamUsersQuery.data?.scannedAt,
-      iamKeysQuery.data?.scannedAt,
-      inspectorEcrQuery.data?.scannedAt,
-      inspectorEc2Query.data?.scannedAt,
-      ec2PortsQuery.data?.scannedAt,
-      rdsPortsQuery.data?.scannedAt,
-      s3Query.data?.scannedAt,
-    ]
-    for (const scannedAt of candidates) {
-      if (!scannedAt) continue
-      const parsed = new Date(scannedAt)
-      if (Number.isNaN(parsed.getTime())) continue
-      if (!latest || parsed > latest) latest = parsed
-    }
-    return latest?.toISOString() ?? null
-  }, [
-    costsQuery.data?.scannedAt,
-    iamUsersQuery.data?.scannedAt,
-    iamKeysQuery.data?.scannedAt,
-    inspectorEcrQuery.data?.scannedAt,
-    inspectorEc2Query.data?.scannedAt,
-    ec2PortsQuery.data?.scannedAt,
-    rdsPortsQuery.data?.scannedAt,
-    s3Query.data?.scannedAt,
-  ])
-
   const scans: DashboardScanEntry[] = useMemo(
     () => [
       {
@@ -240,7 +210,6 @@ export function useDashboardSummary() {
     ec2PublicPorts: ec2PortsQuery.data?.instancesWithPublicPorts ?? 0,
     s3PublicBuckets: s3Query.data?.publicBucketsCount ?? 0,
     scans,
-    latestScannedAt,
     isInitialLoading,
     isRegionalFetching,
     isAnyFetching,

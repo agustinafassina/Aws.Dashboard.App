@@ -112,12 +112,14 @@ export default function IamUsersView() {
                   label="IAM users"
                   value={mfaQuery.data.totalUsers}
                   icon={<UsersIcon className="h-4 w-4" />}
+                  iconTone={0}
                 />
                 <StatCard
                   compact
                   label="Console users"
                   value={mfaQuery.data.usersWithConsoleAccess}
                   icon={<UserIcon />}
+                  iconTone={1}
                 />
                 <StatCard
                   compact
@@ -128,6 +130,7 @@ export default function IamUsersView() {
                   }
                   hint="Password sign-in enabled, no MFA device"
                   icon={<UserIcon />}
+                  iconTone={2}
                 />
               </>
             )}
@@ -141,6 +144,7 @@ export default function IamUsersView() {
                 }
                 hint={`${policiesQuery.data.totalCustomerPoliciesScanned} customer policies scanned`}
                 icon={<SecurityIcon className="h-4 w-4" />}
+                iconTone={3}
               />
             )}
           </div>

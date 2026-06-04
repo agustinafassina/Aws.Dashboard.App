@@ -17,6 +17,13 @@ const es: TranslationDictionary = {
       LOW: 'Baja',
     },
   },
+  inspector: {
+    resultsCapped:
+      'Se muestran los primeros {{count}} findings; Inspector puede tener más en esta región.',
+    totalFindingsHint: 'Cargados en este escaneo',
+    totalFindingsCappedHint:
+      'Solo se cargan los primeros {{count}} (límite de la API); en AWS puede haber más.',
+  },
   sections: {
     dashboard: 'Dashboard',
     costs: 'Costos',
@@ -27,6 +34,12 @@ const es: TranslationDictionary = {
   },
   pageHeader: {
     lastScan: 'Último escaneo',
+  },
+  costsAnalyze: {
+    title: 'Analizar costos',
+    description:
+      'Herramientas para explorar tendencias, comparar períodos y detectar anomalías en el gasto AWS.',
+    comingSoon: 'Esta sección se implementará próximamente.',
   },
   dashboardSummary: {
     regionHint: 'Escaneos regionales en {{region}}',
@@ -39,6 +52,8 @@ const es: TranslationDictionary = {
     keysRotation: 'Keys a rotar',
     criticalHighFindings: 'Findings críticos / altos',
     findingsHint: 'ECR + EC2 · {{region}}',
+    findingsCappedHint:
+      'ECR + EC2 · al menos {{count}} cargados (puede haber más en Inspector)',
     rdsPublicPorts: 'RDS con exposición',
     ec2PublicPorts: 'EC2 con exposición',
     s3PublicBuckets: 'Buckets S3 públicos',
@@ -95,6 +110,9 @@ const es: TranslationDictionary = {
     collapseMenu: 'Colapsar menú',
     version: 'Versión',
     items: {
+      costs: 'Costos',
+      costsOverview: 'Costos',
+      costsAnalyze: 'Analizar costos',
       iam: 'IAM',
       iamUsers: 'Users',
       iamAccessKeys: 'Access keys',
@@ -114,7 +132,20 @@ const es: TranslationDictionary = {
     untaggedResources: {
       title: 'Recursos sin tag',
       description:
-        'EC2, RDS y S3 en la región seleccionada que no tienen el tag de proyecto configurado para costos.',
+        'Recursos en la región seleccionada sin el tag de proyecto usado para asignación de costos, incluyendo EC2, RDS, S3, Lambda y los servicios siguientes.',
+      services: [
+        { name: 'EC2', detail: 'Instancias' },
+        { name: 'RDS', detail: 'Bases de datos' },
+        { name: 'S3', detail: 'Buckets en la región' },
+        { name: 'Lambda', detail: 'Funciones' },
+        { name: 'SES', detail: 'Identidades de correo' },
+        { name: 'DynamoDB', detail: 'Tablas' },
+        { name: 'SQS', detail: 'Colas' },
+        { name: 'SNS', detail: 'Topics' },
+        { name: 'WAF', detail: 'Web ACLs regionales (WAFv2)' },
+        { name: 'CloudWatch', detail: 'Alarmas (métricas y compuestas)' },
+        { name: 'CloudWatch Logs', detail: 'Log groups' },
+      ],
       requiredTagLabel: 'Tag requerido',
       regionLabel: 'Región',
       tableTitle: 'Recursos sin tag',

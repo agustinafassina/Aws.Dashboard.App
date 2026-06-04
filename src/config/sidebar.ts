@@ -11,6 +11,7 @@ import DatabaseIcon from '@/components/atoms/Icons/DatabaseIcon'
 import BucketIcon from '@/components/atoms/Icons/BucketIcon'
 import AuditIcon from '@/components/atoms/Icons/AuditIcon'
 import ProjectsIcon from '@/components/atoms/Icons/ProjectsIcon'
+import SpendIcon from '@/components/atoms/Icons/SpendIcon'
 import { ComponentType } from 'react'
 import type { SectionKey, SidebarGroupLabelKey, SidebarChildLabelKey } from '@/i18n/types'
 
@@ -53,10 +54,21 @@ export const sidebarConfig: SidebarConfig = {
       icon: LargeIcon,
     },
     {
-      kind: 'link',
-      sectionKey: 'costs',
-      path: '/home/costs',
+      kind: 'group',
+      labelKey: 'costs',
       icon: BookIcon,
+      children: [
+        {
+          labelKey: 'costsOverview',
+          path: '/home/costs',
+          icon: BookIcon,
+        },
+        {
+          labelKey: 'costsAnalyze',
+          path: '/home/costs/analyze',
+          icon: SpendIcon,
+        },
+      ],
     },
     {
       kind: 'group',

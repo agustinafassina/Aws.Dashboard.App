@@ -16,7 +16,6 @@ import type { Column } from '@/interfaces/common'
 import type { UntaggedResource } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 
 export default function UntaggedResourcesView() {
@@ -100,8 +99,23 @@ export default function UntaggedResourcesView() {
     <div className={pageContentShellMinHeight}>
       <PageHeader
         title={t.title}
-        description={t.description}
-        scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
+        description={
+          <>
+            <p>{t.description}</p>
+            <ul className="mt-2 grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
+              {t.services.map((service) => (
+                <li key={service.name} className="flex gap-1.5 text-xs">
+                  <span className="font-semibold text-brand_700 dark:text-brand_300">
+                    {service.name}
+                  </span>
+                  <span className="text-gray_600 dark:text-gray_500">
+                    {service.detail}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
+        }
         meta={
           data ? (
             <>
@@ -147,6 +161,7 @@ export default function UntaggedResourcesView() {
               label={t.stats.scanned}
               value={data.totalResourcesScanned}
               icon={<ServerIcon className="h-5 w-5" />}
+              iconTone={0}
             />
             <StatCard
               isLoading={isBusy}
@@ -158,6 +173,7 @@ export default function UntaggedResourcesView() {
               }
               hint={t.stats.untaggedHint}
               icon={<ProjectsIcon className="h-5 w-5" />}
+              iconTone={1}
             />
             <StatCard
               isLoading={isBusy}

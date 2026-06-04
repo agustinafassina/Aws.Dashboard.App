@@ -3,8 +3,15 @@ import type { GuideSectionId } from '@/config/siteGuide'
 
 export type SectionKey = 'dashboard' | 'costs'
 
-export type SidebarGroupLabelKey = 'iam' | 'vulnerabilities' | 'security' | 'audits'
+export type SidebarGroupLabelKey =
+  | 'costs'
+  | 'iam'
+  | 'vulnerabilities'
+  | 'security'
+  | 'audits'
 export type SidebarChildLabelKey =
+  | 'costsOverview'
+  | 'costsAnalyze'
   | 'iamUsers'
   | 'iamAccessKeys'
   | 'dockerImages'
@@ -38,10 +45,20 @@ export type TranslationDictionary = {
       string
     >
   }
+  inspector: {
+    resultsCapped: string
+    totalFindingsHint: string
+    totalFindingsCappedHint: string
+  }
   sections: Record<SectionKey, string>
   homeContent: Record<SectionKey, string>
   pageHeader: {
     lastScan: string
+  }
+  costsAnalyze: {
+    title: string
+    description: string
+    comingSoon: string
   }
   dashboardSummary: {
     regionHint: string
@@ -54,6 +71,7 @@ export type TranslationDictionary = {
     keysRotation: string
     criticalHighFindings: string
     findingsHint: string
+    findingsCappedHint: string
     rdsPublicPorts: string
     ec2PublicPorts: string
     s3PublicBuckets: string
@@ -138,6 +156,7 @@ export type TranslationDictionary = {
     untaggedResources: {
       title: string
       description: string
+      services: ReadonlyArray<{ name: string; detail: string }>
       requiredTagLabel: string
       regionLabel: string
       tableTitle: string

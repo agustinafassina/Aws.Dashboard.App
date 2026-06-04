@@ -22,7 +22,6 @@ import type {
 } from '@/interfaces/aws-api'
 import { pageContentShellMinHeight } from '@/styles/pageShell'
 import { ERROR_MESSAGE } from '@/utils/sharedConstants'
-import { formatDateTime } from '@/utils/formatters'
 import { exportTableToPdf } from '@/utils/exportPdf'
 import ExposureBadge, { exposureLabel } from '@/components/atoms/ExposureBadge'
 import InstanceStateBadge from '@/components/atoms/InstanceStateBadge'
@@ -234,7 +233,6 @@ export default function OpenPortsView({
       <PageHeader
         title={title}
         description={description}
-        scannedAt={data ? formatDateTime(data.scannedAt) : undefined}
       />
 
       {isLoading && (
@@ -274,6 +272,7 @@ export default function OpenPortsView({
                   <DatabaseIcon className="h-5 w-5" />
                 )
               }
+              iconTone={0}
             />
             <StatCard
               label="Public exposure"
@@ -281,6 +280,7 @@ export default function OpenPortsView({
               variant={data.instancesWithPublicPorts > 0 ? 'warning' : 'success'}
               hint="Instances with ports open to the internet"
               icon={<ShieldIcon className="h-5 w-5" />}
+              iconTone={1}
             />
             <StatCard label="Region" value={data.region} />
           </div>

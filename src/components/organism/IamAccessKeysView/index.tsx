@@ -101,11 +101,13 @@ export default function IamAccessKeysView() {
               label="IAM users"
               value={keysQuery.data.totalUsers}
               icon={<UsersIcon className="h-5 w-5" />}
+              iconTone={0}
             />
             <StatCard
               label="Access keys"
               value={keysQuery.data.totalAccessKeys}
               icon={<AccessKeyIcon className="h-5 w-5" />}
+              iconTone={1}
             />
             <StatCard
               label="Need rotation"
@@ -115,6 +117,7 @@ export default function IamAccessKeysView() {
               }
               hint={`Max age: ${keysQuery.data.accessKeyRotationMaxAgeDays} days`}
               icon={<RotationAlertIcon className="h-5 w-5" />}
+              iconTone={2}
             />
             <StatCard
               label="Never used"
@@ -124,12 +127,14 @@ export default function IamAccessKeysView() {
               }
               hint="Active keys with no recorded usage"
               icon={<AccessKeyIcon className="h-5 w-5" />}
+              iconTone={3}
             />
             <StatCard
               label="Rotation policy"
               value={`${keysQuery.data.accessKeyRotationMaxAgeDays} days`}
               hint="Configured on the API"
               icon={<PolicyClockIcon className="h-5 w-5" />}
+              iconTone={4}
             />
           </div>
 

@@ -1,4 +1,3 @@
-import type { DashboardScanModuleKey } from '@/i18n/types'
 import { buildHomeHref, type HomeUrlParams } from '@/utils/urlSearchParams'
 
 export const DASHBOARD_SECTION_LINKS = {
@@ -12,27 +11,9 @@ export const DASHBOARD_SECTION_LINKS = {
   s3PublicBuckets: '/home/security/s3-public-buckets',
 } as const
 
-export const DASHBOARD_SCAN_LINKS: Record<DashboardScanModuleKey, string> = {
-  costs: '/home/costs',
-  iamUsers: '/home/iam/users',
-  iamAccessKeys: '/home/iam/access-keys',
-  inspectorEcr: '/home/vulnerabilities/docker-image',
-  inspectorEc2: '/home/vulnerabilities/ec2-servers',
-  ec2Ports: '/home/security/ec2-open-ports',
-  rdsPorts: '/home/security/rds-open-ports',
-  s3: '/home/security/s3-public-buckets',
-}
-
 export function dashboardSectionHref(
   path: string,
   params: HomeUrlParams,
 ): string {
   return buildHomeHref(path, params)
-}
-
-export function dashboardScanHref(
-  key: DashboardScanModuleKey,
-  params: HomeUrlParams,
-): string {
-  return buildHomeHref(DASHBOARD_SCAN_LINKS[key], params)
 }
