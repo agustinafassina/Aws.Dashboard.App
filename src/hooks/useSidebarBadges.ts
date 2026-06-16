@@ -71,21 +71,22 @@ export function useSidebarBadges() {
         ec2UnusedSecurityGroupsQuery.data?.unusedSecurityGroupsCount ?? 0,
       ec2UnattachedVolumes:
         ec2UnattachedVolumesQuery.data?.unattachedVolumesCount ?? 0,
-      vulnerabilities:
+      runtimeSecurity:
         (inspectorEcrQuery.data?.totalFindings ?? 0) +
-        (inspectorEc2Query.data?.totalFindings ?? 0),
-      security:
+        (inspectorEc2Query.data?.totalFindings ?? 0) +
         (rdsPortsQuery.data?.instancesWithPublicPorts ?? 0) +
         (ec2PortsQuery.data?.instancesWithPublicPorts ?? 0) +
+        (lambdaQuery.data?.publicFunctionsCount ?? 0) +
+        (acmQuery.data?.expiringCertificatesCount ?? 0),
+      dataSecurity:
         (s3Query.data?.publicBucketsCount ?? 0) +
         (s3EncryptionQuery.data?.unencryptedBucketsCount ?? 0) +
-        (lambdaQuery.data?.publicFunctionsCount ?? 0) +
-        (acmQuery.data?.expiringCertificatesCount ?? 0) +
+        (untaggedQuery.data?.untaggedResourcesCount ?? 0),
+      governance:
         (ec2UnusedSecurityGroupsQuery.data?.unusedSecurityGroupsCount ?? 0) +
         (ec2UnattachedVolumesQuery.data?.unattachedVolumesCount ?? 0),
       untaggedResources: untaggedQuery.data?.untaggedResourcesCount ?? 0,
       resourcesByProject: 0,
-      audits: untaggedQuery.data?.untaggedResourcesCount ?? 0,
     }),
     [
       iamKeysQuery.data,

@@ -9,7 +9,6 @@ import DockerIcon from '@/components/atoms/Icons/DockerIcon'
 import ServerIcon from '@/components/atoms/Icons/ServerIcon'
 import DatabaseIcon from '@/components/atoms/Icons/DatabaseIcon'
 import BucketIcon from '@/components/atoms/Icons/BucketIcon'
-import AuditIcon from '@/components/atoms/Icons/AuditIcon'
 import ProjectsIcon from '@/components/atoms/Icons/ProjectsIcon'
 import SpendIcon from '@/components/atoms/Icons/SpendIcon'
 import PolicyClockIcon from '@/components/atoms/Icons/PolicyClockIcon'
@@ -90,36 +89,46 @@ export const sidebarConfig: SidebarConfig = {
     },
     {
       kind: 'group',
-      labelKey: 'vulnerabilities',
+      labelKey: 'runtimeSecurity',
       icon: ShieldIcon,
       children: [
         {
-          labelKey: 'dockerImages',
-          path: '/home/vulnerabilities/docker-image',
-          icon: DockerIcon,
+          labelKey: 'acmExpiringCertificates',
+          path: '/home/security/acm-expiring-certificates',
+          icon: PolicyClockIcon,
         },
         {
-          labelKey: 'ec2Servers',
-          path: '/home/vulnerabilities/ec2-servers',
+          labelKey: 'lambdaPublicFunctions',
+          path: '/home/security/lambda-public-functions',
           icon: ServerIcon,
-        },
-      ],
-    },
-    {
-      kind: 'group',
-      labelKey: 'security',
-      icon: SecurityIcon,
-      children: [
-        {
-          labelKey: 'rdsOpenPorts',
-          path: '/home/security/rds-open-ports',
-          icon: DatabaseIcon,
         },
         {
           labelKey: 'ec2OpenPorts',
           path: '/home/security/ec2-open-ports',
           icon: ServerIcon,
         },
+        {
+          labelKey: 'rdsOpenPorts',
+          path: '/home/security/rds-open-ports',
+          icon: DatabaseIcon,
+        },
+        {
+          labelKey: 'ec2Servers',
+          path: '/home/vulnerabilities/ec2-servers',
+          icon: ServerIcon,
+        },
+        {
+          labelKey: 'dockerImages',
+          path: '/home/vulnerabilities/docker-image',
+          icon: DockerIcon,
+        },
+      ],
+    },
+    {
+      kind: 'group',
+      labelKey: 'dataSecurity',
+      icon: BucketIcon,
+      children: [
         {
           labelKey: 's3PublicBuckets',
           path: '/home/security/s3-public-buckets',
@@ -131,41 +140,31 @@ export const sidebarConfig: SidebarConfig = {
           icon: BucketIcon,
         },
         {
-          labelKey: 'lambdaPublicFunctions',
-          path: '/home/security/lambda-public-functions',
-          icon: ServerIcon,
+          labelKey: 'resourcesByProject',
+          path: '/home/audits/resources-by-project',
+          icon: ProjectsIcon,
         },
-        {
-          labelKey: 'acmExpiringCertificates',
-          path: '/home/security/acm-expiring-certificates',
-          icon: PolicyClockIcon,
-        },
-        {
-          labelKey: 'ec2UnusedSecurityGroups',
-          path: '/home/security/ec2-unused-security-groups',
-          icon: ServerIcon,
-        },
-        {
-          labelKey: 'ec2UnattachedVolumes',
-          path: '/home/security/ec2-unattached-volumes',
-          icon: DatabaseIcon,
-        },
-      ],
-    },
-    {
-      kind: 'group',
-      labelKey: 'audits',
-      icon: AuditIcon,
-      children: [
         {
           labelKey: 'untaggedResources',
           path: '/home/audits/untagged-resources',
           icon: ProjectsIcon,
         },
+      ],
+    },
+    {
+      kind: 'group',
+      labelKey: 'governance',
+      icon: SecurityIcon,
+      children: [
         {
-          labelKey: 'resourcesByProject',
-          path: '/home/audits/resources-by-project',
-          icon: ProjectsIcon,
+          labelKey: 'ec2UnattachedVolumes',
+          path: '/home/security/ec2-unattached-volumes',
+          icon: DatabaseIcon,
+        },
+        {
+          labelKey: 'ec2UnusedSecurityGroups',
+          path: '/home/security/ec2-unused-security-groups',
+          icon: ServerIcon,
         },
       ],
     },

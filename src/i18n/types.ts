@@ -6,9 +6,9 @@ export type SectionKey = 'dashboard' | 'costs'
 export type SidebarGroupLabelKey =
   | 'costs'
   | 'iam'
-  | 'vulnerabilities'
-  | 'security'
-  | 'audits'
+  | 'runtimeSecurity'
+  | 'dataSecurity'
+  | 'governance'
 export type SidebarChildLabelKey =
   | 'costsOverview'
   | 'costsAnalyze'
