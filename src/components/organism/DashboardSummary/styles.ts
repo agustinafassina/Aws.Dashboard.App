@@ -13,7 +13,7 @@ export const dashboardSectionStyles = {
 export const dashboardSummaryStyles = {
   metaTags: 'flex flex-shrink-0 flex-wrap items-center justify-end gap-2',
   refreshingBanner:
-    'mb-4 flex items-center gap-2 rounded-lg border border-brand_200 bg-brand_50/60 px-3 py-2 text-xs font-medium text-brand_800 dark:border-brand_500/30 dark:bg-brand_500/10 dark:text-brand_200',
+    'mb-4 flex items-center gap-2 rounded-lg border border-gray_200 bg-gray_50 px-3 py-2 text-xs font-medium text-gray_700 dark:border-brand_500/30 dark:bg-brand_500/10 dark:text-brand_200',
   kpiGrid:
     'mb-6 grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4',
   kpiLink:

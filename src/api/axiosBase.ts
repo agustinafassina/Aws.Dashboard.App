@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect } from 'react'
-import axios, { InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import { useRouter } from 'next/navigation'
 import { resolveAuthToken } from '@/utils/authToken'
 
@@ -25,25 +25,30 @@ function redirectToLogin() {
   window.location.href = `/api/auth/login?returnTo=${returnTo}`
 }
 
-axiosBase.interceptors.request.use(
-  async (config: InternalAxiosRequestConfig) => {
-    const token = await resolveAuthToken()
+function attachAuthHeaderInterceptor(instance: AxiosInstance) {
+  instance.interceptors.request.use(
+    async (config: InternalAxiosRequestConfig) => {
+      const token = await resolveAuthToken()
 
-    if (!token) {
-      redirectToLogin()
-      return Promise.reject(new Error('No auth token available'))
-    }
+      if (!token) {
+        redirectToLogin()
+        return Promise.reject(new Error('No auth token available'))
+      }
 
-    config.headers.set('Authorization', `Bearer ${token}`)
+      config.headers.set('Authorization', `Bearer ${token}`)
 
-    if (!config.headers.has('Content-Type') && config.data !== undefined) {
-      config.headers.set('Content-Type', 'application/json')
-    }
+      if (!config.headers.has('Content-Type') && config.data !== undefined) {
+        config.headers.set('Content-Type', 'application/json')
+      }
 
-    return config
-  },
-  (error) => Promise.reject(error),
-)
+      return config
+    },
+    (error) => Promise.reject(error),
+  )
+}
+
+attachAuthHeaderInterceptor(axiosBase)
+attachAuthHeaderInterceptor(axiosBaseJson)
 
 const cancelSource = axios.CancelToken.source()
 

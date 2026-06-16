@@ -22,10 +22,10 @@ const lightChartTheme: ChartTheme = {
   tooltipBg: '#FFFFFF',
   tooltipBorder: '#EAEAEA',
   tooltipText: '#3f3f46',
-  primary: '#5F346F',
-  primaryFill: 'rgba(95, 52, 111, 0.2)',
-  secondary: '#A871BC',
-  secondaryFill: 'rgba(168, 113, 188, 0.18)',
+  primary: '#1D4ED8',
+  primaryFill: 'rgba(29, 78, 216, 0.2)',
+  secondary: '#3B82F6',
+  secondaryFill: 'rgba(59, 130, 246, 0.18)',
 }
 
 const darkChartTheme: ChartTheme = {

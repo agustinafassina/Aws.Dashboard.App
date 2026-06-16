@@ -58,28 +58,28 @@ const config = {
         gray_850: '#172033',
         gray_900: '#0F172A',
 
-        // Accent (lilac — aligned with brand scale)
-        blue_50: '#F4EEF7',
-        blue_100: '#E1CEE8',
-        blue_200: '#CEAFD9',
-        blue_300: '#BB90CB',
-        blue_400: '#A871BC',
-        blue_500: '#9552AD',
-        blue_600: '#7F4694',
-        blue_700: '#5F346F',
+        // Accent (blue scale)
+        blue_50: '#EFF6FF',
+        blue_100: '#DBEAFE',
+        blue_200: '#BFDBFE',
+        blue_300: '#93C5FD',
+        blue_400: '#60A5FA',
+        blue_500: '#3B82F6',
+        blue_600: '#2563EB',
+        blue_700: '#1D4ED8',
 
-        // Brand (lilac / plum)
-        brand_50: '#F4EEF7',
-        brand_100: '#E1CEE8',
-        brand_200: '#CEAFD9',
-        brand_300: '#BB90CB',
-        brand_400: '#A871BC',
-        brand_500: '#9552AD',
-        brand_600: '#7F4694',
-        brand_700: '#5F346F',
-        brand_800: '#452650',
-        brand_900: '#2A1731',
-        brand_950: '#0F0811',
+        // Brand (used across interactive surfaces)
+        brand_50: '#EFF6FF',
+        brand_100: '#DBEAFE',
+        brand_200: '#BFDBFE',
+        brand_300: '#93C5FD',
+        brand_400: '#60A5FA',
+        brand_500: '#3B82F6',
+        brand_600: '#2563EB',
+        brand_700: '#1D4ED8',
+        brand_800: '#1E40AF',
+        brand_900: '#1E3A8A',
+        brand_950: '#172554',
 
         // oranges
         orange_300: '#FDBA742E',
@@ -92,13 +92,13 @@ const config = {
         red_300: '#FCA5A54D',
         red_900: '#7F1D1D',
 
-        // Warning (lilac accent — KPI highlights)
-        warning_50: '#F4EEF7',
-        warning_100: '#E1CEE8',
-        warning_200: '#CEAFD9',
-        warning_700: '#5F346F',
-        warning_800: '#452650',
-        warning_900: '#2A1731',
+        // Warning (amber scale)
+        warning_50: '#FFFBEB',
+        warning_100: '#FEF3C7',
+        warning_200: '#FDE68A',
+        warning_700: '#B45309',
+        warning_800: '#92400E',
+        warning_900: '#78350F',
 
         // Success
         success_50: '#DCFCE7',
@@ -111,7 +111,7 @@ const config = {
         white: '#FFFFFF',
       },
       backgroundImage: {
-        linearGradientBlue: 'linear-gradient(135deg, #A871BC, #9552AD, #5F346F)',
+        linearGradientBlue: 'linear-gradient(135deg, #60A5FA, #3B82F6, #1D4ED8)',
       },
       fontSize: {
         'cp-xl': '22px',
@@ -127,7 +127,7 @@ const config = {
           '--gray_800': theme('colors.gray_800'),
 
           // Blues
-          '--blue_300': '#BB90CB',
+          '--blue_300': theme('colors.blue_300'),
           '--blue_400': theme('colors.blue_400'),
           '--blue_500': theme('colors.blue_500'),
 

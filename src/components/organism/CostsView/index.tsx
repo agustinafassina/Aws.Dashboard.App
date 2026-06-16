@@ -242,7 +242,7 @@ export default function CostsView() {
                         formatCurrency(value, data.currency)
                       }
                     />
-                    <Bar dataKey="amount" fill="#5F346F" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="amount" fill="#1D4ED8" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

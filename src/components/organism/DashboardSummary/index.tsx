@@ -442,7 +442,7 @@ export default function DashboardSummary() {
                 />
                 <Bar
                   dataKey="amount"
-                  fill="#5F346F"
+                  fill="#1D4ED8"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
