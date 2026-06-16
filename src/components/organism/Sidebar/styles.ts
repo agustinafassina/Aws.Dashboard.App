@@ -11,7 +11,7 @@ export const sidebarStyles = {
 export function getAsideClass(collapsed: boolean) {
   return cn(
     'flex flex-shrink-0 flex-col justify-between border-r border-r-black/10 bg-white shadow-sm transition-[width] duration-300 ease-in-out dark:border-r-gray_700 dark:bg-gray_900',
-    collapsed ? 'w-[4.5rem] min-w-[4.5rem]' : 'w-[15.625rem] min-w-[15.625rem]',
+    collapsed ? 'w-[4.5rem] min-w-[4.5rem]' : 'w-[17.5rem] min-w-[17.5rem]',
   )
 }
 
