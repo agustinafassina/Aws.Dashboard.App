@@ -21,7 +21,7 @@ const variantClasses = {
   default:
     'bg-white dark:bg-gray_850 border-gray_200 dark:border-gray_750',
   warning:
-    'bg-white border-warning_200 dark:bg-brand_500/10 dark:border-brand_400/30',
+    'bg-warning_50 border-warning_200 dark:bg-brand_500/10 dark:border-brand_400/30',
   success:
     'bg-success_50 dark:bg-success_100/10 border-success_500/25 dark:border-success_500/20',
 }
@@ -58,7 +58,7 @@ export default function StatCard({
             'absolute flex items-center justify-center rounded-lg',
             compact ? 'right-2.5 top-2.5 h-7 w-7' : 'right-4 top-4 h-9 w-9',
             variant === 'warning'
-              ? 'bg-gray_100 text-brand_700 dark:bg-brand_600/30 dark:text-brand_100'
+              ? 'bg-warning_100 text-warning_800 dark:bg-brand_600/30 dark:text-brand_100'
               : variant === 'success'
                 ? 'bg-success_50 text-success_700 dark:bg-success_100/15 dark:text-success_500'
                 : getStatCardIconToneClass(iconTone),

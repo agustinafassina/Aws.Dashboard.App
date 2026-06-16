@@ -3,15 +3,15 @@ import { pageContentShellMinHeight } from '@/styles/pageShell'
 export const dashboardSectionStyles = {
   shell: pageContentShellMinHeight,
   header:
-    'mb-6 flex flex-wrap items-start justify-between gap-x-4 gap-y-3',
+    'mb-6 flex items-center justify-between gap-4',
   welcome:
     'min-w-0 text-lg font-semibold text-gray_900 dark:text-gray_100',
-  headerRight: 'flex flex-shrink-0 flex-col items-end gap-2',
-  exportActions: 'flex flex-wrap items-center justify-end gap-2',
+  headerRight: 'ml-auto flex flex-shrink-0 items-center gap-2',
+  exportActions: 'flex items-center justify-end gap-2',
 } as const
 
 export const dashboardSummaryStyles = {
-  metaTags: 'flex flex-shrink-0 flex-wrap items-center justify-end gap-2',
+  metaTags: 'flex flex-shrink-0 items-center justify-end',
   refreshingBanner:
     'mb-4 flex items-center gap-2 rounded-lg border border-gray_200 bg-gray_50 px-3 py-2 text-xs font-medium text-gray_700 dark:border-brand_500/30 dark:bg-brand_500/10 dark:text-brand_200',
   kpiGrid:
