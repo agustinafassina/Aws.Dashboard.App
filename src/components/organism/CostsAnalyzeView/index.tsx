@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Bar,
   BarChart,
+  Cell,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -47,6 +48,12 @@ interface MoverRow {
 }
 
 const TOP_N_OPTIONS = [5, 10, 15]
+type ComparisonMode = 'previous' | 'month' | 'year'
+const COMPARISON_MODE_OPTIONS: { value: ComparisonMode; label: string }[] = [
+  { value: 'previous', label: 'Previous period' },
+  { value: 'month', label: 'Same period last month' },
+  { value: 'year', label: 'Same period last year' },
+]
 
 function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`
@@ -74,6 +81,36 @@ function getPreviousRange(startDate: string, endDate: string) {
   }
 }
 
+function shiftDateByMonths(value: string, months: number): string {
+  const date = parseYmdUtc(value)
+  date.setUTCMonth(date.getUTCMonth() + months)
+  return toYmdUtc(date)
+}
+
+function shiftDateByYears(value: string, years: number): string {
+  const date = parseYmdUtc(value)
+  date.setUTCFullYear(date.getUTCFullYear() + years)
+  return toYmdUtc(date)
+}
+
+function getComparisonRange(
+  mode: ComparisonMode,
+  startDate: string,
+  endDate: string,
+) {
+  if (mode === 'previous') return getPreviousRange(startDate, endDate)
+  if (mode === 'month') {
+    return {
+      startDate: shiftDateByMonths(startDate, -1),
+      endDate: shiftDateByMonths(endDate, -1),
+    }
+  }
+  return {
+    startDate: shiftDateByYears(startDate, -1),
+    endDate: shiftDateByYears(endDate, -1),
+  }
+}
+
 export default function CostsAnalyzeView() {
   const { dictionary } = useTranslation()
   const { buildReport } = usePdfReport()
@@ -83,17 +120,29 @@ export default function CostsAnalyzeView() {
   const [endDate, setEndDate] = useState(appliedRange.endDate)
   const [topN, setTopN] = useState(10)
   const [minSpendInput, setMinSpendInput] = useState('0')
+  const [comparisonMode, setComparisonMode] = useState<ComparisonMode>('previous')
 
   const { data, isLoading, isFetching, isError, error, refetch } = useCostByProject(
     appliedRange.startDate,
     appliedRange.endDate,
   )
-  const previousRange = useMemo(
-    () => getPreviousRange(appliedRange.startDate, appliedRange.endDate),
-    [appliedRange.endDate, appliedRange.startDate],
+  const comparisonRange = useMemo(
+    () =>
+      getComparisonRange(
+        comparisonMode,
+        appliedRange.startDate,
+        appliedRange.endDate,
+      ),
+    [appliedRange.endDate, appliedRange.startDate, comparisonMode],
   )
-  const previousQuery = useCostByProject(previousRange.startDate, previousRange.endDate)
-  const previousData = previousQuery.data
+  const comparisonQuery = useCostByProject(
+    comparisonRange.startDate,
+    comparisonRange.endDate,
+  )
+  const comparisonData = comparisonQuery.data
+  const comparisonModeLabel =
+    COMPARISON_MODE_OPTIONS.find((opt) => opt.value === comparisonMode)?.label ??
+    'Comparison'
 
   useEffect(() => {
     setStartDate(appliedRange.startDate)
@@ -114,10 +163,10 @@ export default function CostsAnalyzeView() {
   )
 
   const totalAmount = data?.totalAmount ?? 0
-  const previousTotalAmount = previousData?.totalAmount ?? 0
-  const spendDelta = totalAmount - previousTotalAmount
+  const comparisonTotalAmount = comparisonData?.totalAmount ?? 0
+  const spendDelta = totalAmount - comparisonTotalAmount
   const spendDeltaPct =
-    previousTotalAmount > 0 ? (spendDelta / previousTotalAmount) * 100 : null
+    comparisonTotalAmount > 0 ? (spendDelta / comparisonTotalAmount) * 100 : null
   const topProjects = filteredProjects.slice(0, topN)
   const othersAmount = filteredProjects
     .slice(topN)
@@ -159,12 +208,15 @@ export default function CostsAnalyzeView() {
     return sortedProjects.length
   }, [sortedProjects, totalAmount])
 
-  const previousProjectAmountByName = useMemo(
+  const comparisonProjectAmountByName = useMemo(
     () =>
       new Map(
-        (previousData?.projects ?? []).map((project) => [project.project, project.amount]),
+        (comparisonData?.projects ?? []).map((project) => [
+          project.project,
+          project.amount,
+        ]),
       ),
-    [previousData?.projects],
+    [comparisonData?.projects],
   )
 
   const currentProjectAmountByName = useMemo(
@@ -176,18 +228,19 @@ export default function CostsAnalyzeView() {
   const newProjects = useMemo(
     () =>
       [...(data?.projects ?? [])]
-        .filter((project) => !previousProjectAmountByName.has(project.project))
+        .filter((project) => !comparisonProjectAmountByName.has(project.project))
         .sort((a, b) => b.amount - a.amount),
-    [data?.projects, previousProjectAmountByName],
+    [comparisonProjectAmountByName, data?.projects],
   )
   const newProjectsCount = newProjects.length
+  const comparisonLabelShort = comparisonModeLabel.toLowerCase()
   const newProjectsPreview = useMemo(() => {
-    if (newProjects.length === 0) return 'No new projects vs previous period'
+    if (newProjects.length === 0) return `No new projects vs ${comparisonLabelShort}`
     const names = newProjects.slice(0, 3).map((project) => project.project)
     const base = names.join(', ')
     const extraCount = newProjects.length - names.length
     return extraCount > 0 ? `${base} +${extraCount} more` : base
-  }, [newProjects])
+  }, [comparisonLabelShort, newProjects])
 
   const analysisRows = useMemo<AnalyzeRow[]>(() => {
     if (totalAmount <= 0) {
@@ -217,13 +270,13 @@ export default function CostsAnalyzeView() {
   const moversRows = useMemo<MoverRow[]>(() => {
     const names = new Set<string>([
       ...currentProjectAmountByName.keys(),
-      ...previousProjectAmountByName.keys(),
+      ...comparisonProjectAmountByName.keys(),
     ])
 
     const rows: MoverRow[] = []
     for (const name of names) {
       const currentAmount = currentProjectAmountByName.get(name) ?? 0
-      const previousAmount = previousProjectAmountByName.get(name) ?? 0
+      const previousAmount = comparisonProjectAmountByName.get(name) ?? 0
       if (currentAmount < minSpend && previousAmount < minSpend) continue
 
       const deltaAmount = currentAmount - previousAmount
@@ -243,11 +296,26 @@ export default function CostsAnalyzeView() {
       .sort((a, b) => Math.abs(b.deltaAmount) - Math.abs(a.deltaAmount))
       .slice(0, topN)
   }, [
+    comparisonProjectAmountByName,
     currentProjectAmountByName,
     minSpend,
-    previousProjectAmountByName,
     topN,
   ])
+
+  const waterfallData = useMemo(
+    () =>
+      moversRows.map((row) => ({
+        name: row.project,
+        deltaAmount: row.deltaAmount,
+        color:
+          row.deltaAmount >= 0
+            ? row.isNew
+              ? '#F59E0B'
+              : '#DC2626'
+            : '#16A34A',
+      })),
+    [moversRows],
+  )
 
   const rowCurrency = data?.currency ?? 'USD'
   const analyzeColumns: Column<AnalyzeRow>[] = [
@@ -328,7 +396,7 @@ export default function CostsAnalyzeView() {
         executiveSummary: [
           `Total spend: ${formatCurrency(data.totalAmount, data.currency)} across ${data.projects.length} project(s).`,
           `Top project share: ${formatPercent(top1Share)} · Top 3 share: ${formatPercent(top3Share)} · ${projectsFor80Pct} project(s) explain 80% of spend.`,
-          `Previous range (${formatDate(previousRange.startDate)} → ${formatDate(previousRange.endDate)}): ${formatCurrency(previousTotalAmount, data.currency)} · Delta: ${spendDelta >= 0 ? '+' : ''}${formatCurrency(spendDelta, data.currency)}${spendDeltaPct !== null ? ` (${spendDeltaPct >= 0 ? '+' : ''}${formatPercent(spendDeltaPct)})` : ''}.`,
+          `${comparisonModeLabel} (${formatDate(comparisonRange.startDate)} → ${formatDate(comparisonRange.endDate)}): ${formatCurrency(comparisonTotalAmount, data.currency)} · Delta: ${spendDelta >= 0 ? '+' : ''}${formatCurrency(spendDelta, data.currency)}${spendDeltaPct !== null ? ` (${spendDeltaPct >= 0 ? '+' : ''}${formatPercent(spendDeltaPct)})` : ''}.`,
         ],
       }),
       columns: [
@@ -342,11 +410,12 @@ export default function CostsAnalyzeView() {
   }, [
     analysisRows,
     buildReport,
+    comparisonModeLabel,
+    comparisonRange.endDate,
+    comparisonRange.startDate,
+    comparisonTotalAmount,
     data,
     minSpend,
-    previousRange.endDate,
-    previousRange.startDate,
-    previousTotalAmount,
     projectsFor80Pct,
     spendDelta,
     spendDeltaPct,
@@ -361,12 +430,12 @@ export default function CostsAnalyzeView() {
     exportTableToPdf({
       filename: `costs-movers-${data.startDate}-${data.endDate}`,
       title: `Biggest movers (Top ${topN})`,
-      subtitle: `Range: ${formatDate(data.startDate)} → ${formatDate(data.endDate)} · Previous: ${formatDate(previousRange.startDate)} → ${formatDate(previousRange.endDate)}`,
+      subtitle: `Range: ${formatDate(data.startDate)} → ${formatDate(data.endDate)} · ${comparisonModeLabel}: ${formatDate(comparisonRange.startDate)} → ${formatDate(comparisonRange.endDate)}`,
       report: buildReport({
         scope: 'costs',
         scannedAt: data.scannedAt,
         executiveSummary: [
-          `Top ${topN} project movers by absolute spend delta against previous period.`,
+          `Top ${topN} project movers by absolute spend delta against ${comparisonModeLabel.toLowerCase()}.`,
         ],
       }),
       columns: [
@@ -394,7 +463,15 @@ export default function CostsAnalyzeView() {
       ],
       rows: moversRows,
     })
-  }, [buildReport, data, moversRows, previousRange.endDate, previousRange.startDate, topN])
+  }, [
+    buildReport,
+    comparisonModeLabel,
+    comparisonRange.endDate,
+    comparisonRange.startDate,
+    data,
+    moversRows,
+    topN,
+  ])
 
   const dateInputClass =
     'h-8 w-[8.75rem] rounded-md border border-gray_200 bg-white px-2 text-xs text-gray_900 dark:border-gray_600 dark:bg-gray_800 dark:text-gray_100'
@@ -408,7 +485,7 @@ export default function CostsAnalyzeView() {
         description={t.description}
         meta={
           data
-            ? `Tag key: ${data.projectTagKey} · Range: ${formatDate(data.startDate)} → ${formatDate(data.endDate)} · Previous: ${formatDate(previousRange.startDate)} → ${formatDate(previousRange.endDate)}`
+            ? `Tag key: ${data.projectTagKey} · Range: ${formatDate(data.startDate)} → ${formatDate(data.endDate)} · ${comparisonModeLabel}: ${formatDate(comparisonRange.startDate)} → ${formatDate(comparisonRange.endDate)}`
             : undefined
         }
         actions={
@@ -442,6 +519,22 @@ export default function CostsAnalyzeView() {
                   {TOP_N_OPTIONS.map((value) => (
                     <option key={value} value={value}>
                       {value}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex items-center gap-1.5">
+                <span className="text-xs text-gray_600 dark:text-gray_400">
+                  Compare
+                </span>
+                <select
+                  value={comparisonMode}
+                  onChange={(e) => setComparisonMode(e.target.value as ComparisonMode)}
+                  className={`${compactInputClass} min-w-[12.5rem]`}
+                >
+                  {COMPARISON_MODE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>
@@ -511,13 +604,13 @@ export default function CostsAnalyzeView() {
               label="Vs previous period"
               value={`${spendDelta >= 0 ? '+' : ''}${formatCurrency(spendDelta, data.currency)}`}
               hint={
-                previousQuery.isError
-                  ? 'Could not compare with previous period'
+                comparisonQuery.isError
+                  ? `Could not compare with ${comparisonModeLabel.toLowerCase()}`
                   : spendDeltaPct === null
-                    ? 'No previous spend baseline'
-                    : `${spendDeltaPct >= 0 ? '+' : ''}${formatPercent(spendDeltaPct)} vs previous`
+                    ? 'No comparison spend baseline'
+                    : `${spendDeltaPct >= 0 ? '+' : ''}${formatPercent(spendDeltaPct)} vs ${comparisonModeLabel.toLowerCase()}`
               }
-              isLoading={previousQuery.isLoading || previousQuery.isFetching}
+              isLoading={comparisonQuery.isLoading || comparisonQuery.isFetching}
               loadingLabel="…"
               variant={spendDelta > 0 ? 'warning' : spendDelta < 0 ? 'success' : 'default'}
               icon={<SpendIcon className="h-5 w-5" />}
@@ -597,8 +690,51 @@ export default function CostsAnalyzeView() {
             getRowKey={(row) => row.project}
           />
 
+          {waterfallData.length > 0 && (
+            <section className="mb-6 rounded-xl border border-gray_200 bg-white p-4 shadow-sm dark:border-gray_750 dark:bg-gray_850">
+              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray_800 dark:text-gray_400">
+                Cost variation contributors ({comparisonModeLabel})
+              </h2>
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={waterfallData}
+                    margin={{ top: 8, right: 8, left: 0, bottom: 48 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      className="stroke-gray_300 dark:stroke-gray_700"
+                    />
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fontSize: 11, fill: 'currentColor' }}
+                      className="text-gray_600 dark:text-gray_400"
+                      angle={-25}
+                      textAnchor="end"
+                      height={60}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: 'currentColor' }}
+                      className="text-gray_600 dark:text-gray_400"
+                    />
+                    <Tooltip
+                      formatter={(value: number) =>
+                        `${value > 0 ? '+' : ''}${formatCurrency(value, data.currency)}`
+                      }
+                    />
+                    <Bar dataKey="deltaAmount" radius={[4, 4, 0, 0]}>
+                      {waterfallData.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+          )}
+
           <TableSection
-            title={`Biggest movers (vs previous, Top ${topN})`}
+            title={`Biggest movers (${comparisonModeLabel}, Top ${topN})`}
             onExportPdf={handleExportMoversPdf}
             exportDisabled={moversRows.length === 0}
             columns={moversColumns}
