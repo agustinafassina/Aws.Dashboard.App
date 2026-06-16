@@ -67,6 +67,47 @@ export interface IamRiskyPoliciesResponse {
   scannedAt: string
 }
 
+export interface IamAdminPrivilegeGrant {
+  principalType: string
+  principalName: string
+  principalArn: string | null
+  policyArn: string
+  policyName: string
+  privilegeLevel: string
+  attachmentType: string
+  inheritedFromGroup: string | null
+  recommendation: string
+}
+
+export interface IamAdminPrivilegeGrantsResponse {
+  totalUsersScanned: number
+  totalGroupsScanned: number
+  totalRolesScanned: number
+  adminPrivilegeGrantCount: number
+  usersWithAdminAccess: number
+  groupsWithAdminAccess: number
+  rolesWithAdminAccess: number
+  grants: IamAdminPrivilegeGrant[]
+  scannedAt: string
+}
+
+export interface IamCrossAccountRole {
+  roleName: string
+  roleArn: string
+  trustRiskReason: string
+  trustedPrincipals: string[]
+  allowsAnyPrincipal: boolean
+  recommendation: string
+}
+
+export interface IamCrossAccountRolesResponse {
+  currentAccountId: string
+  totalRolesScanned: number
+  crossAccountRolesCount: number
+  roles: IamCrossAccountRole[]
+  scannedAt: string
+}
+
 export interface InspectorFindingResource {
   instanceId?: string | null
   vpcId?: string | null

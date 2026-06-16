@@ -1,6 +1,8 @@
 import { axiosBase } from '@/api/axiosBase'
 import type {
   IamAccessKeysResponse,
+  IamAdminPrivilegeGrantsResponse,
+  IamCrossAccountRolesResponse,
   IamRiskyPoliciesResponse,
   IamUsersWithoutMfaResponse,
 } from '@/interfaces/aws-api'
@@ -34,6 +36,20 @@ export async function fetchIamUsersWithoutMfa(): Promise<IamUsersWithoutMfaRespo
 export async function fetchIamRiskyPolicies(): Promise<IamRiskyPoliciesResponse> {
   const { data } = await axiosBase.get<IamRiskyPoliciesResponse>(
     '/api/v1/iam/risky-policies',
+  )
+  return data
+}
+
+export async function fetchIamAdminPrivilegeGrants(): Promise<IamAdminPrivilegeGrantsResponse> {
+  const { data } = await axiosBase.get<IamAdminPrivilegeGrantsResponse>(
+    '/api/v1/iam/admin-privilege-grants',
+  )
+  return data
+}
+
+export async function fetchIamCrossAccountRoles(): Promise<IamCrossAccountRolesResponse> {
+  const { data } = await axiosBase.get<IamCrossAccountRolesResponse>(
+    '/api/v1/iam/cross-account-roles',
   )
   return data
 }

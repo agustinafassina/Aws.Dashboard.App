@@ -2,6 +2,8 @@ import { maskAccessKeyId } from '@/api/aws/iam'
 import type { Column } from '@/interfaces/common'
 import type {
   IamAccessKey,
+  IamAdminPrivilegeGrant,
+  IamCrossAccountRole,
   IamRiskyPolicy,
   IamUserWithoutMfa,
 } from '@/interfaces/aws-api'
@@ -125,6 +127,89 @@ export const riskyPolicyColumns: Column<IamRiskyPolicy>[] = [
     label: 'ARN',
     cellClassName:
       'min-w-[14rem] truncate whitespace-nowrap font-mono text-xs text-gray_600 dark:text-gray_400',
+  },
+  {
+    key: 'recommendation',
+    label: 'Recommendation',
+    cellClassName: 'min-w-[14rem] whitespace-normal text-xs leading-snug',
+  },
+]
+
+export const adminPrivilegeGrantColumns: Column<IamAdminPrivilegeGrant>[] = [
+  {
+    key: 'principalType',
+    label: 'Type',
+    cellClassName: 'whitespace-nowrap',
+  },
+  {
+    key: 'principalName',
+    label: 'Principal',
+    cellClassName: 'max-w-[10rem] truncate whitespace-nowrap font-mono text-xs',
+  },
+  {
+    key: 'policyName',
+    label: 'Policy',
+    cellClassName: 'max-w-[10rem] truncate whitespace-nowrap',
+  },
+  {
+    key: 'attachmentType',
+    label: 'Attachment',
+    cellClassName: 'whitespace-nowrap text-xs',
+  },
+  {
+    key: 'privilegeLevel',
+    label: 'Privilege',
+    cellClassName:
+      'whitespace-nowrap text-xs font-medium text-red_900 dark:text-red_200',
+  },
+  {
+    key: 'inheritedFromGroup',
+    label: 'Inherited group',
+    cellClassName: 'max-w-[10rem] truncate whitespace-nowrap text-xs',
+    render: (value) => (value ? String(value) : '—'),
+  },
+  {
+    key: 'recommendation',
+    label: 'Recommendation',
+    cellClassName: 'min-w-[14rem] whitespace-normal text-xs leading-snug',
+  },
+]
+
+export const crossAccountRoleColumns: Column<IamCrossAccountRole>[] = [
+  {
+    key: 'roleName',
+    label: 'Role',
+    cellClassName: 'max-w-[10rem] truncate whitespace-nowrap font-mono text-xs',
+  },
+  {
+    key: 'allowsAnyPrincipal',
+    label: 'Trust',
+    cellClassName: 'whitespace-nowrap',
+    render: (value) =>
+      value ? (
+        <span className="inline-flex shrink-0 whitespace-nowrap rounded-full bg-red_50 px-2.5 py-0.5 text-xs font-semibold text-red_900 dark:text-red_200">
+          Any principal
+        </span>
+      ) : (
+        <span className="inline-flex shrink-0 whitespace-nowrap rounded-full bg-warning_100 px-2.5 py-0.5 text-xs font-semibold text-warning_800 dark:bg-brand_500/20 dark:text-brand_200">
+          External account
+        </span>
+      ),
+  },
+  {
+    key: 'trustRiskReason',
+    label: 'Risk',
+    cellClassName:
+      'min-w-[12rem] whitespace-normal text-xs font-medium text-red_900 dark:text-red_200',
+  },
+  {
+    key: 'trustedPrincipals',
+    label: 'Trusted principals',
+    cellClassName: 'min-w-[14rem] whitespace-normal text-xs leading-snug',
+    render: (value) => {
+      const principals = (value as string[]) ?? []
+      return principals.length > 0 ? principals.join('; ') : '—'
+    },
   },
   {
     key: 'recommendation',
