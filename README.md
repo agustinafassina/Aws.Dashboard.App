@@ -1,18 +1,21 @@
-# 📊 Dashboard Template — Next.js
+# 📊 AWS Dashboard App — Next.js
 [English](#english) | [Español](#español)
 ## English 🇬🇧
 ### 📋 Description
-A production-oriented dashboard template built with **Next.js 15** (App Router), **Auth0**, **Tailwind CSS**, and **NextUI**. It includes a collapsible sidebar, avatar menu (theme + language + guide + logout), sample charts, bilingual UI, and CI-ready scripts.
+An AWS security and cost dashboard built with **Next.js 15** (App Router), **Auth0**, **Tailwind CSS**, and **NextUI**.
 
-Designed to clone and extend quickly for internal tools, admin panels, and SaaS dashboards.
+It includes live sections for Dashboard, Costs (overview + analyze), IAM findings, Inspector vulnerabilities, Security posture checks, and Audits.
 
 ### ✨ Features
 - **Authentication** — Auth0 with middleware-protected routes and JWT cookie caching for faster navigation
 - **Light / Dark themes** — Manual toggle in the avatar menu (`next-themes`, persisted; no system theme)
 - **Internationalization (i18n)** — Spanish and English via dictionary files; locale stored in `localStorage` + cookie (SSR metadata)
 - **Collapsible sidebar** — Expand/collapse with persisted width; prefetch on mount
-- **Single client route for sections** — `home/[[...section]]` (Dashboard, Costs, IAM) for instant section switches
-- **Sample charts** — Recharts bar/area charts on Dashboard with theme-aware colors
+- **Single client route for sections** — `home/[[...section]]` with keep-alive views for instant section switches
+- **Costs analysis** — Concentration metrics, biggest movers, comparison mode, and exports
+- **Security modules** — RDS/EC2 open ports, S3 public/encryption checks, Lambda public functions, ACM expiring certs, unused SGs, unattached EBS
+- **IAM modules** — Access keys, users without MFA, risky policies, admin grants, and cross-account roles
+- **Audits modules** — Missing Project tag and resources by project tag
 - **Site guide** — `/guide` page (bilingual), opened from the avatar menu in a new tab
 - **Responsive layout** — No fixed `min-width`; mobile-friendly content shell
 - **Error pages** — Branded 404 and error boundaries with i18n
@@ -97,7 +100,7 @@ src/
 │   ├── api/auth/[auth0]/     # Auth0 route handler
 │   ├── guide/                # Bilingual site guide (public)
 │   ├── home/
-│   │   ├── [[...section]]/   # Dashboard, costs, iam (single page)
+│   │   ├── [[...section]]/   # All home modules (single page + route resolver)
 │   │   ├── layout.tsx        # Sidebar + main
 │   │   ├── loading.tsx       # Section skeleton
 │   │   └── error.tsx         # Home error boundary
@@ -128,9 +131,15 @@ src/
 | Path | Access | Description |
 |------|--------|-------------|
 | `/` | Public | Redirects to dashboard or login |
-| `/home/dashboard` | Protected | Dashboard + sample charts |
-| `/home/costs` | Protected | Costs placeholder |
-| `/home/iam` | Protected | IAM users placeholder |
+| `/home/dashboard` | Protected | Executive summary with security/cost KPIs |
+| `/home/costs` | Protected | Costs by project overview |
+| `/home/costs/analyze` | Protected | Advanced cost analysis (comparison + movers) |
+| `/home/iam/users` | Protected | IAM users, risky policies, admin grants, cross-account roles |
+| `/home/iam/access-keys` | Protected | IAM access key hygiene |
+| `/home/vulnerabilities/docker-image` | Protected | Inspector findings grouped by ECR repository |
+| `/home/vulnerabilities/ec2-servers` | Protected | Inspector findings grouped by EC2 instance |
+| `/home/security/*` | Protected | Security checks (ports, buckets, encryption, lambda, certs, SGs, volumes) |
+| `/home/audits/*` | Protected | Tagging audits (untagged + by project) |
 | `/guide` | Protected | Site guide (bilingual) |
 | `/api/auth/*` | Auth0 | Login, logout, callback |
 
@@ -160,7 +169,7 @@ Root layout metadata and Open Graph use these values.
 1. Add `sectionKey` to `SectionKey` in `src/i18n/types.ts`.
 2. Add labels in `src/i18n/dictionaries/es.ts` and `en.ts` (`sections`, `homeContent`).
 3. Register the item in `src/config/sidebar.ts` (`path`, `icon`).
-4. Handle content in `src/components/organism/HomeSectionContent/index.tsx` (or a new organism).
+4. Handle content in `src/components/organism/HomeViewsShell/index.tsx` and route mapping in `src/utils/homeRoutes.ts`.
 5. Optional: add a block in `guide.sections` in both dictionaries.
 
 No new `page.tsx` under `home/` is required — routing is handled by `[[...section]]`.
@@ -168,7 +177,7 @@ No new `page.tsx` under `home/` is required — routing is handled by `[[...sect
 #### 🌙 Themes
 - Toggle: avatar menu → **Appearance** → Light / Dark
 - Default: light (`src/provider/index.tsx`)
-- Palette: `brand_*` and `gray_*` in `tailwind.config.js`
+- Palette: `brand_*`, `gray_*`, and `warning_*` in `tailwind.config.js`
 - Co-located styles: prefer `styles.ts` + `dark:` variants
 
 #### 🌐 Internationalization
@@ -204,17 +213,20 @@ Agustina Fassina
 
 ## Español 🇪🇸
 ### 📋 Descripción
-Plantilla de dashboard orientada a producción con **Next.js 15** (App Router), **Auth0**, **Tailwind CSS** y **NextUI**. Incluye sidebar colapsable, menú de avatar (tema + idioma + guía + logout), gráficos de ejemplo, UI bilingüe y scripts listos para CI.
+Dashboard de seguridad y costos AWS construido con **Next.js 15** (App Router), **Auth0**, **Tailwind CSS** y **NextUI**.
 
-Pensada para clonar y extender rápido en herramientas internas, paneles admin y dashboards SaaS.
+Incluye secciones productivas para Dashboard, Costos (overview + analyze), hallazgos IAM, vulnerabilidades Inspector, controles de Security y Auditorías.
 
 ### ✨ Características
 - **Autenticación** — Auth0 con rutas protegidas por middleware y caché de JWT en cookie para navegación más rápida
 - **Temas claro / oscuro** — Selector en el menú del avatar (`next-themes`, persistido; sin tema “system”)
 - **Internacionalización (i18n)** — Español e inglés con diccionarios; locale en `localStorage` + cookie (metadata SSR)
 - **Sidebar colapsable** — Expandir/colapsar; prefetch al montar
-- **Ruta única por secciones** — `home/[[...section]]` (Dashboard, Costos, IAM) para cambios instantáneos
-- **Gráficos de ejemplo** — Recharts en Dashboard con colores según tema
+- **Ruta única por secciones** — `home/[[...section]]` con keep-alive de vistas para cambios instantáneos
+- **Analyze costs** — Métricas de concentración, movers, modos de comparación y exportación
+- **Módulos de Security** — Puertos abiertos RDS/EC2, S3 público/cifrado, Lambda pública, ACM por vencer, SGs sin uso, volúmenes sin adjuntar
+- **Módulos IAM** — Access keys, users sin MFA, risky policies, grants de admin y roles cross-account
+- **Módulos de Auditoría** — Recursos sin tag Project y recursos por tag de proyecto
 - **Guía del sitio** — Página `/guide` (bilingüe), enlace en el menú del avatar (nueva pestaña)
 - **Layout responsive** — Sin `min-width` fijo; contenido usable en móvil
 - **Páginas de error** — 404 y límites de error con i18n
@@ -299,7 +311,7 @@ src/
 │   ├── api/auth/[auth0]/     # Handler de Auth0
 │   ├── guide/                # Guía del sitio (bilingüe)
 │   ├── home/
-│   │   ├── [[...section]]/   # dashboard, costs, iam
+│   │   ├── [[...section]]/   # todos los módulos home (single page + resolvedor)
 │   │   ├── layout.tsx        # Sidebar + main
 │   │   ├── loading.tsx       # Skeleton de carga
 │   │   └── error.tsx         # Error boundary del home
@@ -327,9 +339,15 @@ src/
 | Ruta | Acceso | Descripción |
 |------|--------|-------------|
 | `/` | Pública | Redirige al dashboard o al login |
-| `/home/dashboard` | Protegida | Dashboard + gráficos de ejemplo |
-| `/home/costs` | Protegida | Placeholder de costos |
-| `/home/iam` | Protegida | Placeholder de usuarios IAM |
+| `/home/dashboard` | Protegida | Resumen ejecutivo con KPIs de seguridad/costos |
+| `/home/costs` | Protegida | Overview de costos por proyecto |
+| `/home/costs/analyze` | Protegida | Análisis avanzado (comparación + movers) |
+| `/home/iam/users` | Protegida | IAM users, risky policies, admin grants, roles cross-account |
+| `/home/iam/access-keys` | Protegida | Higiene de access keys IAM |
+| `/home/vulnerabilities/docker-image` | Protegida | Findings Inspector agrupados por repositorio ECR |
+| `/home/vulnerabilities/ec2-servers` | Protegida | Findings Inspector agrupados por instancia EC2 |
+| `/home/security/*` | Protegida | Controles de Security (ports, buckets, encryption, lambda, certs, SGs, volumes) |
+| `/home/audits/*` | Protegida | Auditorías de tagging (sin tag + por proyecto) |
 | `/guide` | Protegida | Guía del sitio (bilingüe) |
 | `/api/auth/*` | Auth0 | Login, logout, callback |
 
@@ -348,7 +366,7 @@ Editá `src/config/app.ts` (nombre, descripción, locale por defecto). El layout
 1. Sumar `sectionKey` en `src/i18n/types.ts`.
 2. Traducciones en `src/i18n/dictionaries/es.ts` y `en.ts` (`sections`, `homeContent`).
 3. Ítem en `src/config/sidebar.ts`.
-4. Contenido en `src/components/organism/HomeSectionContent/index.tsx` (u organismo nuevo).
+4. Contenido en `src/components/organism/HomeViewsShell/index.tsx` y mapeo de rutas en `src/utils/homeRoutes.ts`.
 5. Opcional: bloque en `guide.sections` en ambos diccionarios.
 
 No hace falta crear `page.tsx` en `home/` — la ruta catch-all `[[...section]]` ya lo resuelve.
@@ -356,7 +374,7 @@ No hace falta crear `page.tsx` en `home/` — la ruta catch-all `[[...section]]`
 #### 🌙 Temas
 - Cambio: menú del avatar → **Apariencia** → Claro / Oscuro
 - Por defecto: claro
-- Colores: `brand_*` y `gray_*` en `tailwind.config.js`
+- Colores: `brand_*`, `gray_*` y `warning_*` en `tailwind.config.js`
 
 #### 🌐 Internacionalización
 - Diccionarios: `src/i18n/dictionaries/{es,en}.ts`
