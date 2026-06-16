@@ -19,6 +19,11 @@ export type SidebarChildLabelKey =
   | 'rdsOpenPorts'
   | 'ec2OpenPorts'
   | 's3PublicBuckets'
+  | 's3EncryptionStatus'
+  | 'lambdaPublicFunctions'
+  | 'acmExpiringCertificates'
+  | 'ec2UnusedSecurityGroups'
+  | 'ec2UnattachedVolumes'
   | 'untaggedResources'
   | 'resourcesByProject'
 
@@ -31,6 +36,11 @@ export type DashboardScanModuleKey =
   | 'ec2Ports'
   | 'rdsPorts'
   | 's3'
+  | 's3Encryption'
+  | 'lambdaPublicFunctions'
+  | 'acmCertificates'
+  | 'ec2UnusedSecurityGroups'
+  | 'ec2UnattachedVolumes'
 
 export type TranslationDictionary = {
   nav: {
@@ -75,6 +85,11 @@ export type TranslationDictionary = {
     rdsPublicPorts: string
     ec2PublicPorts: string
     s3PublicBuckets: string
+    s3UnencryptedBuckets: string
+    lambdaPublicFunctions: string
+    acmExpiringCertificates: string
+    ec2UnusedSecurityGroups: string
+    ec2UnattachedVolumes: string
     instancesHint: string
     topProjectsChart: string
     lastScanTitle: string

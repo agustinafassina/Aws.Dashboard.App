@@ -10,6 +10,11 @@ export type HomeViewKey =
   | 'vuln-rds-ports'
   | 'vuln-ec2-ports'
   | 'vuln-s3-public-buckets'
+  | 'security-s3-encryption-status'
+  | 'security-lambda-public-functions'
+  | 'security-acm-expiring-certificates'
+  | 'security-ec2-unused-security-groups'
+  | 'security-ec2-unattached-volumes'
   | 'audits-untagged-resources'
   | 'audits-resources-by-project'
 
@@ -42,6 +47,16 @@ export function resolveHomeView(segments: string[]): HomeViewKey | null {
   if (first === 'security' && second === 'ec2-open-ports') return 'vuln-ec2-ports'
   if (first === 'security' && second === 's3-public-buckets')
     return 'vuln-s3-public-buckets'
+  if (first === 'security' && second === 's3-encryption-status')
+    return 'security-s3-encryption-status'
+  if (first === 'security' && second === 'lambda-public-functions')
+    return 'security-lambda-public-functions'
+  if (first === 'security' && second === 'acm-expiring-certificates')
+    return 'security-acm-expiring-certificates'
+  if (first === 'security' && second === 'ec2-unused-security-groups')
+    return 'security-ec2-unused-security-groups'
+  if (first === 'security' && second === 'ec2-unattached-volumes')
+    return 'security-ec2-unattached-volumes'
   if (first === 'audits' && second === 'untagged-resources')
     return 'audits-untagged-resources'
   if (first === 'audits' && second === 'resources-by-project')

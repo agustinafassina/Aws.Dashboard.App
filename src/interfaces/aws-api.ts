@@ -150,6 +150,47 @@ export interface Ec2OpenPortsResponse {
   scannedAt: string
 }
 
+export interface Ec2UnusedSecurityGroup {
+  groupId: string
+  groupName: string
+  description?: string | null
+  vpcId?: string | null
+  isDefaultSecurityGroup: boolean
+  inboundRuleCount: number
+  outboundRuleCount: number
+  recommendation: string
+}
+
+export interface Ec2UnusedSecurityGroupsResponse {
+  region: string
+  totalSecurityGroups: number
+  unusedSecurityGroupsCount: number
+  securityGroups: Ec2UnusedSecurityGroup[]
+  scannedAt: string
+}
+
+export interface Ec2UnattachedVolume {
+  volumeId: string
+  name?: string | null
+  sizeGiB: number
+  volumeType?: string | null
+  state?: string | null
+  encrypted: boolean
+  snapshotId?: string | null
+  availabilityZone?: string | null
+  createdAt?: string | null
+  recommendation: string
+}
+
+export interface Ec2UnattachedVolumesResponse {
+  region: string
+  totalVolumes: number
+  unattachedVolumesCount: number
+  totalUnattachedSizeGiB: number
+  volumes: Ec2UnattachedVolume[]
+  scannedAt: string
+}
+
 export interface RdsInstancePorts {
   dbInstanceIdentifier: string
   engine: string
@@ -187,6 +228,63 @@ export interface S3PublicBucketsResponse {
   totalBucketsInRegion: number
   publicBucketsCount: number
   publicBuckets: S3PublicBucket[]
+  scannedAt: string
+}
+
+export interface S3BucketEncryption {
+  name: string
+  region: string
+  creationDate: string
+  recommendation: string
+}
+
+export interface S3EncryptionStatusResponse {
+  region: string
+  totalBucketsInRegion: number
+  unencryptedBucketsCount: number
+  unencryptedBuckets: S3BucketEncryption[]
+  scannedAt: string
+}
+
+export interface LambdaPublicFunction {
+  functionName: string
+  functionArn: string
+  runtime?: string | null
+  state?: string | null
+  functionUrl?: string | null
+  publicAccessReasons: string[]
+  recommendation: string
+}
+
+export interface LambdaPublicFunctionsResponse {
+  region: string
+  totalFunctions: number
+  publicFunctionsCount: number
+  functions: LambdaPublicFunction[]
+  scannedAt: string
+}
+
+export interface AcmExpiringCertificate {
+  certificateArn: string
+  domainName: string
+  subjectAlternativeNames: string[]
+  status?: string | null
+  type?: string | null
+  inUse: boolean
+  notBefore?: string | null
+  notAfter?: string | null
+  daysUntilExpiry: number
+  isExpired: boolean
+  recommendation: string
+}
+
+export interface AcmExpiringCertificatesResponse {
+  region: string
+  expirationWindowDays: number
+  totalCertificatesScanned: number
+  expiringCertificatesCount: number
+  expiredCertificatesCount: number
+  certificates: AcmExpiringCertificate[]
   scannedAt: string
 }
 

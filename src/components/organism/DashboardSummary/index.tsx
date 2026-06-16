@@ -13,6 +13,7 @@ import {
 import AccessKeyIcon from '@/components/atoms/Icons/AccessKeyIcon'
 import BucketIcon from '@/components/atoms/Icons/BucketIcon'
 import DatabaseIcon from '@/components/atoms/Icons/DatabaseIcon'
+import PolicyClockIcon from '@/components/atoms/Icons/PolicyClockIcon'
 import ServerIcon from '@/components/atoms/Icons/ServerIcon'
 import ShieldIcon from '@/components/atoms/Icons/ShieldIcon'
 import TopProjectIcon from '@/components/atoms/Icons/TopProjectIcon'
@@ -69,6 +70,11 @@ export default function DashboardSummary() {
     ec2PortsQuery,
     rdsPortsQuery,
     s3Query,
+    s3EncryptionQuery,
+    lambdaQuery,
+    acmQuery,
+    ec2UnusedSecurityGroupsQuery,
+    ec2UnattachedVolumesQuery,
     monthSpendFormatted,
     topProject,
     topProjectHint,
@@ -79,6 +85,11 @@ export default function DashboardSummary() {
     rdsPublicPorts,
     ec2PublicPorts,
     s3PublicBuckets,
+    s3UnencryptedBuckets,
+    lambdaPublicFunctions,
+    acmExpiringCertificates,
+    ec2UnusedSecurityGroups,
+    ec2UnattachedVolumes,
     isInitialLoading,
     isRegionalFetching,
     isAnyFetching,
@@ -87,6 +98,11 @@ export default function DashboardSummary() {
   const costsBusy = isQueryBusy(costsQuery)
   const findingsBusy =
     isQueryBusy(inspectorEcrQuery) || isQueryBusy(inspectorEc2Query)
+  const s3EncryptionBusy = isQueryBusy(s3EncryptionQuery)
+  const lambdaBusy = isQueryBusy(lambdaQuery)
+  const acmBusy = isQueryBusy(acmQuery)
+  const ec2UnusedSecurityGroupsBusy = isQueryBusy(ec2UnusedSecurityGroupsQuery)
+  const ec2UnattachedVolumesBusy = isQueryBusy(ec2UnattachedVolumesQuery)
   const inspectorCapped =
     isInspectorResultCapped(inspectorEcrQuery.data) ||
     isInspectorResultCapped(inspectorEc2Query.data)
@@ -279,6 +295,115 @@ export default function DashboardSummary() {
             hint={format(d.instancesHint, { region })}
             icon={<BucketIcon className="h-5 w-5" />}
             iconTone={6}
+          />
+        </KpiLink>
+
+        <KpiLink
+          href={dashboardSectionHref(
+            DASHBOARD_SECTION_LINKS.s3EncryptionStatus,
+            { region: urlRegion },
+          )}
+        >
+          <StatCard
+            equalHeight
+            isLoading={s3EncryptionBusy}
+            loadingLabel={d.loading}
+            label={d.s3UnencryptedBuckets}
+            value={s3UnencryptedBuckets}
+            variant={
+              !s3EncryptionBusy && s3UnencryptedBuckets > 0 ? 'warning' : 'default'
+            }
+            hint={format(d.instancesHint, { region })}
+            icon={<BucketIcon className="h-5 w-5" />}
+            iconTone={0}
+          />
+        </KpiLink>
+
+        <KpiLink
+          href={dashboardSectionHref(
+            DASHBOARD_SECTION_LINKS.lambdaPublicFunctions,
+            { region: urlRegion },
+          )}
+        >
+          <StatCard
+            equalHeight
+            isLoading={lambdaBusy}
+            loadingLabel={d.loading}
+            label={d.lambdaPublicFunctions}
+            value={lambdaPublicFunctions}
+            variant={
+              !lambdaBusy && lambdaPublicFunctions > 0 ? 'warning' : 'default'
+            }
+            hint={format(d.instancesHint, { region })}
+            icon={<ServerIcon className="h-5 w-5" />}
+            iconTone={1}
+          />
+        </KpiLink>
+
+        <KpiLink
+          href={dashboardSectionHref(
+            DASHBOARD_SECTION_LINKS.acmExpiringCertificates,
+            { region: urlRegion },
+          )}
+        >
+          <StatCard
+            equalHeight
+            isLoading={acmBusy}
+            loadingLabel={d.loading}
+            label={d.acmExpiringCertificates}
+            value={acmExpiringCertificates}
+            variant={
+              !acmBusy && acmExpiringCertificates > 0 ? 'warning' : 'default'
+            }
+            hint={format(d.instancesHint, { region })}
+            icon={<PolicyClockIcon className="h-5 w-5" />}
+            iconTone={2}
+          />
+        </KpiLink>
+
+        <KpiLink
+          href={dashboardSectionHref(
+            DASHBOARD_SECTION_LINKS.ec2UnusedSecurityGroups,
+            { region: urlRegion },
+          )}
+        >
+          <StatCard
+            equalHeight
+            isLoading={ec2UnusedSecurityGroupsBusy}
+            loadingLabel={d.loading}
+            label={d.ec2UnusedSecurityGroups}
+            value={ec2UnusedSecurityGroups}
+            variant={
+              !ec2UnusedSecurityGroupsBusy && ec2UnusedSecurityGroups > 0
+                ? 'warning'
+                : 'default'
+            }
+            hint={format(d.instancesHint, { region })}
+            icon={<ShieldIcon className="h-5 w-5" />}
+            iconTone={3}
+          />
+        </KpiLink>
+
+        <KpiLink
+          href={dashboardSectionHref(
+            DASHBOARD_SECTION_LINKS.ec2UnattachedVolumes,
+            { region: urlRegion },
+          )}
+        >
+          <StatCard
+            equalHeight
+            isLoading={ec2UnattachedVolumesBusy}
+            loadingLabel={d.loading}
+            label={d.ec2UnattachedVolumes}
+            value={ec2UnattachedVolumes}
+            variant={
+              !ec2UnattachedVolumesBusy && ec2UnattachedVolumes > 0
+                ? 'warning'
+                : 'default'
+            }
+            hint={format(d.instancesHint, { region })}
+            icon={<DatabaseIcon className="h-5 w-5" />}
+            iconTone={4}
           />
         </KpiLink>
       </div>

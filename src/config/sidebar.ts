@@ -12,6 +12,7 @@ import BucketIcon from '@/components/atoms/Icons/BucketIcon'
 import AuditIcon from '@/components/atoms/Icons/AuditIcon'
 import ProjectsIcon from '@/components/atoms/Icons/ProjectsIcon'
 import SpendIcon from '@/components/atoms/Icons/SpendIcon'
+import PolicyClockIcon from '@/components/atoms/Icons/PolicyClockIcon'
 import { ComponentType } from 'react'
 import type { SectionKey, SidebarGroupLabelKey, SidebarChildLabelKey } from '@/i18n/types'
 
@@ -123,6 +124,31 @@ export const sidebarConfig: SidebarConfig = {
           labelKey: 's3PublicBuckets',
           path: '/home/security/s3-public-buckets',
           icon: BucketIcon,
+        },
+        {
+          labelKey: 's3EncryptionStatus',
+          path: '/home/security/s3-encryption-status',
+          icon: BucketIcon,
+        },
+        {
+          labelKey: 'lambdaPublicFunctions',
+          path: '/home/security/lambda-public-functions',
+          icon: ServerIcon,
+        },
+        {
+          labelKey: 'acmExpiringCertificates',
+          path: '/home/security/acm-expiring-certificates',
+          icon: PolicyClockIcon,
+        },
+        {
+          labelKey: 'ec2UnusedSecurityGroups',
+          path: '/home/security/ec2-unused-security-groups',
+          icon: ServerIcon,
+        },
+        {
+          labelKey: 'ec2UnattachedVolumes',
+          path: '/home/security/ec2-unattached-volumes',
+          icon: DatabaseIcon,
         },
       ],
     },

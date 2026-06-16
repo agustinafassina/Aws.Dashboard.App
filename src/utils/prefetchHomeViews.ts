@@ -8,6 +8,11 @@ export function prefetchHomeViewModules(): void {
   void import('@/components/organism/VulnerabilitiesView/Ec2ServerDetailContent')
   void import('@/components/organism/OpenPortsView')
   void import('@/components/organism/S3PublicBucketsView')
+  void import('@/components/organism/S3EncryptionStatusView')
+  void import('@/components/organism/LambdaPublicFunctionsView')
+  void import('@/components/organism/AcmExpiringCertificatesView')
+  void import('@/components/organism/Ec2UnusedSecurityGroupsView')
+  void import('@/components/organism/Ec2UnattachedVolumesView')
   void import('@/components/organism/UntaggedResourcesView')
   void import('@/components/organism/ResourcesByProjectTagView')
 }

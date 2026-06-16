@@ -9,6 +9,11 @@ export const DASHBOARD_SECTION_LINKS = {
   rdsPublicPorts: '/home/security/rds-open-ports',
   ec2PublicPorts: '/home/security/ec2-open-ports',
   s3PublicBuckets: '/home/security/s3-public-buckets',
+  s3EncryptionStatus: '/home/security/s3-encryption-status',
+  lambdaPublicFunctions: '/home/security/lambda-public-functions',
+  acmExpiringCertificates: '/home/security/acm-expiring-certificates',
+  ec2UnusedSecurityGroups: '/home/security/ec2-unused-security-groups',
+  ec2UnattachedVolumes: '/home/security/ec2-unattached-volumes',
 } as const
 
 export function dashboardSectionHref(

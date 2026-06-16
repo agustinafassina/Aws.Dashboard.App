@@ -11,6 +11,11 @@ import VulnerabilitiesView from '@/components/organism/VulnerabilitiesView'
 import Ec2ServerDetailContent from '@/components/organism/VulnerabilitiesView/Ec2ServerDetailContent'
 import OpenPortsView from '@/components/organism/OpenPortsView'
 import S3PublicBucketsView from '@/components/organism/S3PublicBucketsView'
+import S3EncryptionStatusView from '@/components/organism/S3EncryptionStatusView'
+import LambdaPublicFunctionsView from '@/components/organism/LambdaPublicFunctionsView'
+import AcmExpiringCertificatesView from '@/components/organism/AcmExpiringCertificatesView'
+import Ec2UnusedSecurityGroupsView from '@/components/organism/Ec2UnusedSecurityGroupsView'
+import Ec2UnattachedVolumesView from '@/components/organism/Ec2UnattachedVolumesView'
 import UntaggedResourcesView from '@/components/organism/UntaggedResourcesView'
 import ResourcesByProjectTagView from '@/components/organism/ResourcesByProjectTagView'
 import { getHomePathSegments } from '@/utils/homePath'
@@ -33,6 +38,11 @@ const ALL_VIEW_KEYS: HomeViewKey[] = [
   'vuln-rds-ports',
   'vuln-ec2-ports',
   'vuln-s3-public-buckets',
+  'security-s3-encryption-status',
+  'security-lambda-public-functions',
+  'security-acm-expiring-certificates',
+  'security-ec2-unused-security-groups',
+  'security-ec2-unattached-volumes',
   'audits-untagged-resources',
   'audits-resources-by-project',
 ]
@@ -97,6 +107,41 @@ function HomeViewPanel({
         <S3PublicBucketsView
           title="S3 public buckets"
           description="S3 buckets that are publicly accessible via policy, ACL, or missing Block Public Access settings."
+        />
+      )
+    case 'security-s3-encryption-status':
+      return (
+        <S3EncryptionStatusView
+          title="S3 encryption status"
+          description="S3 buckets in the selected region that do not have encryption configured."
+        />
+      )
+    case 'security-lambda-public-functions':
+      return (
+        <LambdaPublicFunctionsView
+          title="Lambda public functions"
+          description="Lambda functions that are publicly reachable through URL configuration or IAM policy."
+        />
+      )
+    case 'security-acm-expiring-certificates':
+      return (
+        <AcmExpiringCertificatesView
+          title="ACM expiring certificates"
+          description="ACM certificates that are expired or will expire soon in the selected region."
+        />
+      )
+    case 'security-ec2-unused-security-groups':
+      return (
+        <Ec2UnusedSecurityGroupsView
+          title="EC2 unused security groups"
+          description="Security groups in the selected region not currently attached to active network interfaces."
+        />
+      )
+    case 'security-ec2-unattached-volumes':
+      return (
+        <Ec2UnattachedVolumesView
+          title="EC2 unattached volumes"
+          description="EBS volumes in the selected region that are not attached to any running instance."
         />
       )
     case 'audits-untagged-resources':

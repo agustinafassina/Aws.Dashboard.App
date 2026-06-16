@@ -38,6 +38,11 @@ export interface BuildDashboardReportInput {
   rdsPublicPorts: number
   ec2PublicPorts: number
   s3PublicBuckets: number
+  s3UnencryptedBuckets: number
+  lambdaPublicFunctions: number
+  acmExpiringCertificates: number
+  ec2UnusedSecurityGroups: number
+  ec2UnattachedVolumes: number
   topProjectsChart: { name: string; amount: number }[]
   costCurrency: string | undefined
   scans: DashboardScanEntry[]
@@ -81,6 +86,26 @@ export function buildDashboardReportSnapshot(
     {
       metric: d.s3PublicBuckets,
       value: String(input.s3PublicBuckets),
+    },
+    {
+      metric: d.s3UnencryptedBuckets,
+      value: String(input.s3UnencryptedBuckets),
+    },
+    {
+      metric: d.lambdaPublicFunctions,
+      value: String(input.lambdaPublicFunctions),
+    },
+    {
+      metric: d.acmExpiringCertificates,
+      value: String(input.acmExpiringCertificates),
+    },
+    {
+      metric: d.ec2UnusedSecurityGroups,
+      value: String(input.ec2UnusedSecurityGroups),
+    },
+    {
+      metric: d.ec2UnattachedVolumes,
+      value: String(input.ec2UnattachedVolumes),
     },
   ]
 

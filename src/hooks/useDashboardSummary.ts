@@ -8,6 +8,11 @@ import { useInspectorVulnerabilities } from '@/hooks/useInspectorVulnerabilities
 import { useEc2OpenPorts } from '@/hooks/useEc2OpenPorts'
 import { useRdsOpenPorts } from '@/hooks/useRdsOpenPorts'
 import { useS3PublicBuckets } from '@/hooks/useS3PublicBuckets'
+import { useS3EncryptionStatus } from '@/hooks/useS3EncryptionStatus'
+import { useLambdaPublicFunctions } from '@/hooks/useLambdaPublicFunctions'
+import { useAcmExpiringCertificates } from '@/hooks/useAcmExpiringCertificates'
+import { useEc2UnusedSecurityGroups } from '@/hooks/useEc2UnusedSecurityGroups'
+import { useEc2UnattachedVolumes } from '@/hooks/useEc2UnattachedVolumes'
 import { useAwsRegion } from '@/context/RegionContext'
 import { useCostDateRange } from '@/hooks/useCostDateRange'
 import { formatCurrency } from '@/utils/formatters'
@@ -45,6 +50,11 @@ export function useDashboardSummary() {
   const ec2PortsQuery = useEc2OpenPorts(region)
   const rdsPortsQuery = useRdsOpenPorts(region)
   const s3Query = useS3PublicBuckets(region)
+  const s3EncryptionQuery = useS3EncryptionStatus(region)
+  const lambdaQuery = useLambdaPublicFunctions(region)
+  const acmQuery = useAcmExpiringCertificates(region)
+  const ec2UnusedSecurityGroupsQuery = useEc2UnusedSecurityGroups(region)
+  const ec2UnattachedVolumesQuery = useEc2UnattachedVolumes(region)
 
   const topProject = useMemo(() => {
     const projects = costsQuery.data?.projects ?? []
@@ -120,6 +130,40 @@ export function useDashboardSummary() {
         isLoading: s3Query.isLoading || s3Query.isFetching,
         isError: s3Query.isError,
       },
+      {
+        key: 's3Encryption',
+        scannedAt: s3EncryptionQuery.data?.scannedAt ?? null,
+        isLoading: s3EncryptionQuery.isLoading || s3EncryptionQuery.isFetching,
+        isError: s3EncryptionQuery.isError,
+      },
+      {
+        key: 'lambdaPublicFunctions',
+        scannedAt: lambdaQuery.data?.scannedAt ?? null,
+        isLoading: lambdaQuery.isLoading || lambdaQuery.isFetching,
+        isError: lambdaQuery.isError,
+      },
+      {
+        key: 'acmCertificates',
+        scannedAt: acmQuery.data?.scannedAt ?? null,
+        isLoading: acmQuery.isLoading || acmQuery.isFetching,
+        isError: acmQuery.isError,
+      },
+      {
+        key: 'ec2UnusedSecurityGroups',
+        scannedAt: ec2UnusedSecurityGroupsQuery.data?.scannedAt ?? null,
+        isLoading:
+          ec2UnusedSecurityGroupsQuery.isLoading ||
+          ec2UnusedSecurityGroupsQuery.isFetching,
+        isError: ec2UnusedSecurityGroupsQuery.isError,
+      },
+      {
+        key: 'ec2UnattachedVolumes',
+        scannedAt: ec2UnattachedVolumesQuery.data?.scannedAt ?? null,
+        isLoading:
+          ec2UnattachedVolumesQuery.isLoading ||
+          ec2UnattachedVolumesQuery.isFetching,
+        isError: ec2UnattachedVolumesQuery.isError,
+      },
     ],
     [
       costsQuery.data?.scannedAt,
@@ -146,6 +190,21 @@ export function useDashboardSummary() {
       s3Query.data?.scannedAt,
       s3Query.isLoading,
       s3Query.isError,
+      s3EncryptionQuery.data?.scannedAt,
+      s3EncryptionQuery.isLoading,
+      s3EncryptionQuery.isError,
+      lambdaQuery.data?.scannedAt,
+      lambdaQuery.isLoading,
+      lambdaQuery.isError,
+      acmQuery.data?.scannedAt,
+      acmQuery.isLoading,
+      acmQuery.isError,
+      ec2UnusedSecurityGroupsQuery.data?.scannedAt,
+      ec2UnusedSecurityGroupsQuery.isLoading,
+      ec2UnusedSecurityGroupsQuery.isError,
+      ec2UnattachedVolumesQuery.data?.scannedAt,
+      ec2UnattachedVolumesQuery.isLoading,
+      ec2UnattachedVolumesQuery.isError,
     ],
   )
 
@@ -173,14 +232,29 @@ export function useDashboardSummary() {
     rdsPortsQuery.isLoading &&
     !rdsPortsQuery.data &&
     s3Query.isLoading &&
-    !s3Query.data
+    !s3Query.data &&
+    s3EncryptionQuery.isLoading &&
+    !s3EncryptionQuery.data &&
+    lambdaQuery.isLoading &&
+    !lambdaQuery.data &&
+    acmQuery.isLoading &&
+    !acmQuery.data &&
+    ec2UnusedSecurityGroupsQuery.isLoading &&
+    !ec2UnusedSecurityGroupsQuery.data &&
+    ec2UnattachedVolumesQuery.isLoading &&
+    !ec2UnattachedVolumesQuery.data
 
   const isRegionalFetching =
     inspectorEcrQuery.isFetching ||
     inspectorEc2Query.isFetching ||
     ec2PortsQuery.isFetching ||
     rdsPortsQuery.isFetching ||
-    s3Query.isFetching
+    s3Query.isFetching ||
+    s3EncryptionQuery.isFetching ||
+    lambdaQuery.isFetching ||
+    acmQuery.isFetching ||
+    ec2UnusedSecurityGroupsQuery.isFetching ||
+    ec2UnattachedVolumesQuery.isFetching
 
   const isAnyFetching =
     isRegionalFetching ||
@@ -199,6 +273,11 @@ export function useDashboardSummary() {
     ec2PortsQuery,
     rdsPortsQuery,
     s3Query,
+    s3EncryptionQuery,
+    lambdaQuery,
+    acmQuery,
+    ec2UnusedSecurityGroupsQuery,
+    ec2UnattachedVolumesQuery,
     monthSpendFormatted,
     topProject,
     topProjectHint,
@@ -209,6 +288,13 @@ export function useDashboardSummary() {
     rdsPublicPorts: rdsPortsQuery.data?.instancesWithPublicPorts ?? 0,
     ec2PublicPorts: ec2PortsQuery.data?.instancesWithPublicPorts ?? 0,
     s3PublicBuckets: s3Query.data?.publicBucketsCount ?? 0,
+    s3UnencryptedBuckets: s3EncryptionQuery.data?.unencryptedBucketsCount ?? 0,
+    lambdaPublicFunctions: lambdaQuery.data?.publicFunctionsCount ?? 0,
+    acmExpiringCertificates: acmQuery.data?.expiringCertificatesCount ?? 0,
+    ec2UnusedSecurityGroups:
+      ec2UnusedSecurityGroupsQuery.data?.unusedSecurityGroupsCount ?? 0,
+    ec2UnattachedVolumes:
+      ec2UnattachedVolumesQuery.data?.unattachedVolumesCount ?? 0,
     scans,
     isInitialLoading,
     isRegionalFetching,
