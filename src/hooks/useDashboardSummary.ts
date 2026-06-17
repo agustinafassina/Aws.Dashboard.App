@@ -13,6 +13,7 @@ import { useLambdaPublicFunctions } from '@/hooks/useLambdaPublicFunctions'
 import { useAcmExpiringCertificates } from '@/hooks/useAcmExpiringCertificates'
 import { useEc2UnusedSecurityGroups } from '@/hooks/useEc2UnusedSecurityGroups'
 import { useEc2UnattachedVolumes } from '@/hooks/useEc2UnattachedVolumes'
+import { useSecuritySummary } from '@/hooks/useSecuritySummary'
 import { useAwsRegion } from '@/context/RegionContext'
 import { useCostDateRange } from '@/hooks/useCostDateRange'
 import { formatCurrency } from '@/utils/formatters'
@@ -55,6 +56,7 @@ export function useDashboardSummary() {
   const acmQuery = useAcmExpiringCertificates(region)
   const ec2UnusedSecurityGroupsQuery = useEc2UnusedSecurityGroups(region)
   const ec2UnattachedVolumesQuery = useEc2UnattachedVolumes(region)
+  const securitySummaryQuery = useSecuritySummary(region)
 
   const topProject = useMemo(() => {
     const projects = costsQuery.data?.projects ?? []
@@ -242,7 +244,9 @@ export function useDashboardSummary() {
     ec2UnusedSecurityGroupsQuery.isLoading &&
     !ec2UnusedSecurityGroupsQuery.data &&
     ec2UnattachedVolumesQuery.isLoading &&
-    !ec2UnattachedVolumesQuery.data
+    !ec2UnattachedVolumesQuery.data &&
+    securitySummaryQuery.isLoading &&
+    !securitySummaryQuery.data
 
   const isRegionalFetching =
     inspectorEcrQuery.isFetching ||
@@ -254,7 +258,8 @@ export function useDashboardSummary() {
     lambdaQuery.isFetching ||
     acmQuery.isFetching ||
     ec2UnusedSecurityGroupsQuery.isFetching ||
-    ec2UnattachedVolumesQuery.isFetching
+    ec2UnattachedVolumesQuery.isFetching ||
+    securitySummaryQuery.isFetching
 
   const isAnyFetching =
     isRegionalFetching ||
@@ -278,6 +283,7 @@ export function useDashboardSummary() {
     acmQuery,
     ec2UnusedSecurityGroupsQuery,
     ec2UnattachedVolumesQuery,
+    securitySummaryQuery,
     monthSpendFormatted,
     topProject,
     topProjectHint,
@@ -285,16 +291,40 @@ export function useDashboardSummary() {
     costCurrency: costsQuery.data?.currency,
     keysNeedingRotation: iamKeysQuery.data?.accessKeysNeedingRotation ?? 0,
     criticalHighFindings,
-    rdsPublicPorts: rdsPortsQuery.data?.instancesWithPublicPorts ?? 0,
-    ec2PublicPorts: ec2PortsQuery.data?.instancesWithPublicPorts ?? 0,
-    s3PublicBuckets: s3Query.data?.publicBucketsCount ?? 0,
-    s3UnencryptedBuckets: s3EncryptionQuery.data?.unencryptedBucketsCount ?? 0,
-    lambdaPublicFunctions: lambdaQuery.data?.publicFunctionsCount ?? 0,
-    acmExpiringCertificates: acmQuery.data?.expiringCertificatesCount ?? 0,
+    rdsPublicPorts:
+      securitySummaryQuery.data?.rdsInstancesWithOpenPorts ??
+      rdsPortsQuery.data?.instancesWithPublicPorts ??
+      0,
+    ec2PublicPorts:
+      securitySummaryQuery.data?.instancesWithOpenPorts ??
+      ec2PortsQuery.data?.instancesWithPublicPorts ??
+      0,
+    s3PublicBuckets:
+      securitySummaryQuery.data?.publicBuckets ?? s3Query.data?.publicBucketsCount ?? 0,
+    s3UnencryptedBuckets:
+      securitySummaryQuery.data?.unencryptedBuckets ??
+      s3EncryptionQuery.data?.unencryptedBucketsCount ??
+      0,
+    lambdaPublicFunctions:
+      securitySummaryQuery.data?.publicLambdaFunctions ??
+      lambdaQuery.data?.publicFunctionsCount ??
+      0,
+    acmExpiringCertificates:
+      securitySummaryQuery.data?.expiringCertificates ??
+      acmQuery.data?.expiringCertificatesCount ??
+      0,
     ec2UnusedSecurityGroups:
-      ec2UnusedSecurityGroupsQuery.data?.unusedSecurityGroupsCount ?? 0,
+      securitySummaryQuery.data?.unusedSecurityGroups ??
+      ec2UnusedSecurityGroupsQuery.data?.unusedSecurityGroupsCount ??
+      0,
     ec2UnattachedVolumes:
-      ec2UnattachedVolumesQuery.data?.unattachedVolumesCount ?? 0,
+      securitySummaryQuery.data?.unattachedVolumes ??
+      ec2UnattachedVolumesQuery.data?.unattachedVolumesCount ??
+      0,
+    publicLoadBalancers: securitySummaryQuery.data?.publicLoadBalancers ?? 0,
+    ecrRepositoryRisks: securitySummaryQuery.data?.ecrRepositoriesAtRisk ?? 0,
+    ec2Imdsv1Instances: securitySummaryQuery.data?.imdsv1Instances ?? 0,
+    rdsUnencryptedInstances: securitySummaryQuery.data?.unencryptedRdsInstances ?? 0,
     scans,
     isInitialLoading,
     isRegionalFetching,

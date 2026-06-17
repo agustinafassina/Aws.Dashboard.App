@@ -41,6 +41,21 @@ const en: TranslationDictionary = {
       'Tools to explore spend trends, compare periods, and detect AWS cost anomalies.',
     comingSoon: 'This section will be available soon.',
   },
+  iamUsers: {
+    legends: {
+      mfa: 'IAM users with console (password) sign-in enabled but no MFA device registered. Best practice: enforce MFA for every human user, disable console access that is no longer needed, and prefer federated SSO over long-lived IAM users.',
+      riskyPolicies:
+        'Customer-managed policies that allow every action on every resource (Action * / Resource *), effectively granting full administrator rights. Best practice: scope policies to least privilege—grant only the specific actions and resources each workload needs, and avoid wildcards.',
+      overprivilegedPolicies:
+        'Customer-managed policies that grant service-wide wildcard actions (e.g. s3:*, iam:*) even if not full admin. Best practice: replace wildcards with the specific actions each workload uses, restrict the affected resources, and prioritise the highest-severity policies first.',
+      adminGrants:
+        'Users, groups, and roles attached to admin-level policies (e.g. AdministratorAccess), including access inherited through groups. Best practice: keep the number of administrators to a minimum, prefer temporary role assumption over standing access, and review these grants regularly.',
+      crossAccountRoles:
+        'Roles whose trust policy allows principals from external AWS accounts to assume them. Best practice: trust only known account IDs, require an ExternalId for third-party access, never allow Principal *, and remove trust relationships that are no longer in use.',
+      inlinePolicies:
+        'Policies embedded directly on a single user, group, or role instead of being managed and reusable. Best practice: avoid inline policies—use customer-managed policies for reusability and auditability, and remove any wildcard admin permissions flagged here.',
+    },
+  },
   dashboardSummary: {
     regionHint: 'Regional scans use {{region}}',
     regionTagLabel: 'Regional scans',
@@ -137,6 +152,11 @@ const en: TranslationDictionary = {
       s3EncryptionStatus: 'S3 encryption gaps',
       lambdaPublicFunctions: 'Public Lambda exposure',
       acmExpiringCertificates: 'Certificate expiration risk',
+      elbPublicListeners: 'Public ELB listeners',
+      ecrRepositoryRisks: 'ECR repository risks',
+      ec2Imdsv1Instances: 'EC2 IMDSv1 exposure',
+      rdsUnencryptedInstances: 'RDS encryption gaps',
+      rdsNoBackups: 'RDS backup coverage gaps',
       ec2UnusedSecurityGroups: 'Unused EC2 security groups',
       ec2UnattachedVolumes: 'Unattached EBS volumes',
       untaggedResources: 'Missing Project tag',

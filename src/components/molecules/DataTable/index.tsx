@@ -79,10 +79,19 @@ export default function DataTable<T extends object>({
             >
               {columns.map((col) => {
                 const value = row[col.key]
+                const cellClassName = col.cellClassName ?? col.className ?? ''
+                const usesTruncate = cellClassName.includes('truncate')
+                const autoTooltip =
+                  usesTruncate && !col.render && value != null ? String(value) : undefined
+                const tooltip = col.tooltipValue
+                  ? col.tooltipValue(value, row)
+                  : autoTooltip
+
                 return (
                   <td
                     key={`${String(col.key)}-${col.label}`}
-                    className={`px-4 py-3 text-gray_900 dark:text-gray_200 ${col.cellClassName ?? col.className ?? ''}`}
+                    className={`px-4 py-3 text-gray_900 dark:text-gray_200 ${cellClassName}`}
+                    title={tooltip}
                   >
                     {col.render
                       ? col.render(value, row)

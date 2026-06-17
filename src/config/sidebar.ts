@@ -108,6 +108,11 @@ export const sidebarConfig: SidebarConfig = {
           icon: ServerIcon,
         },
         {
+          labelKey: 'elbPublicListeners',
+          path: '/home/security/elb-public-listeners',
+          icon: ServerIcon,
+        },
+        {
           labelKey: 'rdsOpenPorts',
           path: '/home/security/rds-open-ports',
           icon: DatabaseIcon,
@@ -140,6 +145,21 @@ export const sidebarConfig: SidebarConfig = {
           icon: BucketIcon,
         },
         {
+          labelKey: 'rdsUnencryptedInstances',
+          path: '/home/security/rds-unencrypted-instances',
+          icon: DatabaseIcon,
+        },
+        {
+          labelKey: 'rdsNoBackups',
+          path: '/home/security/rds-no-backups',
+          icon: DatabaseIcon,
+        },
+        {
+          labelKey: 'ecrRepositoryRisks',
+          path: '/home/security/ecr-repository-risks',
+          icon: DockerIcon,
+        },
+        {
           labelKey: 'resourcesByProject',
           path: '/home/audits/resources-by-project',
           icon: ProjectsIcon,
@@ -164,6 +184,11 @@ export const sidebarConfig: SidebarConfig = {
         {
           labelKey: 'ec2UnusedSecurityGroups',
           path: '/home/security/ec2-unused-security-groups',
+          icon: ServerIcon,
+        },
+        {
+          labelKey: 'ec2Imdsv1Instances',
+          path: '/home/security/ec2-imdsv1-instances',
           icon: ServerIcon,
         },
       ],

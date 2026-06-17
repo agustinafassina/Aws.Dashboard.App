@@ -41,6 +41,21 @@ const es: TranslationDictionary = {
       'Herramientas para explorar tendencias, comparar períodos y detectar anomalías en el gasto AWS.',
     comingSoon: 'Esta sección se implementará próximamente.',
   },
+  iamUsers: {
+    legends: {
+      mfa: 'Usuarios IAM con acceso por consola (contraseña) habilitado pero sin ningún dispositivo MFA registrado. Buena práctica: exigir MFA a todo usuario humano, deshabilitar el acceso por consola que ya no se use y preferir SSO federado en lugar de usuarios IAM de larga duración.',
+      riskyPolicies:
+        'Políticas administradas por el cliente que permiten cualquier acción sobre cualquier recurso (Action * / Resource *), otorgando de hecho permisos de administrador total. Buena práctica: aplicar el mínimo privilegio—conceder solo las acciones y recursos específicos que cada carga de trabajo necesita y evitar comodines.',
+      overprivilegedPolicies:
+        'Políticas administradas por el cliente que conceden acciones con comodín a nivel de servicio (por ejemplo s3:*, iam:*) aunque no sean de administrador total. Buena práctica: reemplazar los comodines por las acciones específicas que usa cada carga de trabajo, restringir los recursos afectados y priorizar primero las políticas de mayor severidad.',
+      adminGrants:
+        'Usuarios, grupos y roles asociados a políticas de nivel administrador (por ejemplo AdministratorAccess), incluido el acceso heredado a través de grupos. Buena práctica: mantener al mínimo la cantidad de administradores, preferir la asunción temporal de roles en lugar de accesos permanentes y revisar estos otorgamientos con regularidad.',
+      crossAccountRoles:
+        'Roles cuya política de confianza permite que principales de cuentas AWS externas los asuman. Buena práctica: confiar solo en IDs de cuenta conocidos, exigir un ExternalId para el acceso de terceros, nunca permitir Principal * y eliminar las relaciones de confianza que ya no se usen.',
+      inlinePolicies:
+        'Políticas embebidas directamente en un único usuario, grupo o rol en lugar de ser administradas y reutilizables. Buena práctica: evitar las políticas inline—usar políticas administradas por el cliente para favorecer la reutilización y auditoría, y eliminar cualquier permiso de administrador con comodines marcado aquí.',
+    },
+  },
   dashboardSummary: {
     regionHint: 'Escaneos regionales en {{region}}',
     regionTagLabel: 'Escaneos regionales',
@@ -137,6 +152,11 @@ const es: TranslationDictionary = {
       s3EncryptionStatus: 'Brechas de cifrado en S3',
       lambdaPublicFunctions: 'Exposición pública en Lambda',
       acmExpiringCertificates: 'Riesgo por certificados próximos a vencer',
+      elbPublicListeners: 'Listeners públicos en ELB',
+      ecrRepositoryRisks: 'Riesgos en repositorios ECR',
+      ec2Imdsv1Instances: 'Exposición EC2 IMDSv1',
+      rdsUnencryptedInstances: 'Brechas de cifrado en RDS',
+      rdsNoBackups: 'Brechas de backups en RDS',
       ec2UnusedSecurityGroups: 'Security groups EC2 sin uso',
       ec2UnattachedVolumes: 'Volúmenes EBS sin adjuntar',
       untaggedResources: 'Sin tag Project',

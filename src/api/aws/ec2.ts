@@ -1,5 +1,6 @@
 import { axiosBase } from '@/api/axiosBase'
 import type {
+  Ec2Imdsv1InstancesResponse,
   Ec2OpenPortsResponse,
   Ec2UnattachedVolumesResponse,
   Ec2UnusedSecurityGroupsResponse,
@@ -30,6 +31,16 @@ export async function fetchEc2UnattachedVolumes(
 ): Promise<Ec2UnattachedVolumesResponse> {
   const { data } = await axiosBase.get<Ec2UnattachedVolumesResponse>(
     '/api/v1/ec2/unattached-volumes',
+    { params: { region } },
+  )
+  return data
+}
+
+export async function fetchEc2Imdsv1Instances(
+  region: string,
+): Promise<Ec2Imdsv1InstancesResponse> {
+  const { data } = await axiosBase.get<Ec2Imdsv1InstancesResponse>(
+    '/api/v1/ec2/imdsv1-instances',
     { params: { region } },
   )
   return data

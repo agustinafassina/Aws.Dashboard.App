@@ -13,6 +13,11 @@ export type HomeViewKey =
   | 'security-s3-encryption-status'
   | 'security-lambda-public-functions'
   | 'security-acm-expiring-certificates'
+  | 'security-elb-public-listeners'
+  | 'security-ecr-repository-risks'
+  | 'security-ec2-imdsv1-instances'
+  | 'security-rds-unencrypted-instances'
+  | 'security-rds-no-backups'
   | 'security-ec2-unused-security-groups'
   | 'security-ec2-unattached-volumes'
   | 'audits-untagged-resources'
@@ -53,6 +58,16 @@ export function resolveHomeView(segments: string[]): HomeViewKey | null {
     return 'security-lambda-public-functions'
   if (first === 'security' && second === 'acm-expiring-certificates')
     return 'security-acm-expiring-certificates'
+  if (first === 'security' && second === 'elb-public-listeners')
+    return 'security-elb-public-listeners'
+  if (first === 'security' && second === 'ecr-repository-risks')
+    return 'security-ecr-repository-risks'
+  if (first === 'security' && second === 'ec2-imdsv1-instances')
+    return 'security-ec2-imdsv1-instances'
+  if (first === 'security' && second === 'rds-unencrypted-instances')
+    return 'security-rds-unencrypted-instances'
+  if (first === 'security' && second === 'rds-no-backups')
+    return 'security-rds-no-backups'
   if (first === 'security' && second === 'ec2-unused-security-groups')
     return 'security-ec2-unused-security-groups'
   if (first === 'security' && second === 'ec2-unattached-volumes')

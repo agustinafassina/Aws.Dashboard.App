@@ -7,6 +7,7 @@ import type { Column } from '@/interfaces/common'
 
 interface TableSectionProps<T extends object> {
   title: string
+  description?: string
   onExportPdf: () => void
   exportDisabled?: boolean
   columns: Column<T>[]
@@ -17,6 +18,7 @@ interface TableSectionProps<T extends object> {
 
 export default function TableSection<T extends object>({
   title,
+  description,
   onExportPdf,
   exportDisabled,
   columns,
@@ -30,6 +32,7 @@ export default function TableSection<T extends object>({
     <section className="mb-8 min-w-0 last:mb-0">
       <SectionTableHeader
         title={title}
+        description={description}
         onExportPdf={onExportPdf}
         exportDisabled={exportDisabled}
         searchQuery={searchQuery}

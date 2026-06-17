@@ -67,6 +67,25 @@ export interface IamRiskyPoliciesResponse {
   scannedAt: string
 }
 
+export interface IamOverprivilegedPolicy {
+  policyArn: string
+  policyName: string
+  privilegeLevel: string
+  riskReason: string
+  riskyActions: string[]
+  recommendation: string
+}
+
+export interface IamOverprivilegedPoliciesResponse {
+  totalCustomerPoliciesScanned: number
+  overprivilegedPolicyCount: number
+  criticalPolicyCount: number
+  highPolicyCount: number
+  mediumPolicyCount: number
+  policies: IamOverprivilegedPolicy[]
+  scannedAt: string
+}
+
 export interface IamAdminPrivilegeGrant {
   principalType: string
   principalName: string
@@ -105,6 +124,44 @@ export interface IamCrossAccountRolesResponse {
   totalRolesScanned: number
   crossAccountRolesCount: number
   roles: IamCrossAccountRole[]
+  scannedAt: string
+}
+
+export interface IamRootAccountStatusResponse {
+  accountId: string
+  mfaEnabled: boolean
+  hasActiveAccessKeys: boolean
+  hasSigningCertificate: boolean
+  passwordEnabled: boolean
+  accessKey1Active: boolean
+  accessKey2Active: boolean
+  passwordLastUsed: string | null
+  accessKey1LastUsed: string | null
+  accessKey2LastUsed: string | null
+  credentialReportAvailable: boolean
+  isCompliant: boolean
+  riskReasons: string[]
+  recommendation: string
+  scannedAt: string
+}
+
+export interface IamInlinePolicy {
+  principalType: string
+  principalName: string
+  principalArn: string | null
+  policyName: string
+  hasWildcardAdminRisk: boolean
+  riskReason: string | null
+  recommendation: string
+}
+
+export interface IamInlinePoliciesResponse {
+  totalUsersScanned: number
+  totalGroupsScanned: number
+  totalRolesScanned: number
+  inlinePolicyCount: number
+  riskyInlinePolicyCount: number
+  policies: IamInlinePolicy[]
   scannedAt: string
 }
 
@@ -232,6 +289,24 @@ export interface Ec2UnattachedVolumesResponse {
   scannedAt: string
 }
 
+export interface Ec2Imdsv1Instance {
+  instanceId: string
+  name?: string | null
+  state?: string | null
+  instanceType?: string | null
+  httpTokens?: string | null
+  httpEndpoint?: string | null
+  recommendation: string
+}
+
+export interface Ec2Imdsv1InstancesResponse {
+  region: string
+  totalInstances: number
+  imdsv1InstancesCount: number
+  instances: Ec2Imdsv1Instance[]
+  scannedAt: string
+}
+
 export interface RdsInstancePorts {
   dbInstanceIdentifier: string
   engine: string
@@ -251,6 +326,47 @@ export interface RdsOpenPortsResponse {
   totalInstances: number
   instancesWithPublicPorts: number
   instances: RdsInstancePorts[]
+  scannedAt: string
+}
+
+export interface RdsUnencryptedInstance {
+  dbInstanceIdentifier: string
+  engine: string
+  engineVersion?: string | null
+  status?: string | null
+  storageType?: string | null
+  allocatedStorageGiB?: number | null
+  storageEncrypted: boolean
+  kmsKeyId?: string | null
+  recommendation: string
+}
+
+export interface RdsUnencryptedInstancesResponse {
+  region: string
+  totalInstances: number
+  unencryptedInstancesCount: number
+  instances: RdsUnencryptedInstance[]
+  scannedAt: string
+}
+
+export interface RdsNoBackupInstance {
+  dbInstanceIdentifier: string
+  engine: string
+  engineVersion?: string | null
+  status?: string | null
+  backupRetentionPeriodDays: number
+  preferredBackupWindow?: string | null
+  latestRestorableTime?: string | null
+  riskReason: string
+  recommendation: string
+}
+
+export interface RdsNoBackupsResponse {
+  region: string
+  minBackupRetentionDays: number
+  totalInstances: number
+  instancesWithoutAdequateBackupsCount: number
+  instances: RdsNoBackupInstance[]
   scannedAt: string
 }
 
@@ -302,6 +418,46 @@ export interface LambdaPublicFunctionsResponse {
   totalFunctions: number
   publicFunctionsCount: number
   functions: LambdaPublicFunction[]
+  scannedAt: string
+}
+
+export interface EcrRepositoryRisk {
+  repositoryName: string
+  repositoryArn: string
+  isPublic: boolean
+  scanOnPushEnabled: boolean
+  riskReasons: string[]
+  recommendation: string
+}
+
+export interface EcrRepositoryRisksResponse {
+  region: string
+  totalRepositoriesScanned: number
+  repositoriesAtRiskCount: number
+  repositories: EcrRepositoryRisk[]
+  scannedAt: string
+}
+
+export interface ElbListenerDetail {
+  port: number
+  protocol: string
+}
+
+export interface ElbPublicListener {
+  loadBalancerName: string
+  loadBalancerArn: string
+  loadBalancerType: string
+  scheme: string
+  listeners: ElbListenerDetail[]
+  riskReasons: string[]
+  recommendation: string
+}
+
+export interface ElbPublicListenersResponse {
+  region: string
+  totalLoadBalancersScanned: number
+  publicLoadBalancersCount: number
+  loadBalancers: ElbPublicListener[]
   scannedAt: string
 }
 
@@ -363,5 +519,35 @@ export interface ResourcesByProjectTagResponse {
   totalResourcesScanned: number
   matchingResourcesCount: number
   resources: TaggedResource[]
+  scannedAt: string
+}
+
+export interface SecuritySummaryResponse {
+  region: string
+  certificateExpirationWindowDays: number
+  totalFindings: number
+  publicBuckets: number
+  unencryptedBuckets: number
+  instancesWithOpenPorts: number
+  unusedSecurityGroups: number
+  unattachedVolumes: number
+  rdsInstancesWithOpenPorts: number
+  unencryptedRdsInstances: number
+  imdsv1Instances: number
+  publicLambdaFunctions: number
+  publicLoadBalancers: number
+  ecrRepositoriesAtRisk: number
+  expiringCertificates: number
+  expiredCertificates: number
+  activeInspectorFindings: number
+  untaggedResources: number
+  accessKeysNeedingRotation: number
+  accessKeysNeverUsed: number
+  usersWithoutMfa: number
+  riskyPolicies: number
+  adminPrivilegeGrants: number
+  crossAccountRoles: number
+  rootAccountRiskCount: number
+  riskyInlinePolicies: number
   scannedAt: string
 }

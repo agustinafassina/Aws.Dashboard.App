@@ -22,6 +22,11 @@ export type SidebarChildLabelKey =
   | 's3EncryptionStatus'
   | 'lambdaPublicFunctions'
   | 'acmExpiringCertificates'
+  | 'elbPublicListeners'
+  | 'ecrRepositoryRisks'
+  | 'ec2Imdsv1Instances'
+  | 'rdsUnencryptedInstances'
+  | 'rdsNoBackups'
   | 'ec2UnusedSecurityGroups'
   | 'ec2UnattachedVolumes'
   | 'untaggedResources'
@@ -69,6 +74,16 @@ export type TranslationDictionary = {
     title: string
     description: string
     comingSoon: string
+  }
+  iamUsers: {
+    legends: {
+      mfa: string
+      riskyPolicies: string
+      overprivilegedPolicies: string
+      adminGrants: string
+      crossAccountRoles: string
+      inlinePolicies: string
+    }
   }
   dashboardSummary: {
     regionHint: string

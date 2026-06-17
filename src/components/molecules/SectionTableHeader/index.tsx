@@ -3,6 +3,7 @@ import TableSearchInput from '@/components/molecules/TableSearchInput'
 
 interface SectionTableHeaderProps {
   title: string
+  description?: string
   onExportPdf: () => void
   exportDisabled?: boolean
   searchQuery: string
@@ -11,16 +12,24 @@ interface SectionTableHeaderProps {
 
 export default function SectionTableHeader({
   title,
+  description,
   onExportPdf,
   exportDisabled = false,
   searchQuery,
   onSearchQueryChange,
 }: SectionTableHeaderProps) {
   return (
-    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-gray_800 dark:text-gray_400">
-        {title}
-      </h2>
+    <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+      <div className="min-w-0">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray_800 dark:text-gray_400">
+          {title}
+        </h2>
+        {description && (
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-gray_600 dark:text-gray_400">
+            {description}
+          </p>
+        )}
+      </div>
       <div className="inline-flex flex-nowrap items-center gap-2">
         <TableSearchInput value={searchQuery} onChange={onSearchQueryChange} />
         <ExportPdfButton onClick={onExportPdf} disabled={exportDisabled} />

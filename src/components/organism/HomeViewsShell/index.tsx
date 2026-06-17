@@ -14,6 +14,11 @@ import S3PublicBucketsView from '@/components/organism/S3PublicBucketsView'
 import S3EncryptionStatusView from '@/components/organism/S3EncryptionStatusView'
 import LambdaPublicFunctionsView from '@/components/organism/LambdaPublicFunctionsView'
 import AcmExpiringCertificatesView from '@/components/organism/AcmExpiringCertificatesView'
+import ElbPublicListenersView from '@/components/organism/ElbPublicListenersView'
+import EcrRepositoryRisksView from '@/components/organism/EcrRepositoryRisksView'
+import Ec2Imdsv1InstancesView from '@/components/organism/Ec2Imdsv1InstancesView'
+import RdsUnencryptedInstancesView from '@/components/organism/RdsUnencryptedInstancesView'
+import RdsNoBackupsView from '@/components/organism/RdsNoBackupsView'
 import Ec2UnusedSecurityGroupsView from '@/components/organism/Ec2UnusedSecurityGroupsView'
 import Ec2UnattachedVolumesView from '@/components/organism/Ec2UnattachedVolumesView'
 import UntaggedResourcesView from '@/components/organism/UntaggedResourcesView'
@@ -41,6 +46,11 @@ const ALL_VIEW_KEYS: HomeViewKey[] = [
   'security-s3-encryption-status',
   'security-lambda-public-functions',
   'security-acm-expiring-certificates',
+  'security-elb-public-listeners',
+  'security-ecr-repository-risks',
+  'security-ec2-imdsv1-instances',
+  'security-rds-unencrypted-instances',
+  'security-rds-no-backups',
   'security-ec2-unused-security-groups',
   'security-ec2-unattached-volumes',
   'audits-untagged-resources',
@@ -128,6 +138,41 @@ function HomeViewPanel({
         <AcmExpiringCertificatesView
           title="ACM expiring certificates"
           description="ACM certificates that are expired or will expire soon in the selected region."
+        />
+      )
+    case 'security-elb-public-listeners':
+      return (
+        <ElbPublicListenersView
+          title="ELB public listeners"
+          description="Load balancers that expose internet-facing listeners in the selected region."
+        />
+      )
+    case 'security-ecr-repository-risks':
+      return (
+        <EcrRepositoryRisksView
+          title="ECR repository risks"
+          description="Repositories with public access or missing scan-on-push protections."
+        />
+      )
+    case 'security-ec2-imdsv1-instances':
+      return (
+        <Ec2Imdsv1InstancesView
+          title="EC2 IMDSv1 instances"
+          description="Instances still allowing IMDSv1 metadata access behavior."
+        />
+      )
+    case 'security-rds-unencrypted-instances':
+      return (
+        <RdsUnencryptedInstancesView
+          title="RDS unencrypted instances"
+          description="RDS instances without storage encryption configured."
+        />
+      )
+    case 'security-rds-no-backups':
+      return (
+        <RdsNoBackupsView
+          title="RDS backup coverage gaps"
+          description="RDS instances with backup retention below the configured minimum threshold."
         />
       )
     case 'security-ec2-unused-security-groups':

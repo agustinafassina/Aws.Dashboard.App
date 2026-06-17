@@ -14,7 +14,7 @@ export interface Column<T> {
   key: keyof T
   label: string
   render?: (value: any, row: T) => React.ReactNode
-  /** Applied to both header and cells when cellClassName/headerClassName are omitted. */
+  tooltipValue?: (value: any, row: T) => string | undefined
   className?: string
   headerClassName?: string
   cellClassName?: string

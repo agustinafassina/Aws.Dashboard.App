@@ -3,7 +3,10 @@ import type {
   IamAccessKeysResponse,
   IamAdminPrivilegeGrantsResponse,
   IamCrossAccountRolesResponse,
+  IamInlinePoliciesResponse,
+  IamOverprivilegedPoliciesResponse,
   IamRiskyPoliciesResponse,
+  IamRootAccountStatusResponse,
   IamUsersWithoutMfaResponse,
 } from '@/interfaces/aws-api'
 
@@ -40,6 +43,13 @@ export async function fetchIamRiskyPolicies(): Promise<IamRiskyPoliciesResponse>
   return data
 }
 
+export async function fetchIamOverprivilegedCustomPolicies(): Promise<IamOverprivilegedPoliciesResponse> {
+  const { data } = await axiosBase.get<IamOverprivilegedPoliciesResponse>(
+    '/api/v1/iam/overprivileged-custom-policies',
+  )
+  return data
+}
+
 export async function fetchIamAdminPrivilegeGrants(): Promise<IamAdminPrivilegeGrantsResponse> {
   const { data } = await axiosBase.get<IamAdminPrivilegeGrantsResponse>(
     '/api/v1/iam/admin-privilege-grants',
@@ -50,6 +60,20 @@ export async function fetchIamAdminPrivilegeGrants(): Promise<IamAdminPrivilegeG
 export async function fetchIamCrossAccountRoles(): Promise<IamCrossAccountRolesResponse> {
   const { data } = await axiosBase.get<IamCrossAccountRolesResponse>(
     '/api/v1/iam/cross-account-roles',
+  )
+  return data
+}
+
+export async function fetchIamRootAccountStatus(): Promise<IamRootAccountStatusResponse> {
+  const { data } = await axiosBase.get<IamRootAccountStatusResponse>(
+    '/api/v1/iam/root-account-status',
+  )
+  return data
+}
+
+export async function fetchIamInlinePolicies(): Promise<IamInlinePoliciesResponse> {
+  const { data } = await axiosBase.get<IamInlinePoliciesResponse>(
+    '/api/v1/iam/inline-policies',
   )
   return data
 }
