@@ -86,6 +86,17 @@ export type TranslationDictionary = {
     }
   }
   dashboardSummary: {
+    posture: {
+      title: string
+      scoreLabel: string
+      gradeLabel: string
+      allClear: string
+      issuesSummary: string
+      critical: string
+      high: string
+      medium: string
+      low: string
+    }
     regionHint: string
     regionTagLabel: string
     costTagLabel: string

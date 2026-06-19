@@ -57,6 +57,17 @@ const es: TranslationDictionary = {
     },
   },
   dashboardSummary: {
+    posture: {
+      title: 'Postura de seguridad',
+      scoreLabel: 'Puntaje',
+      gradeLabel: 'Nota {{grade}}',
+      allClear: 'Sin problemas abiertos en los controles de seguridad de {{region}}',
+      issuesSummary: '{{total}} problemas abiertos en los controles de seguridad de {{region}}',
+      critical: 'Críticos',
+      high: 'Altos',
+      medium: 'Medios',
+      low: 'Bajos',
+    },
     regionHint: 'Escaneos regionales en {{region}}',
     regionTagLabel: 'Escaneos regionales',
     costTagLabel: 'Costos',

@@ -57,6 +57,17 @@ const en: TranslationDictionary = {
     },
   },
   dashboardSummary: {
+    posture: {
+      title: 'Security posture',
+      scoreLabel: 'Score',
+      gradeLabel: 'Grade {{grade}}',
+      allClear: 'No open issues across security checks in {{region}}',
+      issuesSummary: '{{total}} open issues across security checks in {{region}}',
+      critical: 'Critical',
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
+    },
     regionHint: 'Regional scans use {{region}}',
     regionTagLabel: 'Regional scans',
     costTagLabel: 'Costs',

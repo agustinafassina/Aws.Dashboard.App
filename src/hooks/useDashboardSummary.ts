@@ -18,6 +18,7 @@ import { useAwsRegion } from '@/context/RegionContext'
 import { useCostDateRange } from '@/hooks/useCostDateRange'
 import { formatCurrency } from '@/utils/formatters'
 import { countHighCriticalFindings } from '@/utils/inspectorMetrics'
+import { computeSecurityPosture } from '@/utils/securityPostureScore'
 
 import type { DashboardScanModuleKey } from '@/i18n/types'
 
@@ -81,6 +82,11 @@ export function useDashboardSummary() {
   const criticalHighFindings =
     countHighCriticalFindings(inspectorEcrQuery.data?.findings) +
     countHighCriticalFindings(inspectorEc2Query.data?.findings)
+
+  const securityPosture = useMemo(
+    () => computeSecurityPosture(securitySummaryQuery.data),
+    [securitySummaryQuery.data],
+  )
 
   const scans: DashboardScanEntry[] = useMemo(
     () => [
@@ -284,6 +290,7 @@ export function useDashboardSummary() {
     ec2UnusedSecurityGroupsQuery,
     ec2UnattachedVolumesQuery,
     securitySummaryQuery,
+    securityPosture,
     monthSpendFormatted,
     topProject,
     topProjectHint,

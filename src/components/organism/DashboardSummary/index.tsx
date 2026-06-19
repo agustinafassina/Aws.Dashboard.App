@@ -31,7 +31,72 @@ import {
   getInspectorLoadedCount,
   isInspectorResultCapped,
 } from '@/utils/inspectorDisplay'
+import type {
+  SecurityGrade,
+  SecuritySeverity,
+} from '@/utils/securityPostureScore'
 import { dashboardSummaryStyles } from './styles'
+
+const GRADE_STYLES: Record<
+  SecurityGrade,
+  { ring: string; score: string; badge: string }
+> = {
+  A: {
+    ring: 'border-success_500',
+    score: 'text-success_700 dark:text-success_500',
+    badge: 'bg-success_100 text-success_700 dark:bg-success_500/20 dark:text-success_500',
+  },
+  B: {
+    ring: 'border-success_500',
+    score: 'text-success_700 dark:text-success_500',
+    badge: 'bg-success_100 text-success_700 dark:bg-success_500/20 dark:text-success_500',
+  },
+  C: {
+    ring: 'border-warning_700',
+    score: 'text-warning_800 dark:text-warning_200',
+    badge: 'bg-warning_100 text-warning_800 dark:bg-warning_700/30 dark:text-warning_200',
+  },
+  D: {
+    ring: 'border-warning_700',
+    score: 'text-warning_800 dark:text-warning_200',
+    badge: 'bg-warning_100 text-warning_800 dark:bg-warning_700/30 dark:text-warning_200',
+  },
+  F: {
+    ring: 'border-red_200',
+    score: 'text-red_900 dark:text-red_200',
+    badge: 'bg-red_50 text-red_900 dark:bg-red_300/40 dark:text-red_200',
+  },
+}
+
+const SEVERITY_CHIP_STYLES: Record<SecuritySeverity, string> = {
+  critical: 'bg-red_50 text-red_900 dark:bg-red_300/40 dark:text-red_200',
+  high: 'bg-warning_100 text-warning_800 dark:bg-warning_700/30 dark:text-warning_200',
+  medium: 'bg-warning_50 text-warning_700 dark:bg-warning_700/20 dark:text-warning_200',
+  low: 'bg-gray_100 text-gray_700 dark:bg-gray_750 dark:text-gray_300',
+}
+
+function SeverityChip({
+  label,
+  count,
+  severity,
+}: {
+  label: string
+  count: number
+  severity: SecuritySeverity
+}) {
+  return (
+    <span
+      className={`${dashboardSummaryStyles.postureChip} ${
+        count > 0
+          ? SEVERITY_CHIP_STYLES[severity]
+          : 'bg-gray_75 text-gray_500 dark:bg-gray_800 dark:text-gray_500'
+      }`}
+    >
+      <span className="font-semibold">{count}</span>
+      {label}
+    </span>
+  )
+}
 
 function KpiLink({
   href,
@@ -75,6 +140,7 @@ export default function DashboardSummary() {
     acmQuery,
     ec2UnusedSecurityGroupsQuery,
     ec2UnattachedVolumesQuery,
+    securityPosture,
     monthSpendFormatted,
     topProject,
     topProjectHint,
@@ -142,6 +208,72 @@ export default function DashboardSummary() {
           <LoadingSpinner size="sm" label={d.refreshingData} />
           <span>{d.refreshingData}</span>
         </div>
+      )}
+
+      {securityPosture && (
+        <section
+          className={dashboardSummaryStyles.postureCard}
+          aria-busy={isAnyFetching}
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className={`${dashboardSummaryStyles.postureRing} ${GRADE_STYLES[securityPosture.grade].ring}`}
+            >
+              <span
+                className={`text-xl font-bold leading-none ${GRADE_STYLES[securityPosture.grade].score}`}
+              >
+                {securityPosture.score}
+              </span>
+              <span className="text-[0.625rem] font-medium text-gray_500 dark:text-gray_400">
+                {d.posture.scoreLabel}
+              </span>
+            </div>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className={dashboardSummaryStyles.postureTitle}>
+                  {d.posture.title}
+                </h3>
+                <span
+                  className={`${dashboardSummaryStyles.postureGradeBadge} ${GRADE_STYLES[securityPosture.grade].badge}`}
+                >
+                  {format(d.posture.gradeLabel, {
+                    grade: securityPosture.grade,
+                  })}
+                </span>
+              </div>
+              <p className={dashboardSummaryStyles.postureSummary}>
+                {securityPosture.totalIssues === 0
+                  ? format(d.posture.allClear, { region })
+                  : format(d.posture.issuesSummary, {
+                      total: String(securityPosture.totalIssues),
+                      region,
+                    })}
+              </p>
+            </div>
+          </div>
+          <div className={dashboardSummaryStyles.postureSeverityRow}>
+            <SeverityChip
+              label={d.posture.critical}
+              count={securityPosture.critical}
+              severity="critical"
+            />
+            <SeverityChip
+              label={d.posture.high}
+              count={securityPosture.high}
+              severity="high"
+            />
+            <SeverityChip
+              label={d.posture.medium}
+              count={securityPosture.medium}
+              severity="medium"
+            />
+            <SeverityChip
+              label={d.posture.low}
+              count={securityPosture.low}
+              severity="low"
+            />
+          </div>
+        </section>
       )}
 
       <div
