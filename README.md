@@ -1,5 +1,7 @@
 # 📊 AWS Dashboard App — Next.js
 [English](#english) | [Español](#español)
+<a id="english"></a>
+
 ## English 🇬🇧
 ### 📋 Description
 An AWS security and cost dashboard built with **Next.js 15** (App Router), **Auth0**, **Tailwind CSS**, and **NextUI**.
@@ -22,7 +24,7 @@ It includes live sections for Dashboard, Costs (overview + analyze), IAM finding
 - **Accessibility** — Focus trap, keyboard navigation, and ARIA on the avatar menu
 - **Atomic design** — `atoms` / `molecules` / `organism` component structure
 - **Co-located styles** — `styles.ts` per component + shared tokens in `src/styles/`
-- **CI** — GitHub Actions workflow (lint + build)
+- **CI** — GitHub Actions workflow (lint + typecheck + build)
 
 ### 🛠️ Tech stack
 | Area | Technology |
@@ -39,9 +41,10 @@ It includes live sections for Dashboard, Costs (overview + analyze), IAM finding
 | Icons | React Icons |
 
 ### 📦 Prerequisites
-- **Node.js** 18.x or higher
+- **Node.js** 18.18 or higher (20 LTS recommended)
 - **npm**, **yarn**, **pnpm**, or **bun**
 - An **Auth0** application (Regular Web Application)
+- The **AWS Dashboard API** (backend) running and reachable — this app is only the frontend; every section fetches its data from that API (default `http://localhost:5000`)
 
 ### 🚀 Getting started
 #### 1️⃣ Install dependencies
@@ -62,7 +65,18 @@ AUTH0_CLIENT_ID=your_client_id
 AUTH0_CLIENT_SECRET=your_client_secret
 AUTH0_BASE_URL=http://localhost:3000
 AUTH0_SECRET=your_random_secret_min_32_chars
+
+# AWS Dashboard API (backend)
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
 ```
+
+| Variable | Description |
+|----------|-------------|
+| `AUTH0_ISSUER_BASE_URL` | Auth0 tenant URL (`https://…`) |
+| `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET` | Credentials of the Auth0 application |
+| `AUTH0_BASE_URL` | URL where this app runs |
+| `AUTH0_SECRET` | Random secret used to encrypt the session cookie |
+| `NEXT_PUBLIC_API_BASE_URL` | Base URL of the backend API; requests are sent with the Auth0 access token as `Bearer` |
 
 **Auth0 application settings** (Application → Settings):
 
@@ -89,16 +103,19 @@ Open [http://localhost:3000](http://localhost:3000). Unauthenticated users are r
 | Script | Description |
 |--------|-------------|
 | `npm run dev` | Development server |
+| `npm run dev:clean` | Delete `.next` cache and start the dev server |
+| `npm run clean` | Delete the `.next` cache |
 | `npm run build` | Production build |
 | `npm run start` | Start production server |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
 
 ### 📁 Project structure
 ```
 src/
 ├── app/
 │   ├── api/auth/[auth0]/     # Auth0 route handler
-│   ├── guide/                # Bilingual site guide (public)
+│   ├── guide/                # Bilingual site guide (protected)
 │   ├── home/
 │   │   ├── [[...section]]/   # All home modules (single page + route resolver)
 │   │   ├── layout.tsx        # Sidebar + main
@@ -124,7 +141,7 @@ src/
 ├── provider/                 # Theme, Language, React Query, NextUI
 ├── styles/                   # globals, pageShell, cn, shared
 └── middleware.ts             # Auth0 + JWT cookie refresh
-.github/workflows/ci.yml        # Lint + build on push/PR
+.github/workflows/ci.yml        # Lint + typecheck + build on push/PR
 ```
 
 ### 🗺️ Routes
@@ -207,9 +224,11 @@ No new `page.tsx` under `home/` is required — routing is handled by `[[...sect
 - Or clear cookies and reload
 
 ### 📝 License
-Agustina Fassina
+Copyright © Agustina Fassina. All rights reserved.
 
 ---
+
+<a id="español"></a>
 
 ## Español 🇪🇸
 ### 📋 Descripción
@@ -233,7 +252,7 @@ Incluye secciones productivas para Dashboard, Costos (overview + analyze), halla
 - **Accesibilidad** — Focus trap y teclado en el menú del avatar
 - **Atomic design** — Estructura `atoms` / `molecules` / `organism`
 - **Estilos co-localizados** — `styles.ts` por componente + tokens en `src/styles/`
-- **CI** — Workflow de GitHub Actions (lint + build)
+- **CI** — Workflow de GitHub Actions (lint + typecheck + build)
 
 ### 🛠️ Stack tecnológico
 | Área | Tecnología |
@@ -250,9 +269,10 @@ Incluye secciones productivas para Dashboard, Costos (overview + analyze), halla
 | Iconos | React Icons |
 
 ### 📦 Requisitos previos
-- **Node.js** 18.x o superior
+- **Node.js** 18.18 o superior (recomendado 20 LTS)
 - **npm**, **yarn**, **pnpm** o **bun**
 - Una aplicación **Auth0** (Regular Web Application)
+- La **AWS Dashboard API** (backend) corriendo y accesible — esta app es solo el frontend; todas las secciones obtienen sus datos de esa API (por defecto `http://localhost:5000`)
 
 ### 🚀 Comenzar
 #### 1️⃣ Instalar dependencias
@@ -273,7 +293,18 @@ AUTH0_CLIENT_ID=tu_client_id
 AUTH0_CLIENT_SECRET=tu_client_secret
 AUTH0_BASE_URL=http://localhost:3000
 AUTH0_SECRET=tu_secreto_aleatorio_min_32_caracteres
+
+# AWS Dashboard API (backend)
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
 ```
+
+| Variable | Descripción |
+|----------|-------------|
+| `AUTH0_ISSUER_BASE_URL` | URL del tenant de Auth0 (`https://…`) |
+| `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET` | Credenciales de la aplicación Auth0 |
+| `AUTH0_BASE_URL` | URL donde corre esta app |
+| `AUTH0_SECRET` | Secreto aleatorio para cifrar la cookie de sesión |
+| `NEXT_PUBLIC_API_BASE_URL` | URL base de la API backend; los requests van con el access token de Auth0 como `Bearer` |
 
 **Configuración en Auth0** (Application → Settings):
 
@@ -300,16 +331,19 @@ Abrí [http://localhost:3000](http://localhost:3000). Si no hay sesión, redirig
 | Script | Descripción |
 |--------|-------------|
 | `npm run dev` | Servidor de desarrollo |
+| `npm run dev:clean` | Borra la caché `.next` y levanta el servidor de desarrollo |
+| `npm run clean` | Borra la caché `.next` |
 | `npm run build` | Build de producción |
 | `npm run start` | Servidor de producción |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | Chequeo de TypeScript (`tsc --noEmit`) |
 
 ### 📁 Estructura del proyecto
 ```
 src/
 ├── app/
 │   ├── api/auth/[auth0]/     # Handler de Auth0
-│   ├── guide/                # Guía del sitio (bilingüe)
+│   ├── guide/                # Guía del sitio (bilingüe, protegida)
 │   ├── home/
 │   │   ├── [[...section]]/   # todos los módulos home (single page + resolvedor)
 │   │   ├── layout.tsx        # Sidebar + main
@@ -332,7 +366,7 @@ src/
 ├── provider/
 ├── styles/
 └── middleware.ts
-.github/workflows/ci.yml
+.github/workflows/ci.yml        # Lint + typecheck + build en push/PR
 ```
 
 ### 🗺️ Rutas
@@ -403,4 +437,4 @@ No hace falta crear `page.tsx` en `home/` — la ruta catch-all `[[...section]]`
 - O borrá cookies y recargá
 
 ### 📝 Licencia
-Agustina Fassina
+Copyright © Agustina Fassina. Todos los derechos reservados.
