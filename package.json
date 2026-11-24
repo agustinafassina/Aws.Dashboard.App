@@ -8,7 +8,11 @@
     "dev:clean": "npm run clean && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18.18.0"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
